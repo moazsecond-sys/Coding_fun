@@ -5,31 +5,186 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Green Apple Design 🍏 - تصميمات احترافية</title>
 <style>
-:root{--green:#22c55e;--light:#f7fef7;--dark:#166534;--white:#fff}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+:root{
+  --green:#22c55e;
+  --light:#f7fef7;
+  --dark:#166534;
+  --white:#fff
+}
+
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
-body{background:var(--light);color:#222}
-header{background:var(--white);padding:18px;text-align:center;box-shadow:0 2px 6px #0001;position:sticky;top:0;z-index:10;border-bottom:3px solid var(--green)}
-header h1{color:var(--green);font-size:28px}
-.notification{position:fixed;top:0;left:0;right:0;padding:12px;text-align:center;color:#fff;display:none;z-index:999;font-weight:bold}
-.notif-success{background:var(--green)}.notif-error{background:#eab308}.notif-offer{background:#dc2626}
-.container{max-width:900px;margin:auto;padding:20px}
-.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;margin-top:20px}
-.card{background:var(--white);padding:18px;border-radius:14px;box-shadow:0 3px 10px #0001;text-align:center;border-top:4px solid var(--green)}
-.card h3{color:var(--dark);margin-bottom:8px}
-.btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;margin-top:10px;font-weight:bold}
-.btn:hover{opacity:0.85}
-.gallery{display:flex;gap:12px;overflow-x:auto;margin:20px 0;padding-bottom:10px}
-.gallery img{width:200px;height:260px;object-fit:cover;border-radius:12px;border:3px solid var(--green)}
-.ad-banner{background:var(--white);padding:15px;border-radius:12px;text-align:center;margin-top:25px;border:2px dashed var(--green)}
-.ad-banner img{max-width:100%;border-radius:8px;cursor:pointer}
-.whatsapp-float{position:fixed;bottom:20px;left:20px;background:#25D366;color:#fff;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;text-decoration:none;box-shadow:0 4px 12px #0003;z-index:99}
-footer{text-align:center;padding:20px;color:#666;font-size:14px}
+
+body{
+  background:var(--light);
+  color:#222;
+  line-height:1.6
+}
+
+/* الهيدر + التفاحة المأكولة */
+header{
+  background:var(--white);
+  padding:20px;
+  text-align:center;
+  box-shadow:0 3px 8px #0001;
+  position:sticky;
+  top:0;
+  z-index:10;
+  border-bottom:4px solid var(--green)
+}
+
+header h1{
+  color:var(--green);
+  font-size:32px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  justify-content:center
+}
+
+/* شكل التفاحة SVG */
+.apple-logo{
+  width:45px;
+  height:45px;
+  flex-shrink:0
+}
+
+/* التنبيهات فوق الصفحة */
+.notification{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  padding:14px;
+  text-align:center;
+  color:#fff;
+  display:none;
+  z-index:999;
+  font-weight:bold;
+  font-size:16px
+}
+.notif-success{background:var(--green)}
+.notif-error{background:#eab308}
+.notif-offer{background:#dc2626}
+
+/* باقي الموقع */
+.container{max-width:900px;margin:auto;padding:25px}
+.container h2{color:var(--dark);margin-bottom:15px;border-right:4px solid var(--green);padding-right:10px}
+
+.services{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:18px;
+  margin-top:20px
+}
+
+.card{
+  background:var(--white);
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 4px 12px #0001;
+  text-align:center;
+  border-top:5px solid var(--green);
+  transition:0.3s
+}
+.card:hover{transform:translateY(-5px)}
+
+.card h3{color:var(--dark);margin-bottom:10px;font-size:20px}
+.card p{color:#555;margin-bottom:8px}
+.card b{color:var(--green);font-size:22px}
+
+.btn{
+  background:var(--green);
+  color:#fff;
+  border:none;
+  padding:12px 20px;
+  border-radius:10px;
+  cursor:pointer;
+  margin-top:12px;
+  font-weight:bold;
+  font-size:16px
+}
+.btn:hover{opacity:0.85;transform:scale(1.05)}
+
+.gallery{
+  display:flex;
+  gap:15px;
+  overflow-x:auto;
+  margin:25px 0;
+  padding-bottom:10px
+}
+.gallery img{
+  width:200px;
+  height:260px;
+  object-fit:cover;
+  border-radius:12px;
+  border:3px solid var(--green)
+}
+
+.ad-banner{
+  background:var(--white);
+  padding:18px;
+  border-radius:14px;
+  text-align:center;
+  margin-top:30px;
+  border:2px dashed var(--green)
+}
+.ad-banner img{
+  max-width:100%;
+  border-radius:10px;
+  cursor:pointer;
+  margin-top:10px
+}
+
+/* زرار واتساب عايم */
+.whatsapp-float{
+  position:fixed;
+  bottom:25px;
+  left:25px;
+  background:#25D366;
+  color:#fff;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  text-decoration:none;
+  box-shadow:0 5px 15px #0003;
+  z-index:99
+}
+.whatsapp-float:hover{transform:scale(1.1)}
+
+footer{
+  text-align:center;
+  padding:25px;
+  color:#666;
+  font-size:15px;
+  margin-top:30px
+}
+
+/* موبايل */
+@media(max-width:600px){
+  header h1{font-size:24px;flex-direction:column;gap:8px}
+ .apple-logo{width:38px;height:38px}
 </style>
 </head>
 <body>
 <div id="notif" class="notification"></div>
+
 <header>
-<h1 id="brandName">Green Apple Design 🍏</h1>
+<h1 id="brandName">
+  <svg class="apple-logo" viewBox="0 0 100 100">
+    <path d="M50 5 C30 5 15 20 15 40 C15 60 30 75 45 90 C50 95 50 95 55 90 C70 75 85 60 85 40 C85 20 70 5 50 5 Z" fill="#22c55e"/>
+    <path d="M65 15 C70 10 80 12 82 18 C84 24 78 28 73 25 Z" fill="white"/>
+    <path d="M52 2 L50 8 L48 2" fill="#8b4513"/>
+    <path d="M50 8 L54 10" stroke="#228b22" stroke-width="2" fill="none"/>
+  </svg>
+  Green Apple Design
+</h1>
 <p id="brandDesc">تصميمات Canva احترافية - CV + لوجو + بوستات</p>
 </header>
 
@@ -48,11 +203,11 @@ footer{text-align:center;padding:20px;color:#666;font-size:14px}
 
 <a id="whatsappBtn" class="whatsapp-float" target="_blank">💬</a>
 
-<footer>© 2026 Green Apple Design 🍏 - كل الحقوق محفوظة</font></footer>
+<footer>© 2026 Green Apple Design 🍏 - كل الحقوق محفوظة</footer>
 
 <script>
 const data = JSON.parse(localStorage.getItem('greenapple_data')) || {};
-document.getElementById('brandName').innerText = data.brand || 'Green Apple Design 🍏';
+document.getElementById('brandName').childNodes[2].textContent = ' + (data.brand || 'Green Apple Design');
 document.getElementById('brandDesc').innerText = data.desc || 'تصميمات Canva احترافية - CV + لوجو + بوستات';
 
 // الخدمات
@@ -63,7 +218,7 @@ const services = data.services || [
 ];
 const sBox = document.getElementById('servicesBox');
 services.forEach(s=>{
-sBox.innerHTML += `<div class="card"><h3>${s.title}</h3><p>${s.desc}</p><b style="color:var(--green);font-size:18px">${s.price}</b><br><button class="btn" onclick="order()">اطلب الآن</button></div>`;
+sBox.innerHTML += `<div class="card"><h3>${s.title}</h3><p>${s.desc}</p><b>${s.price}</b><br><button class="btn" onclick="order()">اطلب الآن</button></div>`;
 });
 
 // المعرض
@@ -75,14 +230,14 @@ const gallery = data.gallery || [
 const gBox = document.getElementById('galleryBox');
 gallery.forEach(img=> gBox.innerHTML += `<img src="${img}" alt="عمل">`);
 
-// الأزرار الوهمية القابلة للتغيير
+// الأزرار
 const btns = data.buttons || [{name:'واتساب',link:'#',icon:'💬'},{name:'يوتيوب',link:'#',icon:'▶️'}];
 const wBtn = document.getElementById('whatsappBtn');
 wBtn.href = btns[0].link;
 wBtn.innerText = btns[0].icon;
 wBtn.title = btns[0].name;
 
-// الإعلان زي يوتيوب
+// الإعلان
 if(data.ad && data.ad.show){
 document.getElementById('adBox').style.display='block';
 document.getElementById('adTitle').innerText = data.ad.title || 'شاهد باقي أعمالي';
@@ -90,7 +245,7 @@ document.getElementById('adLink').href = data.ad.link || '#';
 document.getElementById('adImg').src = data.ad.img || 'https://via.placeholder.com/800x200/22c55e/fff?text=Green+Apple+Design+Portfolio';
 }
 
-// التنبيهات فوق الصفحة
+// التنبيهات
 function showNotif(msg,type){
 const n=document.getElementById('notif');
 n.className='notification notif-'+type;
@@ -104,8 +259,6 @@ showNotif('⚠️ من فضلك أضف رقم الواتساب من لوحة ا�
 window.open(data.buttons[0].link,'_blank');
 showNotif('✅ تم تحويلك للواتساب بنجاح','success');
 }
-}
-// تنبيه العرض
 if(data.offer) showNotif(data.offer,'offer');
 </script>
 </body>
