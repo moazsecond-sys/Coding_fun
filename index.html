@@ -1,9 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta http-equiv="refresh" content="0; url=اسم-صفحتك.html">
+<meta charset="UTF-8">
+<title>لوحة تحكم Green Apple Design 🍏</title>
+<style>
+body{font-family:'Cairo',sans-serif;background:#f7fef7;padding:20px}
+h2{color:#166534;border-bottom:2px solid #22c55e;padding-bottom:8px}
+input,textarea,button{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
+button{background:#22c55e;color:#fff;border:none;cursor:pointer;font-weight:bold}
+button:hover{opacity:0.9}
+.box{background:#fff;padding:18px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 6px #0001;border-right:4px solid #22c55e}
+label{font-weight:bold;color:#166534;display:block;margin-top:5px}
+small{color:#666}
+</style>
 </head>
 <body>
-  <p>جاري التحويل...</p>
+<h2>لوحة تحكم Green Apple Design 🍏</h2>
+
+<div class="box">
+<label>اسم البراند</label>
+<input id="brand" placeholder="Green Apple Design 🍏">
+<label>وصف قصير تحت الاسم</label>
+<input id="desc" placeholder="تصميمات Canva احترافية">
+</div>
+
+<div class="box">
+<label>الخدمات - سطر لكل خدمة بالصيغة: العنوان | السعر | الوصف</label>
+<textarea id="services" rows="3" placeholder="تصميم CV احترافي | 70 ج | سيرة ذاتية ATS خلال 24 ساعة
+تصميم بوست سوشيال | 30 ج | بوست فيسبوك وانستجرام
+تصميم لوجو بسيط | 50 ج | لوجو سريع لمشروعك"></textarea>
+<small>غير الأسعار براحتك في أي وقت</small>
+</div>
+
+<div class="box">
+<label>الأزرار الوهمية - سطر لكل زرار: الاسم | الرابط | الأيقونة</label>
+<textarea id="buttons" rows="2" placeholder="واتساب | https://wa.me/2010xxxxxxx | 💬
+يوتيوب | https://youtube.com/@yourchannel | ▶️"></textarea>
+<small>سيب الرابط # لو لسه محطتش رقمك</small>
+</div>
+
+<div class="box">
+<label>صور معرض الأعمال - حط رابط كل صورة في سطر</label>
+<textarea id="gallery" rows="3" placeholder="https://link1.jpg
+https://link2.jpg
+https://link3.jpg"></textarea>
+<small>لحد ما تصمم، سيب الصور الوهمية</small>
+</div>
+
+<div class="box">
+<label>إعلان زي يوتيوب/فيسبوك</label>
+<input id="adTitle" placeholder="عنوان الإعلان: شاهد باقي أعمالي">
+<input id="adLink" placeholder="رابط قناة اليوتيوب أو معرض أعمالك">
+<input id="adImg" placeholder="رابط صورة البانر 800x200">
+<label><input type="checkbox" id="adShow"> إظهار البانر الإعلاني</label>
+</div>
+
+<div class="box">
+<label>التنبيه اللي يظهر فوق الصفحة</label>
+<input id="offer" placeholder="عرض الأسبوع: خصم 20% على تصميم الـ CV">
+<small>سيبه فاضي عشان التنبيه يختفي</small>
+</div>
+
+<button onclick="save()">💾 حفظ كل التعديلات</button>
+<p id="msg" style="color:green;font-weight:bold"></p>
+
+<script>
+const key='greenapple_data';
+const data = JSON.parse(localStorage.getItem(key)) || {};
+brand.value = data.brand||'Green Apple Design 🍏';
+desc.value = data.desc||'تصميمات Canva احترافية';
+services.value = (data.services||[]).map(s=>`${s.title} | ${s.price} | ${s.desc}`).join('\n');
+buttons.value = (data.buttons||[]).map(b=>`${b.name} | ${b.link} | ${b.icon}`).join('\n');
+gallery.value = (data.gallery||[]).join('\n');
+adTitle.value = data.ad?.title||'';
+adLink.value = data.ad?.link||'';
+adImg.value = data.ad?.img||'';
+adShow.checked = data.ad?.show||false;
+offer.value = data.offer||'';
+
+function save(){
+const sv = services.value.split('\n').filter(x=>x).map(l=>{
+const [title,price,desc]=l.split('|').map(x=>x.trim());
+return {title,price,desc}});
+const btn = buttons.value.split('\n').filter(x=>x).map(l=>{
+const [name,link,icon]=l.split('|').map(x=>x.trim());
+return {name,link,icon}});
+const gal = gallery.value.split('\n').filter(x=>x);
+
+localStorage.setItem(key, JSON.stringify({
+brand:brand.value, desc:desc.value, services:sv, buttons:btn, gallery:gal,
+ad:{title:adTitle.value, link:adLink.value, img:adImg.value, show:adShow.checked},
+offer:offer.value
+}));
+msg.innerText='✅ تم حفظ التعديلات بنجاح. افتح الموقع وشوف التغيير';
+setTimeout(()=>msg.innerText='',2500);
+}
+</script>
 </body>
 </html>
