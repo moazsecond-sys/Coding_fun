@@ -8,20 +8,43 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Cairo',sans-serif;background:#f8f8f8;color:#333;text-align:center;padding-bottom:100px}
+    
     header{background:#2E7D32;padding:40px 20px;color:white}
-    .logo{width:150px;margin-bottom:15px}
-    h1{font-size:32px}
+    
+    /* كود اللوجو الجديد - Responsive */
+    .logo{
+      max-width:160px; /* أكبر مقاس على الكمبيوتر */
+      width:100%;      /* يصغر لوحده على الموبايل */
+      height:auto;     /* عشان ميبكسلش */
+      margin-bottom:15px;
+      display:block;
+      margin-left:auto;
+      margin-right:auto;
+    }
+    
+    h1{font-size:32px;margin-top:10px}
     nav{margin-top:15px}
     nav a{color:white;margin:0 10px;text-decoration:none;font-size:18px}
+    
     .content{padding:50px 20px;max-width:800px;margin:auto;background:white;border-radius:12px;margin-top:30px}
+    
     footer{background:#2E7D32;color:white;padding:20px;margin-top:50px}
+    
     .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999}
+    
+    /* للموبايل الشاشات الصغيرة */
+    @media (max-width: 600px){
+      h1{font-size:26px}
+      .logo{max-width:120px} /* اللوجو يصغر زيادة على الموبايل */
+      nav a{font-size:16px;margin:0 7px}
+      .content{padding:30px 15px}
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="GREEN APPLE DESIGN" class="logo">
-    <h1>صفحاتنا</h1>
+    <img src="logo.png" alt="GREEN APPLE DESIGN Logo" class="logo">
+    <h1>GREEN APPLE DESIGN</h1>
     <nav>
       <a href="index.html">الرئيسية</a>
       <a href="safahat.html">صفحات</a>
