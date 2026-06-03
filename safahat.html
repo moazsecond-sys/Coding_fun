@@ -9,6 +9,7 @@
 
 :root{
   --green:#22c55e;
+  --green-dark:#166534;
   --light:#f7fef7;
   --dark:#166534;
   --white:#fff
@@ -22,7 +23,6 @@ body{
   line-height:1.6
 }
 
-/* الهيدر + التفاحة المأكولة */
 header{
   background:var(--white);
   padding:20px;
@@ -44,14 +44,12 @@ header h1{
   justify-content:center
 }
 
-/* شكل التفاحة SVG */
 .apple-logo{
   width:45px;
   height:45px;
   flex-shrink:0
 }
 
-/* التنبيهات فوق الصفحة */
 .notification{
   position:fixed;
   top:0;
@@ -69,7 +67,6 @@ header h1{
 .notif-error{background:#eab308}
 .notif-offer{background:#dc2626}
 
-/* باقي الموقع */
 .container{max-width:900px;margin:auto;padding:25px}
 .container h2{color:var(--dark);margin-bottom:15px;border-right:4px solid var(--green);padding-right:10px}
 
@@ -104,7 +101,8 @@ header h1{
   cursor:pointer;
   margin-top:12px;
   font-weight:bold;
-  font-size:16px
+  font-size:16px;
+  transition:0.3s
 }
 .btn:hover{opacity:0.85;transform:scale(1.05)}
 
@@ -138,7 +136,6 @@ header h1{
   margin-top:10px
 }
 
-/* زرار واتساب عايم */
 .whatsapp-float{
   position:fixed;
   bottom:25px;
@@ -166,7 +163,6 @@ footer{
   margin-top:30px
 }
 
-/* موبايل */
 @media(max-width:600px){
   header h1{font-size:24px;flex-direction:column;gap:8px}
  .apple-logo{width:38px;height:38px}
@@ -207,7 +203,9 @@ footer{
 
 <script>
 const data = JSON.parse(localStorage.getItem('greenapple_data')) || {};
-document.getElementById('brandName').childNodes[2].textContent = ' + (data.brand || 'Green Apple Design');
+
+// عدلت السطر ده - شلت الـ ' + ' الزيادة
+document.getElementById('brandName').childNodes[2].textContent = data.brand || 'Green Apple Design';
 document.getElementById('brandDesc').innerText = data.desc || 'تصميمات Canva احترافية - CV + لوجو + بوستات';
 
 // الخدمات
@@ -218,7 +216,7 @@ const services = data.services || [
 ];
 const sBox = document.getElementById('servicesBox');
 services.forEach(s=>{
-sBox.innerHTML += `<div class="card"><h3>${s.title}</h3><p>${s.desc}</p><b>${s.price}</b><br><button class="btn" onclick="order()">اطلب الآن</button></div>`;
+sBox.innerHTML += `<div class="card"><h3>${s.title}</h3><p>${s.desc}</p><b>${s.price}</b><br><button class="btn" onclick="order(event)">اطلب الآن</button></div>`;
 });
 
 // المعرض
@@ -252,14 +250,28 @@ n.className='notification notif-'+type;
 n.innerText=msg; n.style.display='block';
 setTimeout(()=>n.style.display='none',3500);
 }
-function order(){
-if(!data.buttons ||!data.buttons[0].link || data.buttons[0].link=='#'){
-showNotif('⚠️ من فضلك أضف رقم الواتساب من لوحة التحكم أولاً','error');
-}else{
-window.open(data.buttons[0].link,'_blank');
-showNotif('✅ تم تحويلك للواتساب بنجاح','success');
+
+// دالة الزرار الساحر 🍏
+function order(event){
+  let الزرار = event.target;
+
+  if(!data.buttons ||!data.buttons[0].link || data.buttons[0].link=='#'){
+    showNotif('⚠️ من فضلك أضف رقم الواتساب من لوحة التحكم أولاً','error');
+    return;
+  }
+
+  // اقلب أخضر غامق Green Apple
+  الزرار.style.backgroundColor = "#166534";
+  الزرار.style.color = "white";
+  الزرار.innerText = "تمام! جاري التحويل 🍏";
+
+  setTimeout(function(){
+    window.open(data.buttons[0].link,'_blank');
+    showNotif('✅ تم تحويلك للواتساب بنجاح','success');
+  }, 1000);
+
+  if(data.offer) showNotif(data.offer,'offer');
 }
-if(data.offer) showNotif(data.offer,'offer');
 </script>
 </body>
 </html>
