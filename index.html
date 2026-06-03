@@ -3,33 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GREEN APPLE DESIGN - الرئيسية</title>
+  <title>الرئيسية - GREEN APPLE DESIGN</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Cairo',sans-serif;background:#f8f8f8;color:#333;text-align:center;padding-bottom:100px}
+    
+    /* شاشة التحميل Preloader */
+    #loader{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #2E7D32;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: opacity 0.5s ease;
+    }
+    
+    .apple-loader{
+      width: 120px;
+      animation: spin 2s linear infinite, glow 2s infinite;
+    }
+    
+    @keyframes spin{
+      0%{transform: rotate(0deg);}
+      100%{transform: rotate(360deg);}
+    }
+    
+    @keyframes glow{
+      0%, 100%{filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));}
+      50%{filter: drop-shadow(0 0 30px rgba(255,255,255,0.8));}
+    }
+    
+    .loading-text{
+      color: white;
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    /* باقي الموقع */
     header{background:#2E7D32;padding:40px 20px;color:white}
-    .logo{width:180px;margin-bottom:15px}
-    h1{font-size:32px;font-weight:700}
+    
+    .logo{
+      max-width:160px;
+      width:100%;
+      height:auto;
+      margin-bottom:15px;
+      display:block;
+      margin-left:auto;
+      margin-right:auto;
+    }
+    
+    h1{font-size:32px;margin-top:10px}
     nav{margin-top:15px}
-    nav a{color:white;margin:0 10px;text-decoration:none;font-size:18px}
-    .products{padding:50px 20px;display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
-    .product-card{background:white;border-radius:12px;padding:20px;width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.1);text-align:right}
-    .product-card img{width:100%;border-radius:8px;margin-bottom:15px}
-    .product-card h3{font-size:20px;margin:10px 0;color:#2E7D32}
-    .product-card p{margin:8px 0;color:#666}
-    .price{color:#2E7D32;font-size:24px;font-weight:700;margin:10px 0}
-    button{background:#2E7D32;color:white;border:none;padding:12px 30px;border-radius:8px;font-size:18px;cursor:pointer;font-family:'Cairo';width:100%;margin-top:10px}
-    button:hover{background:#1b5e20}
+    nav a{color:white;margin:0 10px;text-decoration:none;font-size:18px;font-weight:700}
+    nav a:hover{text-decoration:underline}
+    
+    .content{padding:50px 20px;max-width:800px;margin:auto;background:white;border-radius:12px;margin-top:30px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+    
     footer{background:#2E7D32;color:white;padding:20px;margin-top:50px}
-    .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999}
+    
+    .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
+    .chat-btn:hover{transform:scale(1.05)}
+    
+    /* للموبايل */
+    @media (max-width: 600px){
+      h1{font-size:26px}
+      .logo{max-width:120px}
+      .apple-loader{width:90px}
+      nav a{font-size:16px;margin:0 7px}
+      .content{padding:30px 15px}
+    }
   </style>
 </head>
 <body>
+
+  <!-- شاشة التحميل -->
+  <div id="loader">
+    <img src="logo.png" alt="Loading" class="apple-loader">
+    <p class="loading-text">GREEN APPLE DESIGN</p>
+  </div>
+
+  <!-- المحتوى العادي -->
   <header>
-    <img src="logo.png" alt="GREEN APPLE DESIGN" class="logo">
+    <img src="logo.png" alt="GREEN APPLE DESIGN Logo" class="logo">
     <h1>GREEN APPLE DESIGN</h1>
-    <p>تصاميم تفتح الشهية للشراء 🍏</p>
     <nav>
       <a href="index.html">الرئيسية</a>
       <a href="safahat.html">صفحات</a>
@@ -37,10 +102,15 @@
   </header>
 
   <main>
-    <section class="products">
-      <h2 style="width:100%;margin-bottom:30px">منتجاتنا</h2>
-      <div id="products-list" style="display:flex;flex-wrap:wrap;justify-content:center;gap:20px;width:100%"></div>
-    </section>
+    <div class="content">
+      <h2>مرحبا بك في GREEN APPLE DESIGN</h2>
+      <p style="font-size:20px;margin-top:20px;line-height:2">
+        احنا متخصصين في تصميم اللوجوهات والبنرات اللي تبيع.<br>
+        شغلك معانا = براند قوي من أول نظرة.<br><br>
+        شوف أعمالنا في صفحة "صفحات" 👆<br>
+        أو كلمنا واتساب مباشرة تحت 👇
+      </p>
+    </div>
   </main>
 
   <footer>
@@ -49,20 +119,24 @@
 
   <a href="https://wa.me/2126XXXXXXXX?text=مرحبا" class="chat-btn" target="_blank">💬 شات واتساب</a>
 
-  <script src="data.js"></script>
+  <!-- كود إخفاء شاشة التحميل - مرة واحدة بس -->
   <script>
-    const list = document.getElementById('products-list');
-    products.forEach(p => {
-      list.innerHTML += `
-        <div class="product-card">
-          <img src="${p.image}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <p>${p.desc}</p>
-          <p class="price">${p.price} درهم</p>
-          <button onclick="window.open('https://wa.me/2126XXXXXXXX?text=أريد ${p.name}','_blank')">اطلب الآن</button>
-        </div>
-      `;
-    });
+    // لو أول مرة يدخل الموقع
+    if (!sessionStorage.getItem('visited')) {
+      sessionStorage.setItem('visited', 'true');
+      
+      window.addEventListener('load', function(){
+        setTimeout(function(){
+          document.getElementById('loader').style.opacity = '0';
+          setTimeout(function(){
+            document.getElementById('loader').style.display = 'none';
+          }, 500);
+        }, 2000); // 2 ثانية
+      });
+    } else {
+      // لو دخل صفحة تاني - اخفيه فوراً
+      document.getElementById('loader').style.display = 'none';
+    }
   </script>
 </body>
 </html>
