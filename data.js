@@ -20,7 +20,7 @@ const products = [
 ];
 
 const works = [
-  "https://via.placeholder.com/600x400/2E7D32/ffffff?text=لوجو+1",
-  "https://via.placeholder.com/600x400/1B5E20/ffffff?text=بنر+2", 
+  "https://via.placeholder.com/600x400/2E7D32/ffffff?text=تصميم+1",
+  "https://via.placeholder.com/600x400/1B5E20/ffffff?text=تصميم+2", 
   "https://via.placeholder.com/600x400/4CAF50/ffffff?text=تصميم+3"
 ];
