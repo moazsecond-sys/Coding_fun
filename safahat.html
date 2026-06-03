@@ -260,13 +260,14 @@ function order(event){
     return;
   }
 
-  // اقلب أخضر غامق Green Apple
+  // 1. اقلب أخضر غامق فوراً
   الزرار.style.backgroundColor = "#166534";
   الزرار.style.color = "white";
   الزرار.innerText = "تمام! جاري التحويل 🍏";
 
+  // 2. استنى ثانية وبعدين افتح الواتساب في نفس التاب
   setTimeout(function(){
-    window.open(data.buttons[0].link,'_blank');
+    window.location.href = data.buttons[0].link;
     showNotif('✅ تم تحويلك للواتساب بنجاح','success');
   }, 1000);
 
