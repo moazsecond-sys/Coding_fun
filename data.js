@@ -18,3 +18,9 @@ const products = [
     image: "https://via.placeholder.com/300"
   }
 ];
+
+const works = [
+  "work1.jpg",
+  "work2.jpg", 
+  "work3.jpg"
+];
