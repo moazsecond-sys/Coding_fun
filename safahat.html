@@ -253,31 +253,38 @@ setTimeout(()=>n.style.display='none',3500);
 
 // دالة الزرار الساحر 🍏
 function order(event){
+let تم_التحويل = false; // متغير برا الدالة عشان يحفظ الحالة
+
+function order(event){
+  event.preventDefault(); // امنع أي تصرف افتراضي
   let الزرار = event.target;
 
-  // لو الزرار مقفول خلاص يبقى اطلع برا وماتعملش حاجة
-  if(الزرار.disabled) return;
+  // لو دوست قبل كده يبقى اخرج فوراً
+  if(تم_التحويل) return;
+  تم_التحويل = true; // علم إننا دوستنا خلاص
 
   if(!data.buttons ||!data.buttons[0].link || data.buttons[0].link=='#'){
     showNotif('⚠️ من فضلك أضف رقم الواتساب من لوحة التحكم أولاً','error');
+    تم_التحويل = false; // رجع العلامة عشان يقدر يجرب تاني
     return;
   }
 
-  // 1. اقفل الزرار فوراً عشان محدش يدوس تاني
+  // اقفل الزرار شكلا وموضوعا
   الزرار.disabled = true;
-  الزرار.style.opacity = "0.7";
+  الزرار.style.opacity = "0.6";
   الزرار.style.cursor = "not-allowed";
-
-  // 2. اقلب أخضر غامق
   الزرار.style.backgroundColor = "#166534";
   الزرار.style.color = "white";
   الزرار.innerText = "تمام! جاري التحويل 🍏";
 
-  // 3. حول للواتساب بعد ثانية
+  // افتح الواتساب مرة واحدة بس
   setTimeout(function(){
-    window.location.href = data.buttons[0].link;
+    let a = document.createElement('a');
+    a.href = data.buttons[0].link;
+    a.target = '_blank';
+    a.click(); // ضغطة برمجية واحدة بس
     showNotif('✅ تم تحويلك للواتساب بنجاح','success');
-  }, 1000);
+  }, 800);
 
   if(data.offer) showNotif(data.offer,'offer');
 }
