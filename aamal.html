@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>أعمالنا - GREEN APPLE DESIGN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;background:#f8f8f8;color:#333;text-align:center;padding-bottom:100px}
+
+    #loader{position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: #2E7D32;z-index: 9999;display: flex;justify-content: center;align-items: center;flex-direction: column;transition: opacity 0.5s ease}
+   .apple-loader{width: 120px;animation: spin 2s linear infinite, glow 2s infinite}
+    @keyframes spin{0%{transform: rotate(0deg);}100%{transform: rotate(360deg);}}
+    @keyframes glow{0%, 100%{filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));}50%{filter: drop-shadow(0 0 30px rgba(255,255,255,0.8));}}
+   .loading-text{color: white;font-size: 20px;margin-top: 20px;font-weight: 700}
+
+    header{background:#2E7D32;padding:40px 20px;color:white}
+   .logo{max-width:160px;width:100%;height:auto;margin-bottom:15px;display:block;margin:auto;transition:0.3s;cursor:pointer}
+   .logo:hover{transform:scale(1.05) rotate(5deg);filter:drop-shadow(0 0 20px rgba(255,255,255,0.5))}
+    h1{font-size:32px;margin-top:10px}
+
+    nav{margin-top:15px}
+    nav a{color:white;margin:0 10px;text-decoration:none;font-size:18px;font-weight:700;transition:0.3s}
+    nav a:hover{opacity:0.8}
+    nav a.active{opacity:0.6;text-decoration:underline;cursor:default}
+
+   .content{padding:50px 20px;max-width:1000px;margin:auto;background:white;border-radius:12px;margin-top:30px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+
+    /* سلايدر الأعمال */
+   .gallery{position:relative;max-width:600px;margin:30px auto}
+   .gallery img{width:100%;border-radius:12px;display:none}
+   .gallery img.active{display:block;animation:fade 0.5s}
+    @keyframes fade{from{opacity:0}to{opacity:1}}
+   .btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(46,125,50,0.8);color:white;border:none;padding:15px 20px;font-size:24px;cursor:pointer;border-radius:50%;transition:0.3s}
+   .btn:hover{background:#2E7D32}
+   .prev{left:-50px}
+   .next{right:-50px}
+
+    footer{background:#2E7D32;color:white;padding:20px;margin-top:50px}
+   .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
+   .chat-btn:hover{transform:scale(1.05)}
+
+    /* زر ارجع لفوق */
+    #topBtn{display:none;position:fixed;bottom:90px;left:20px;z-index:998;background:#2E7D32;color:white;border:none;padding:12px 18px;border-radius:50%;font-size:20px;cursor:pointer;transition:0.3s}
+    #topBtn:hover{background:#1B5E20;transform:scale(1.1)}
+
+    @media (max-width: 600px){
+     .prev{left:5px}.next{right:5px}
+     .apple-loader{width:90px}
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <img src="logo.png" alt="Loading" class="apple-loader">
+    <p class="loading-text">GREEN APPLE DESIGN</p>
+  </div>
+
+  <header>
+    <img src="logo.png" alt="GREEN APPLE DESIGN Logo" class="logo">
+    <h1>GREEN APPLE DESIGN</h1>
+    <nav>
+      <a href="index.html">الرئيسية</a>
+      <a href="safahat.html">صفحات</a>
+      <a href="#" class="active" onclick="return false">أعمالنا</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="content">
+      <h2>معرض أعمالنا</h2>
+      <p style="font-size:20px;margin-top:10px">شوف شغلنا اللي يخلي العميل يشتري من أول نظرة 👇</p>
+
+      <div class="gallery">
+        <img src="work1.jpg" class="active" alt="تصميم 1">
+        <img src="work2.jpg" alt="تصميم 2">
+        <img src="work3.jpg" alt="تصميم 3">
+        <button class="btn prev" onclick="changeSlide(-1)">❮</button>
+        <button class="btn next" onclick="changeSlide(1)">❯</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 GREEN APPLE DESIGN</p>
+  </footer>
+
+  <a href="https://wa.me/2126XXXXXXXX?text=مرحبا" class="chat-btn" target="_blank">💬 شات واتساب</a>
+  <button onclick="topFunction()" id="topBtn" title="ارجع لفوق">⬆</button>
+
+  <script>
+  // نفس كود الـ loader
+  document.addEventListener('DOMContentLoaded', function() {
+    if (sessionStorage.getItem('visited')!== 'yes') {
+      sessionStorage.setItem('visited', 'yes');
+      window.addEventListener('load', function(){
+        setTimeout(function(){
+          document.getElementById('loader').style.opacity = '0';
+          setTimeout(function(){document.getElementById('loader').style.display = 'none'}, 500);
+        }, 2000);
+      });
+    } else {
+      document.getElementById('loader').style.display = 'none';
+    }
+  });
+
+  // سلايدر الأعمال
+  let slideIndex = 0;
+  const slides = document.querySelectorAll('.gallery img');
+  function changeSlide(n){
+    slides[slideIndex].classList.remove('active');
+    slideIndex = (slideIndex + n + slides.length) % slides.length;
+    slides[slideIndex].classList.add('active');
+  }
+
+  // زر ارجع لفوق
+  window.onscroll = function() {
+    document.getElementById("topBtn").style.display = window.scrollY > 300? "block" : "none";
+  };
+  function topFunction() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  </script>
+</body>
+</html>
