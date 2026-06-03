@@ -255,17 +255,25 @@ setTimeout(()=>n.style.display='none',3500);
 function order(event){
   let الزرار = event.target;
 
+  // لو الزرار مقفول خلاص يبقى اطلع برا وماتعملش حاجة
+  if(الزرار.disabled) return;
+
   if(!data.buttons ||!data.buttons[0].link || data.buttons[0].link=='#'){
     showNotif('⚠️ من فضلك أضف رقم الواتساب من لوحة التحكم أولاً','error');
     return;
   }
 
-  // 1. اقلب أخضر غامق فوراً
+  // 1. اقفل الزرار فوراً عشان محدش يدوس تاني
+  الزرار.disabled = true;
+  الزرار.style.opacity = "0.7";
+  الزرار.style.cursor = "not-allowed";
+
+  // 2. اقلب أخضر غامق
   الزرار.style.backgroundColor = "#166534";
   الزرار.style.color = "white";
   الزرار.innerText = "تمام! جاري التحويل 🍏";
 
-  // 2. استنى ثانية وبعدين افتح الواتساب في نفس التاب
+  // 3. حول للواتساب بعد ثانية
   setTimeout(function(){
     window.location.href = data.buttons[0].link;
     showNotif('✅ تم تحويلك للواتساب بنجاح','success');
