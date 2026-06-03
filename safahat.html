@@ -252,24 +252,21 @@ setTimeout(()=>n.style.display='none',3500);
 }
 
 // دالة الزرار الساحر 🍏
-function order(event){
-let تم_التحويل = false; // متغير برا الدالة عشان يحفظ الحالة
+let تم_التحويل = false;
 
 function order(event){
-  event.preventDefault(); // امنع أي تصرف افتراضي
+  if(تم_التحويل) return; // لو دوست قبل كده اخرج
+  تم_التحويل = true;
+
   let الزرار = event.target;
-
-  // لو دوست قبل كده يبقى اخرج فوراً
-  if(تم_التحويل) return;
-  تم_التحويل = true; // علم إننا دوستنا خلاص
 
   if(!data.buttons ||!data.buttons[0].link || data.buttons[0].link=='#'){
     showNotif('⚠️ من فضلك أضف رقم الواتساب من لوحة التحكم أولاً','error');
-    تم_التحويل = false; // رجع العلامة عشان يقدر يجرب تاني
+    تم_التحويل = false;
     return;
   }
 
-  // اقفل الزرار شكلا وموضوعا
+  // اقفل الزرار فوراً
   الزرار.disabled = true;
   الزرار.style.opacity = "0.6";
   الزرار.style.cursor = "not-allowed";
@@ -277,17 +274,12 @@ function order(event){
   الزرار.style.color = "white";
   الزرار.innerText = "تمام! جاري التحويل 🍏";
 
-  // افتح الواتساب مرة واحدة بس
-  setTimeout(function(){
-    let a = document.createElement('a');
-    a.href = data.buttons[0].link;
-    a.target = '_blank';
-    a.click(); // ضغطة برمجية واحدة بس
-    showNotif('✅ تم تحويلك للواتساب بنجاح','success');
-  }, 800);
+  // افتح الواتساب مباشر من ضغطة العميل
+  window.open(data.buttons[0].link, '_blank');
 
+  showNotif('✅ تم تحويلك للواتساب بنجاح','success');
   if(data.offer) showNotif(data.offer,'offer');
-}
+  }
 </script>
 </body>
 </html>
