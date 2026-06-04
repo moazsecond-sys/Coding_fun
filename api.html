@@ -1,43 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>تجربة API</title>
-</head>
-<body>
-  <h1>قائمة البرجر من الـ API</h1>
-  <ul id="menu-list"></ul>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-    // 2. نجيب الداتا من Supabase ونعرضها
-const list = document.getElementById("menu-list");
-
 async function loadMenu() {
   list.innerHTML = '<li>جاري التحميل...</li>';
   
-  const { data, error } = await supabase.from('menu').select('*');
+  // 1. نجرب نجيب كل حاجة
+  const { data, error, count } = await supabase.from('menu').select('*', { count: 'exact' });
   
-  console.log('Data:', data); // افتح F12 وشوف الـ Console
   console.log('Error:', error);
+  console.log('Count:', count); 
+  console.log('Data:', data);
   
   if (error) {
-    list.innerHTML = '<li>خطأ: ' + error.message + '</li>';
+    list.innerHTML = `<li>خطأ Supabase: ${error.message}</li>`;
     return;
   }
   
-  if(!data || data.length === 0) {
-    list.innerHTML = '<li>الداتا فاضية - الجدول مفيهوش صفوف</li>';
+  if (count === 0) {
+    list.innerHTML = '<li>الجدول فاضي - مفيهوش أي صفوف</li>';
     return;
   }
   
-  list.innerHTML = '';
+  list.innerHTML = `<li>لقيت ${count} صنف، بس الأعمدة مش مظبوطة</li>`;
+  
+  // نعرض الداتا الخام عشان نشوف اسماء الأعمدة ايه
   data.forEach(item => {
-    list.innerHTML += `<li>${item.name} - ${item.price}$</li>`;
+    list.innerHTML += `<li>${JSON.stringify(item)}</li>`;
   });
 }
 
 loadMenu();
-</script>
-</body>
-</html>
