@@ -14,16 +14,24 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const list = document.getElementById("menu-list");
 
 async function loadMenu() {
-  const { data, error } = await supabase
-    .from('menu')
-    .select('name, price');
+  list.innerHTML = '<li>جاري التحميل...</li>';
+  
+  const { data, error } = await supabase.from('menu').select('*');
+  
+  console.log('Data:', data); // افتح F12 وشوف الـ Console
+  console.log('Error:', error);
   
   if (error) {
-    list.innerHTML = '<li>خطأ في تحميل الداتا</li>';
-    console.log(error);
+    list.innerHTML = '<li>خطأ: ' + error.message + '</li>';
     return;
   }
   
+  if(!data || data.length === 0) {
+    list.innerHTML = '<li>الداتا فاضية - الجدول مفيهوش صفوف</li>';
+    return;
+  }
+  
+  list.innerHTML = '';
   data.forEach(item => {
     list.innerHTML += `<li>${item.name} - ${item.price}$</li>`;
   });
