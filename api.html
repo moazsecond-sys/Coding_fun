@@ -1,35 +1,23 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>منيو البرجر</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body{font-family:Tahoma;padding:20px;background:#fff3e0}
-    h1{text-align:center;color:#e65100}
-    .item{background:white;padding:15px;margin:10px 0;border-radius:10px;display:flex;justify-content:space-between}
-    .price{color:#d32f2f;font-weight:bold}
-  </style>
 </head>
 <body>
-  <h1>🍔 المنيو</h1>
-  <div id="list">جاري التحميل...</div>
-  
+  <h3 id="result">بنجرب الاتصال...</h3>
   <script>
-  // ===  هنا 1: الـ URL ===
-  const URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-  
-  // === الصق هنا 2: الـ anon key ===
-  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-  
-  const supabase = window.supabase.createClient(URL, KEY);
-  
-  supabase.from('menu').select('*').then(({data,error})=>{
-    if(error) return document.getElementById('list').innerHTML = 'خطأ: '+error.message;
-    document.getElementById('list').innerHTML = data.map(i=>`
-      <div class="item"><span>${i.name}</span><span class="price">${i.price}$</span></div>
-    `).join('');
-  });
+    const URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+    const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+    
+    document.getElementById('result').innerText = 'URL: ' + URL + '\nKey موجود: نعم';
+    
+    // لو الصفحة دي فتحت وكتبت "URL صح" يبقى المشكلة في الـ key بتاعك بس
+    if(URL.includes('mirrxytqttjglxrarq.supabase.co')){
+      document.getElementById('result').innerText += '\n\n✅ الـ URL صح 100%';
+    } else {
+      document.getElementById('result').innerText += '\n\n❌ الـ URL فيه غلطة';
+    }
   </script>
 </body>
 </html>
