@@ -19,15 +19,18 @@
 <script>
 const URL = 'https://mirrxytqttjglglxrarq.supabase.co';
 const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-
 const supabase = window.supabase.createClient(URL, KEY);
-document.getElementById('list').innerHTML = 'بجرب...';
+const list = document.getElementById('list');
+list.innerHTML = '1. بستدعي الداتا...';
 
 supabase.from('menu').select('*').then(res=>{
-  console.log(res); // افتح F12 > Console
-  if(res.error) document.getElementById('list').innerHTML = 'خطأ: ' + res.error.message;
-  else if(res.data.length === 0) document.getElementById('list').innerHTML = 'الجدول فاضي';
-  else document.getElementById('list').innerHTML = 'نجح! ' + JSON.stringify(res.data);
+  if(res.error) {
+    list.innerHTML = '2. الخطأ: ' + res.error.message;
+  } else if(res.data.length === 0) {
+    list.innerHTML = '2. الجدول فاضي مفيهوش منتجات';
+  } else {
+    list.innerHTML = '2. نجح! لقيت: ' + res.data[0].name + ' - ' + res.data[0].price + '$';
+  }
 });
 </script>
 </body>
