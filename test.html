@@ -3,56 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>اختبار المنيو</title>
+<title>منيو المطعم - محمي</title>
 <style>
-body{font-family:Tahoma; background:#0f172a; color:#fff; padding:30px; margin:0}
-h1{text-align:center; color:#38bdf8; margin-bottom:30px}
-#status{text-align:center; font-size:18px; margin:20px}
-.grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-top:30px}
-.card{background:#1e293b; padding:20px; border-radius:15px; text-align:center; border:2px solid #334155}
-.card:hover{border-color:#38bdf8; transform:scale(1.05); transition:0.3s}
-.card img{width:100px; height:100px; object-fit:cover; border-radius:10px; background:#334155}
-.card h3{color:#fbbf24; margin:10px 0; font-size:20px}
-.card p{color:#22c55e; font-size:18px; font-weight:bold}
-.success{color:#22c55e}
-.error{color:#ef4444}
+    body {
+        font-family: 'Tajawal', Arial, sans-serif;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    #status {
+        text-align: center;
+        padding: 10px;
+        margin: 20px auto;
+        max-width: 400px;
+        border-radius: 8px;
+        background: #fff3cd;
+        color: #856404;
+    }
+    #menu {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .card h3 {
+        margin: 10px 0 5px;
+        color: #222;
+    }
+    .card p {
+        font-size: 18px;
+        color: #e63946;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
-<h1>🍔 اختبار الاتصال بالمنيو</h1>
-<div id="status">جاري جلب الداتا من JSON Bin...</div>
-<div id="menu" class="grid"></div>
+
+<h1>🍔 منيو المطعم</h1>
+<div id="status">⏳ جاري تحميل المنيو...</div>
+<div id="menu"></div>
 
 <script>
-const BIN_URL = 'https://api.jsonbin.io/v3/b/6a216fa6f5f4af5e29b7da9f/latest';
+// 1. عنوان المنيو بتاعك - Bin ID
+const BIN_URL = 'https://api.jsonbin.io/v3/b/6a216e6bf5f4af5e29b7d38b/latest';
 
-fetch(BIN_URL)
-.then(r => {
-  if(!r.ok) throw new Error('فشل التحميل: ' + r.status);
-  return r.json();
+// 2. هنا الصق الـ ACCESS KEY اللي عملته. اوعى تحط الماستر كي
+const ACCESS_KEY = '$2a$10$KD79cZsun4/GlAqdOSxWGekbheQ1YEqApurMsQETJW0Q05kaGSd66';
+
+fetch(BIN_URL, {
+  headers: {
+    'X-Access-Key': ACCESS_KEY
+  }
+})
+.then(response => {
+  if (!response.ok) {
+    throw new Error('فشل التحميل - اتأكد من الكي');
+  }
+  return response.json();
 })
 .then(data => {
   const items = data.record;
-  const status = document.getElementById('status');
-  const menuDiv = document.getElementById('menu');
+  document.getElementById('status').innerHTML = '✅ المنيو محمي وآمن';
+  document.getElementById('status').style.background = '#d4edda';
+  document.getElementById('status').style.color = '#155724';
   
-  status.innerHTML = '✅ <span class="success">نجح الاتصال! عدد المنتجات: ' + items.length + '</span>';
+  const menuDiv = document.getElementById('menu');
   menuDiv.innerHTML = '';
   
   items.forEach(item => {
     menuDiv.innerHTML += `
       <div class="card">
-        <img src="${item.img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/100'">
+        <img src="${item.img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/250x180?text=No+Image'">
         <h3>${item.name}</h3>
         <p>${item.price} $</p>
       </div>
     `;
   });
 })
-.catch(e => {
-  document.getElementById('status').innerHTML = '❌ <span class="error">غلط: ' + e.message + '</span>';
-  document.getElementById('menu').innerHTML = '<p style="text-align:center; grid-column:1/-1">تأكد ان الـ Bin معمول Public</p>';
+.catch(error => {
+  document.getElementById('status').innerHTML = '❌ غلط: ' + error.message + '<br>اتأكد ان Access Key صحيح وله صلاحية Read';
+  document.getElementById('status').style.background = '#f8d7da';
+  document.getElementById('status').style.color = '#721c24';
 });
 </script>
+
 </body>
 </html>
