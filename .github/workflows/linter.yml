@@ -1,0 +1,17 @@
+name: فحص الأخطاء أوتوماتيك
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: تحميل الملفات
+        uses: actions/checkout@v4
+
+      - name: تشغيل Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: فحص data.js بالـ ESLint
+        run: npx eslint data.js --format=stylish
