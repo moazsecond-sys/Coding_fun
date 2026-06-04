@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>تجربة API</title>
+</head>
+<body>
+  <h1>قائمة البرجر من الـ API</h1>
+  <ul id="menu-list"></ul>
+
+  <script>
+    // 1. ده الـ API بتاعنا - داتا وهمية
+    const apiData = [
+      {name: "برجر خضار", price: 25},
+      {name: "برجر عدس", price: 30},
+      {name: "برجر مشروم", price: 35}
+    ];
+
+    // 2. الكود ده بيكلم الـ API ويعرض النتيجة
+    const list = document.getElementById("menu-list");
+    
+    apiData.forEach(item => {
+      list.innerHTML += `<li>${item.name} - ${item.price} جنيه</li>`;
+    });
+  </script>
+</body>
+</html>
