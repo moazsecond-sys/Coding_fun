@@ -2,41 +2,43 @@
 <html dir="rtl" lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>تشخيص Supabase</title>
-  <style>body{font-family:Arial;padding:20px} li{background:#fff;padding:10px;margin:5px;border-radius:5px}</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منيو البرجر</title>
+  <style>
+    body { font-family: Tahoma; padding: 20px; background: #f8f8f8; }
+    h1 { color: #d32f2f; text-align: center; margin-bottom: 30px; }
+    .menu-item { 
+      background: white; 
+      padding: 15px 20px; 
+      margin: 10px 0; 
+      border-radius: 10px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+    }
+    .price { color: #d32f2f; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>تشخيص الاتصال</h1>
-  <ul id="menu-list"><li>1. بدأ التحميل...</li></ul>
+  <h1>🍔 منيو البرجر</h1>
+  <div id="menu-list">جاري التحميل...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+  const SUPABASE_URL = 'https://mirrxytqttjglxrarq.supabase.co';
+  const SUPABASE_ANON_KEY = 'انسخ-anon-key-من-هنا';
+  
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const list = document.getElementById("menu-list");
   
   async function loadMenu() {
-    list.innerHTML += '<li>2. المكتبة اتحملت</li>';
+    const { data, error } = await supabase.from('menu').select('name, price').order('id');
     
-    const supabase = window.supabase.createClient(
-      'https://mirrxytqttjglglxrarq.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-    );
-    
-    list.innerHTML += '<li>3. Client اتعمل</li>';
-    
-    try {
-      list.innerHTML += '<li>4. قبل ما نطلب الداتا...</li>';
-      const { data, error } = await supabase.from('menu').select('*');
-      list.innerHTML += '<li>5. بعد ما طلبنا الداتا</li>';
-      
-      if (error) list.innerHTML += `<li style="color:red">خطأ: ${error.message}</li>`;
-      else list.innerHTML += `<li>الداتا: ${JSON.stringify(data)}</li>`;
-      
-    } catch (err) {
-      list.innerHTML += `<li style="color:red">Catch Error: ${err.message}</li>`;
+    if (error) {
+      list.innerHTML = `<p style="color:red">خطأ: ${error.message}</p>`;
+      return;
     }
-  }
-  
-  loadMenu();
-  </script>
-</body>
-</html>
+    
+    if (!data || data.length === 0) {
+      list.innerHTML = '<p>مفيش
