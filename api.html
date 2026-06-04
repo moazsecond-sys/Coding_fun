@@ -3,26 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منيو البرجر</title>
+  <title>منيو البرجر - Zsecond</title>
   <style>
-    body { font-family: Tahoma; padding: 20px; background: #f8f8f8; }
-    h1 { color: #d32f2f; text-align: center; margin-bottom: 30px; }
+    body { 
+      font-family: 'Tahoma', Arial; 
+      padding: 20px; 
+      background: linear-gradient(135deg, #fff3e0, #ffecb3);
+      margin: 0;
+    }
+    h1 { 
+      color: #e65100; 
+      text-align: center; 
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .menu-container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
     .menu-item { 
       background: white; 
-      padding: 15px 20px; 
-      margin: 10px 0; 
-      border-radius: 10px; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 18px 20px; 
+      margin: 12px 0; 
+      border-radius: 12px; 
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
       display: flex;
       justify-content: space-between;
-      font-size: 18px;
+      align-items: center;
+      transition: transform 0.2s;
     }
-    .price { color: #d32f2f; font-weight: bold; }
+    .menu-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+    }
+    .name { font-size: 18px; font-weight: bold; color: #333; }
+    .price { 
+      color: #d32f2f; 
+      font-weight: bold; 
+      font-size: 20px;
+      background: #ffebee;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    .loading { text-align: center; color: #666; font-size: 18px; }
   </style>
 </head>
 <body>
   <h1>🍔 منيو البرجر</h1>
-  <div id="menu-list">جاري التحميل...</div>
+  <div class="menu-container" id="menu-list">
+    <div class="loading">جاري تحميل المنيو...</div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -36,9 +66,27 @@
     const { data, error } = await supabase.from('menu').select('name, price').order('id');
     
     if (error) {
-      list.innerHTML = `<p style="color:red">خطأ: ${error.message}</p>`;
+      list.innerHTML = `<p style="color:red; text-align:center">خطأ: ${error.message}</p>`;
       return;
     }
     
     if (!data || data.length === 0) {
-      list.innerHTML = '<p>مفيش
+      list.innerHTML = '<p style="text-align:center">المنيو فاضي حالياً</p>';
+      return;
+    }
+    
+    list.innerHTML = '';
+    data.forEach(item => {
+      list.innerHTML += `
+        <div class="menu-item">
+          <span class="name">${item.name}</span>
+          <span class="price">${item.price} $</span>
+        </div>
+      `;
+    });
+  }
+  
+  loadMenu();
+</script>
+</body>
+</html>
