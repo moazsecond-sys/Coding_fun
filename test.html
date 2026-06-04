@@ -3,81 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منيو المطعم - محمي</title>
+<title>منيو المطعم</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
-    * {
-        box-sizing: border-box;
-    }
+    * {box-sizing: border-box;}
     body {
         font-family: 'Tajawal', Arial, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        margin: 0;
-        padding: 20px;
-        min-height: 100vh;
+        margin: 0; padding: 20px; min-height: 100vh;
     }
     h1 {
-        text-align: center;
-        color: white;
-        font-size: 32px;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        text-align: center; color: white; font-size: 32px;
+        margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     #status {
-        text-align: center;
-        padding: 12px;
-        margin: 20px auto;
-        max-width: 400px;
-        border-radius: 10px;
-        background: #fff3cd;
-        color: #856404;
-        font-weight: bold;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center; padding: 12px; margin: 20px auto;
+        max-width: 400px; border-radius: 10px; background: #fff3cd;
+        color: #856404; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     #menu {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 25px;
-        max-width: 1200px;
-        margin: 0 auto;
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px; max-width: 1200px; margin: 0 auto;
     }
     .card {
-        background: white;
-        border-radius: 15px;
-        padding: 15px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        text-align: center;
-        transition: all 0.3s;
-        overflow: hidden;
+        background: white; border-radius: 15px; padding: 15px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2); text-align: center;
+        transition: all 0.3s; overflow: hidden;
     }
-    .card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-    }
+    .card:hover {transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.3);}
     .card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 10px;
-        margin-bottom: 10px;
+        width: 100%; height: 200px; object-fit: cover;
+        border-radius: 10px; margin-bottom: 10px;
     }
-    .card h3 {
-        margin: 10px 0 5px;
-        color: #333;
-        font-size: 20px;
-    }
-    .card p {
-        font-size: 22px;
-        color: #e63946;
-        font-weight: bold;
-        margin: 5px 0;
-    }
+    .card h3 {margin: 10px 0 5px; color: #333; font-size: 20px;}
+    .card p {font-size: 22px; color: #e63946; font-weight: bold; margin: 5px 0;}
     .price-tag {
-        background: #e63946;
-        color: white;
-        padding: 5px 15px;
-        border-radius: 20px;
-        display: inline-block;
+        background: #e63946; color: white; padding: 5px 15px;
+        border-radius: 20px; display: inline-block;
     }
 </style>
 </head>
@@ -88,24 +50,15 @@
 <div id="menu"></div>
 
 <script>
-// ===== الإعدادات بتاعتك =====
-// 1. حط هنا الـ Bin ID بتاعك
+// ===== إعداداتك =====
 const BIN_ID = '6a217af2da38895dfe869b52';
-const BIN_URL = `https://api.jsonbin.io/v3/b/${6a217af2da38895dfe869b52}/latest`;
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
 
-// 2. حط هنا الـ ACCESS KEY للقراءة فقط - اوعى تحط الماستر كي
-const ACCESS_KEY = '$2a$10$vPqWC2EIGODgs3V8E2wbxu4IpHaOPwUN4nr3g0KQUVJThqZ7grVZi';
-
-// ===== الكود =====
-fetch(BIN_URL, {
-  headers: {
-    'X-Access-Key': ACCESS_KEY,
-    'X-Bin-Meta': 'false'
-  }
-})
+// ===== الكود بدون كي عشان الـ Bin مفتوح =====
+fetch(BIN_URL)
 .then(response => {
   if (!response.ok) {
-    throw new Error('فشل التحميل - كود الخطأ: ' + response.status);
+    throw new Error('فشل التحميل - كود: ' + response.status);
   }
   return response.json();
 })
@@ -117,7 +70,7 @@ fetch(BIN_URL, {
     return;
   }
   
-  document.getElementById('status').innerHTML = '✅ المنيو محمي وآمن';
+  document.getElementById('status').innerHTML = '✅ المنيو اشتغل';
   document.getElementById('status').style.background = '#d4edda';
   document.getElementById('status').style.color = '#155724';
   
@@ -136,7 +89,7 @@ fetch(BIN_URL, {
 })
 .catch(error => {
   console.error('Error:', error);
-  document.getElementById('status').innerHTML = '❌ خطأ: ' + error.message + '<br>اتأكد من Access Key والـ Bin ID';
+  document.getElementById('status').innerHTML = '❌ خطأ: ' + error.message;
   document.getElementById('status').style.background = '#f8d7da';
   document.getElementById('status').style.color = '#721c24';
 });
