@@ -2,53 +2,37 @@
 <html dir="rtl" lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منيو البرجر</title>
-  <style>
-    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
-    h1 { color: #333; text-align: center; }
-    ul { list-style: none; padding: 0; max-width: 400px; margin: 20px auto; }
-    li { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 18px; }
-  </style>
+  <title>تشخيص Supabase</title>
+  <style>body{font-family:Arial;padding:20px} li{background:#fff;padding:10px;margin:5px;border-radius:5px}</style>
 </head>
 <body>
-  <h1>قائمة البرجر من الـ API</h1>
-  <ul id="menu-list">
-    <li>جاري التحميل...</li>
-  </ul>
+  <h1>تشخيص الاتصال</h1>
+  <ul id="menu-list"><li>1. بدأ التحميل...</li></ul>
 
-  <!-- 1. مكتبة Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <!-- 2. الكود بتاعنا -->
   <script>
-  const SUPABASE_URL = 'https://mirrxytqttjglxrarq.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-  
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const list = document.getElementById("menu-list");
   
   async function loadMenu() {
+    list.innerHTML += '<li>2. المكتبة اتحملت</li>';
+    
+    const supabase = window.supabase.createClient(
+      'https://mirrxytqttjglxrarq.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+    );
+    
+    list.innerHTML += '<li>3. Client اتعمل</li>';
+    
     try {
-      const { data, error } = await supabase.from('menu').select('name, price');
+      list.innerHTML += '<li>4. قبل ما نطلب الداتا...</li>';
+      const { data, error } = await supabase.from('menu').select('*');
+      list.innerHTML += '<li>5. بعد ما طلبنا الداتا</li>';
       
-      if (error) {
-        list.innerHTML = `<li style="color:red">خطأ: ${error.message}</li>`;
-        return;
-      }
-      
-      if (!data || data.length === 0) {
-        list.innerHTML = '<li>الجدول فاضي - ضيف أصناف من Supabase</li>';
-        return;
-      }
-      
-      list.innerHTML = '';
-      data.forEach(item => {
-        list.innerHTML += `<li>${item.name} - ${item.price} $</li>`;
-      });
+      if (error) list.innerHTML += `<li style="color:red">خطأ: ${error.message}</li>`;
+      else list.innerHTML += `<li>الداتا: ${JSON.stringify(data)}</li>`;
       
     } catch (err) {
-      list.innerHTML = `<li style="color:red">خطأ في الاتصال: ${err.message}</li>`;
+      list.innerHTML += `<li style="color:red">Catch Error: ${err.message}</li>`;
     }
   }
   
