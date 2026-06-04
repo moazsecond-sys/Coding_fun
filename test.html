@@ -4,58 +4,80 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>منيو المطعم - محمي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
+    * {
+        box-sizing: border-box;
+    }
     body {
         font-family: 'Tajawal', Arial, sans-serif;
-        background: #f8f9fa;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         margin: 0;
         padding: 20px;
+        min-height: 100vh;
     }
     h1 {
         text-align: center;
-        color: #333;
+        color: white;
+        font-size: 32px;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
     #status {
         text-align: center;
-        padding: 10px;
+        padding: 12px;
         margin: 20px auto;
         max-width: 400px;
-        border-radius: 8px;
+        border-radius: 10px;
         background: #fff3cd;
         color: #856404;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     #menu {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px;
         max-width: 1200px;
         margin: 0 auto;
     }
     .card {
         background: white;
-        border-radius: 12px;
+        border-radius: 15px;
         padding: 15px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         text-align: center;
-        transition: transform 0.2s;
+        transition: all 0.3s;
+        overflow: hidden;
     }
     .card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.3);
     }
     .card img {
         width: 100%;
-        height: 180px;
+        height: 200px;
         object-fit: cover;
-        border-radius: 8px;
+        border-radius: 10px;
+        margin-bottom: 10px;
     }
     .card h3 {
         margin: 10px 0 5px;
-        color: #222;
+        color: #333;
+        font-size: 20px;
     }
     .card p {
-        font-size: 18px;
+        font-size: 22px;
         color: #e63946;
         font-weight: bold;
+        margin: 5px 0;
+    }
+    .price-tag {
+        background: #e63946;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
     }
 </style>
 </head>
@@ -66,25 +88,35 @@
 <div id="menu"></div>
 
 <script>
-// 1. عنوان المنيو بتاعك - Bin ID
-const BIN_URL = 'https://api.jsonbin.io/v3/b/6a216e6bf5f4af5e29b7d38b/latest';
+// ===== الإعدادات بتاعتك =====
+// 1. حط هنا الـ Bin ID بتاعك
+const BIN_ID = '6a217af2da38895dfe869b52';
+const BIN_URL = `https://api.jsonbin.io/v3/b/${6a217af2da38895dfe869b52}/latest`;
 
-// 2. هنا الصق الـ ACCESS KEY اللي عملته. اوعى تحط الماستر كي
-const ACCESS_KEY = '$2a$10$KD79cZsun4/GlAqdOSxWGekbheQ1YEqApurMsQETJW0Q05kaGSd66';
+// 2. حط هنا الـ ACCESS KEY للقراءة فقط - اوعى تحط الماستر كي
+const ACCESS_KEY = '$2a$10$vPqWC2EIGODgs3V8E2wbxu4IpHaOPwUN4nr3g0KQUVJThqZ7grVZi';
 
+// ===== الكود =====
 fetch(BIN_URL, {
   headers: {
-    'X-Access-Key': ACCESS_KEY
+    'X-Access-Key': ACCESS_KEY,
+    'X-Bin-Meta': 'false'
   }
 })
 .then(response => {
   if (!response.ok) {
-    throw new Error('فشل التحميل - اتأكد من الكي');
+    throw new Error('فشل التحميل - كود الخطأ: ' + response.status);
   }
   return response.json();
 })
 .then(data => {
   const items = data.record;
+  
+  if (!items || items.length === 0) {
+    document.getElementById('status').innerHTML = '⚠️ المنيو فاضي. ضيف أصناف في jsonbin';
+    return;
+  }
+  
   document.getElementById('status').innerHTML = '✅ المنيو محمي وآمن';
   document.getElementById('status').style.background = '#d4edda';
   document.getElementById('status').style.color = '#155724';
@@ -95,15 +127,16 @@ fetch(BIN_URL, {
   items.forEach(item => {
     menuDiv.innerHTML += `
       <div class="card">
-        <img src="${item.img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/250x180?text=No+Image'">
+        <img src="${item.img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/260x200/cccccc/666?text=No+Image'">
         <h3>${item.name}</h3>
-        <p>${item.price} $</p>
+        <p><span class="price-tag">${item.price} $</span></p>
       </div>
     `;
   });
 })
 .catch(error => {
-  document.getElementById('status').innerHTML = '❌ غلط: ' + error.message + '<br>اتأكد ان Access Key صحيح وله صلاحية Read';
+  console.error('Error:', error);
+  document.getElementById('status').innerHTML = '❌ خطأ: ' + error.message + '<br>اتأكد من Access Key والـ Bin ID';
   document.getElementById('status').style.background = '#f8d7da';
   document.getElementById('status').style.color = '#721c24';
 });
