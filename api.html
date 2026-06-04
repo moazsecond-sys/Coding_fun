@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منيو البرجر</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    h1 { color: #333; text-align: center; }
+    ul { list-style: none; padding: 0; max-width: 400px; margin: 20px auto; }
+    li { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>قائمة البرجر من الـ API</h1>
+  <ul id="menu-list">
+    <li>جاري التحميل...</li>
+  </ul>
+
+  <!-- 1. مكتبة Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- 2. الكود بتاعنا -->
+  <script>
+  const SUPABASE_URL = 'https://mirrxytqttjglxrarq.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+  
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const list = document.getElementById("menu-list");
+  
+  async function loadMenu() {
+    try {
+      const { data, error } = await supabase.from('menu').select('name, price');
+      
+      if (error) {
+        list.innerHTML = `<li style="color:red">خطأ: ${error.message}</li>`;
+        return;
+      }
+      
+      if (!data || data.length === 0) {
+        list.innerHTML = '<li>الجدول فاضي - ضيف أصناف من Supabase</li>';
+        return;
+      }
+      
+      list.innerHTML = '';
+      data.forEach(item => {
+        list.innerHTML += `<li>${item.name} - ${item.price} $</li>`;
+      });
+      
+    } catch (err) {
+      list.innerHTML = `<li style="color:red">خطأ في الاتصال: ${err.message}</li>`;
+    }
+  }
+  
+  loadMenu();
+  </script>
+</body>
+</html>
