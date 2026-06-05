@@ -1,6 +1,6 @@
-// script.js - كود Supabase الصح
-const SUPABASE_URL = 'https://xxxxx.supabase.co' // غيره لرابط مشروعك
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6...' // المفتاح الجديد
+// Supabase Setup - غيرهم بمفاتيحك
+const SUPABASE_URL = 'https://xxxxx.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6...' 
 
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
@@ -14,7 +14,8 @@ async function loadWorks() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    grid.innerHTML = `<p class="empty">خطأ: ${error.message}</p>`;
+    console.error(error);
+    grid.innerHTML = `<p class="empty">خطأ في التحميل: ${error.message}</p>`;
     return;
   }
 
@@ -25,7 +26,7 @@ async function loadWorks() {
 
   empty.style.display = 'none';
   grid.innerHTML = data.map(w => `
-    <div class="work-card" data-cat="${w.category}">
+    <div class="work-card" data-cat="${w.category || 'عام'}">
       <img src="${w.img_url}" alt="${w.title}" loading="lazy">
       <div class="work-card-content">
         <h3>${w.title || 'بدون عنوان'}</h3>
