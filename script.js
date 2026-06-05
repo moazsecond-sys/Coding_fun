@@ -1,12 +1,18 @@
-// Supabase Setup - غيرهم بمفاتيحك
+// 1. استدعاء مكتبة Supabase
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+// 2. حط مفاتيحك هنا بين " "
 const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
 const SUPABASE_ANON_KEY = "sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu"
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+// 3. انشاء الاتصال
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-const grid = document.getElementById('grid');
-const empty = document.getElementById('empty');
+// 4. استدعاء العناصر من HTML
+const grid = document.getElementById('grid')
+const empty = document.getElementById('empty')
 
+// 5. دالة جلب الأعمال من جدول works
 async function loadWorks() {
   const { data, error } = await supabase
     .from('works')
@@ -14,32 +20,27 @@ async function loadWorks() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error(error);
-    grid.innerHTML = `<p class="empty">خطأ في التحميل: ${error.message}</p>`;
-    return;
+    console.error('خطأ Supabase:', error)
+    if(grid) grid.innerHTML = `<p class="empty">صار خطأ: ${error.message}</p>`
+    return
   }
 
   if (!data || data.length === 0) {
-    empty.style.display = 'block';
-    return;
+    if(empty) empty.style.display = 'block'
+    return
   }
 
-  empty.style.display = 'none';
-  grid.innerHTML = data.map(w => `
-    <div class="work-card" data-cat="${w.category || 'عام'}">
-      <img src="${w.img_url}" alt="${w.title}" loading="lazy">
-      <div class="work-card-content">
-        <h3>${w.title || 'بدون عنوان'}</h3>
-        <p class="desc">${w.description || ''}</p>
-        <div class="meta">
-          <span class="category">${w.category || 'عام'}</span>
-          <span class="price">${w.price ? w.price + ' ريال' : 'تواصل'}</span>
-        </div>
-        <a href="https://wa.me/2126XXXXXXXX?text=مرحبا، مهتم بـ ${encodeURIComponent(w.title)}" 
-           class="btn-whatsapp" target="_blank">💬 اطلب</a>
-      </div>
+  if(empty) empty.style.display = 'none'
+  
+  // 6. عرض البيانات في grid
+  grid.innerHTML = data.map(work => `
+    <div class="card">
+      <img src="${work.image_url}" alt="${work.title}">
+      <h3>${work.title}</h3>
+      <p>${work.description}</p>
     </div>
-  `).join('');
+  `).join('')
 }
 
-document.addEventListener('DOMContentLoaded', loadWorks);
+// 7. شغل الدالة أول ما الصفحة تفتح
+loadWorks()
