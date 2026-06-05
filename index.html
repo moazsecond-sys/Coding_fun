@@ -3,65 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>الرئيسية - GREEN APPLE DESIGN</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Cairo',sans-serif;background:#f8f8f8;color:#333;text-align:center;padding-bottom:100px}
-    
-    #loader{
-      position: fixed;
-      top: 0;left: 0;
-      width: 100%;height: 100%;
-      background: #2E7D32;
-      z-index: 9999;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      transition: opacity 0.5s ease;
-    }
-    
-    .apple-loader{
-      width: 120px;
-      animation: spin 2s linear infinite, glow 2s infinite;
-    }
-    
-    @keyframes spin{0%{transform: rotate(0deg);}100%{transform: rotate(360deg);}}
-    @keyframes glow{0%, 100%{filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));}50%{filter: drop-shadow(0 0 30px rgba(255,255,255,0.8));}}
-    
-    .loading-text{color: white;font-size: 20px;margin-top: 20px;font-weight: 700;letter-spacing: 1px}
-    
-    header{background:#2E7D32;padding:40px 20px;color:white}
-    .logo{max-width:160px;width:100%;height:auto;margin-bottom:15px;display:block;margin:auto}
-    h1{font-size:32px;margin-top:10px}
-    
-    nav{margin-top:15px}
-    nav a{color:white;margin:0 10px;text-decoration:none;font-size:18px;font-weight:700;transition:0.3s}
-    nav a:hover{opacity:0.8}
-    nav a.active{opacity:0.6;text-decoration:underline;cursor:default}
-    
-    .content{padding:50px 20px;max-width:800px;margin:auto;background:white;border-radius:12px;margin-top:30px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
-    footer{background:#2E7D32;color:white;padding:20px;margin-top:50px}
-    .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
-    .chat-btn:hover{transform:scale(1.05)}
-    
-    @media (max-width: 600px){
-      h1{font-size:26px}
-      .logo{max-width:120px}
-      .apple-loader{width:90px}
-      nav a{font-size:16px;margin:0 7px}
-      .content{padding:30px 15px}
-    }
-  </style>
+  <title>GREEN APPLE DESIGN | تصميم لوجوهات وبنرات احترافية</title>
+  <meta name="description" content="GREEN APPLE DESIGN متخصصين في تصميم اللوجوهات والبنرات اللي تبيع. براند قوي من أول نظرة">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- شاشة التحميل -->
   <div id="loader">
     <img src="images/logo.png" alt="Loading" class="apple-loader">
     <p class="loading-text">GREEN APPLE DESIGN</p>
   </div>
 
+  <!-- الهيدر -->
   <header>
     <img src="images/logo.png" alt="GREEN APPLE DESIGN Logo" class="logo">
     <h1>GREEN APPLE DESIGN</h1>
@@ -72,24 +28,42 @@
     </nav>
   </header>
 
-  <main>
-    <div class="content">
+  <!-- المحتوى الرئيسي -->
+  <main class="container">
+    <div class="hero-content">
       <h2>مرحبا بك في GREEN APPLE DESIGN</h2>
-      <p style="font-size:20px;margin-top:20px;line-height:2">
+      <p>
         احنا متخصصين في تصميم اللوجوهات والبنرات اللي تبيع.<br>
         شغلك معانا = براند قوي من أول نظرة.<br><br>
-        شوف أعمالنا في صفحة "أعمالنا" 👆
+        شوف أعمالنا في صفحة "أعمالنا" 👇
       </p>
     </div>
+
+    <!-- شبكة الأعمال - هنا بتجي الكروت من data.js -->
+    <div class="filter-bar">
+      <button class="filter-btn active" data-cat="all">الكل</button>
+      <button class="filter-btn" data-cat="logo">لوجوهات</button>
+      <button class="filter-btn" data-cat="banner">بنرات</button>
+    </div>
+
+    <div class="works-grid" id="grid">
+      <!-- الكروت بتتولد تلقائي من script.js -->
+    </div>
+
+    <div class="empty" id="empty" style="display:none">مافي أعمال حالياً</div>
   </main>
 
+  <!-- الفوتر -->
   <footer>
-    <p>© 2026 GREEN APPLE DESIGN</p>
+    <p>© 2026 GREEN APPLE DESIGN - جميع الحقوق محفوظة</p>
   </footer>
 
-  <a href="https://wa.me/2126XXXXXXXX?text=مرحبا" class="chat-btn" target="_blank">💬 شات واتساب</a>
+  <!-- زر الواتساب العائم -->
+  <a href="https://wa.me/2126XXXXXXXX?text=مرحبا، ابغى استفسار" class="chat-btn" target="_blank">💬 واتساب</a>
 
+  <!-- سكربتات -->
   <script>
+  // شاشة التحميل مرة وحدة بس
   document.addEventListener('DOMContentLoaded', function() {
     if (sessionStorage.getItem('visited') !== 'yes') {
       sessionStorage.setItem('visited', 'yes');
@@ -97,7 +71,7 @@
         setTimeout(function(){
           document.getElementById('loader').style.opacity = '0';
           setTimeout(function(){document.getElementById('loader').style.display = 'none'}, 500);
-        }, 2000);
+        }, 1500);
       });
     } else {
       document.getElementById('loader').style.display = 'none';
@@ -105,8 +79,8 @@
   });
   </script>
 
-  <!-- ===== سكربتات الكونسول - الترتيب مهم ===== -->
   <script src="data.js"></script>
+  <script src="script.js"></script>
   <script src="error.js"></script>
   <script src="console.js"></script>
 </body>
