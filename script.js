@@ -1,68 +1,44 @@
-// script.js - يقرا من data.js ويبني الكروت
+// script.js - كود Supabase الصح
+const SUPABASE_URL = 'https://xxxxx.supabase.co' // غيره لرابط مشروعك
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6...' // المفتاح الجديد
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
 const grid = document.getElementById('grid');
 const empty = document.getElementById('empty');
 
-function createCard(item, type) {
-  if (type === 'product') {
-    return `
-      <div class="work-card" data-cat="product">
-        <img src="${item.image}" alt="${item.name}" loading="lazy">
-        <div class="work-card-content">
-          <h3>${item.name}</h3>
-          <p class="desc">${item.desc}</p>
-          <div class="meta">
-            <span class="category">منتج</span>
-            <span class="price">${item.price} جنيه</span>
-          </div>
-          <a href="https://wa.me/2126XXXXXXXX?text=مرحبا، مهتم بـ ${encodeURIComponent(item.name)}" 
-             class="btn-whatsapp" target="_blank">
-             💬 اطلب الآن
-          </a>
-        </div>
-      </div>
-    `;
+async function loadWorks() {
+  const { data, error } = await supabase
+    .from('works')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    grid.innerHTML = `<p class="empty">خطأ: ${error.message}</p>`;
+    return;
   }
-  
-  if (type === 'work') {
-    return `
-      <div class="work-card" data-cat="work">
-        <img src="images/${item}" alt="تصميم" loading="lazy">
-        <div class="work-card-content">
-          <h3>تصميم احترافي</h3>
-          <p class="desc">تصميم مميز يناسب براندك</p>
-          <div class="meta">
-            <span class="category">تصميم</span>
-            <span class="price">تواصل للسعر</span>
-          </div>
-          <a href="https://wa.me/2126XXXXXXXX?text=مرحبا، ابغى تصميم" 
-             class="btn-whatsapp" target="_blank">
-             💬 اطلب تصميم
-          </a>
-        </div>
-      </div>
-    `;
+
+  if (!data || data.length === 0) {
+    empty.style.display = 'block';
+    return;
   }
+
+  empty.style.display = 'none';
+  grid.innerHTML = data.map(w => `
+    <div class="work-card" data-cat="${w.category}">
+      <img src="${w.img_url}" alt="${w.title}" loading="lazy">
+      <div class="work-card-content">
+        <h3>${w.title || 'بدون عنوان'}</h3>
+        <p class="desc">${w.description || ''}</p>
+        <div class="meta">
+          <span class="category">${w.category || 'عام'}</span>
+          <span class="price">${w.price ? w.price + ' ريال' : 'تواصل'}</span>
+        </div>
+        <a href="https://wa.me/2126XXXXXXXX?text=مرحبا، مهتم بـ ${encodeURIComponent(w.title)}" 
+           class="btn-whatsapp" target="_blank">💬 اطلب</a>
+      </div>
+    </div>
+  `).join('');
 }
 
-function renderAll() {
-  grid.innerHTML = '';
-  let count = 0;
-  
-  if (typeof products !== 'undefined' && products.length > 0) {
-    products.forEach(p => {
-      grid.innerHTML += createCard(p, 'product');
-      count++;
-    });
-  }
-  
-  if (typeof works !== 'undefined' && works.length > 0) {
-    works.forEach(w => {
-      grid.innerHTML += createCard(w, 'work');
-      count++;
-    });
-  }
-  
-  empty.style.display = count === 0 ? 'block' : 'none';
-}
-
-document.addEventListener('DOMContentLoaded', renderAll);
+document.addEventListener('DOMContentLoaded', loadWorks);
