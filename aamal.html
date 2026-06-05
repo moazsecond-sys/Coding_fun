@@ -6,91 +6,48 @@
   <title>أعمالنا - GREEN APPLE DESIGN</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth}
+    *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Cairo',sans-serif;background:#f8f8f8;color:#333;text-align:center;padding-bottom:100px}
-
-    #loader{position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: #2E7D32;z-index: 9999;display: flex;justify-content: center;align-items: center;flex-direction: column;transition: opacity 0.5s ease}
- .apple-loader{width: 120px;animation: spin 2s linear infinite, glow 2s infinite}
-    @keyframes spin{0%{transform: rotate(0deg);}100%{transform: rotate(360deg);}}
-    @keyframes glow{0%, 100%{filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));}50%{filter: drop-shadow(0 0 30px rgba(255,255,255,0.8));}}
- .loading-text{color: white;font-size: 20px;margin-top: 20px;font-weight: 700}
-
     header{background:#2E7D32;padding:40px 20px;color:white}
- .logo{max-width:160px;width:100%;height:auto;margin-bottom:15px;display:block;margin:auto;transition:0.3s;cursor:pointer}
- .logo:hover{transform:scale(1.05) rotate(5deg);filter:drop-shadow(0 0 20px rgba(255,255,255,0.5))}
+    .logo{max-width:160px;width:100%;height:auto;margin-bottom:15px;display:block;margin:auto}
     h1{font-size:32px;margin-top:10px}
-
     nav{margin-top:15px}
     nav a{color:white;margin:0 10px;text-decoration:none;font-size:18px;font-weight:700;transition:0.3s}
     nav a:hover{opacity:0.8}
     nav a.active{opacity:0.6;text-decoration:underline;cursor:default}
-
- .content{padding:50px 20px;max-width:1000px;margin:auto;background:white;border-radius:12px;margin-top:30px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
-
-    /* سلايدر الأعمال */
- .gallery{position:relative;max-width:600px;margin:30px auto;min-height:400px}
- .gallery img{width:100%;border-radius:12px;display:none}
- .gallery img.active{display:block;animation:fade 0.5s}
-    @keyframes fade{from{opacity:0}to{opacity:1}}
- .btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(46,125,50,0.8);color:white;border:none;padding:15px 20px;font-size:24px;cursor:pointer;border-radius:50%;transition:0.3s;z-index:10}
- .btn:hover{background:#2E7D32}
- .prev{left:-50px}
- .next{right:-50px}
-
-    /* النقط تحت السلايدر */
- .dots{text-align:center;margin-top:15px}
- .dot{height:12px;width:12px;margin:0 5px;background:#bbb;border-radius:50%;display:inline-block;cursor:pointer;transition:0.3s}
- .dot.active{background:#2E7D32}
-
+    .content{padding:50px 20px;max-width:1000px;margin:auto;background:white;border-radius:12px;margin-top:30px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:30px}
+    .grid img{width:100%;border-radius:8px}
     footer{background:#2E7D32;color:white;padding:20px;margin-top:50px}
- .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
- .chat-btn:hover{transform:scale(1.05)}
-
-    /* زر ارجع لفوق */
-    #topBtn{display:none;position:fixed;bottom:90px;left:20px;z-index:998;background:#2E7D32;color:white;border:none;padding:12px 18px;border-radius:50%;font-size:20px;cursor:pointer;transition:0.3s}
-    #topBtn:hover{background:#1B5E20;transform:scale(1.1)}
-
+    .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
+    .chat-btn:hover{transform:scale(1.05)}
     @media (max-width: 600px){
-   .prev{left:5px}.next{right:5px}
-   .apple-loader{width:90px}
-   .gallery{min-height:250px}
+      h1{font-size:26px}
+      .logo{max-width:120px}
+      nav a{font-size:16px;margin:0 7px}
+      .content{padding:30px 15px}
     }
   </style>
 </head>
 <body>
 
-  <div id="loader">
-    <img src="images/logo.png" alt="Loading" class="apple-loader">
-    <p class="loading-text">GREEN APPLE DESIGN</p>
-  </div>
-
-  <header id="top">
+  <header>
     <img src="images/logo.png" alt="GREEN APPLE DESIGN Logo" class="logo">
     <h1>GREEN APPLE DESIGN</h1>
     <nav>
       <a href="index.html">الرئيسية</a>
       <a href="safahat.html">صفحات</a>
-      <a href="#" class="active" onclick="return false">أعمالنا</a>
+      <a href="aamal.html" class="active">أعمالنا</a>
     </nav>
   </header>
 
   <main>
     <div class="content">
-      <h2>معرض أعمالنا</h2>
-      <p style="font-size:20px;margin-top:10px">شوف شغلنا اللي يخلي العميل يشتري من أول نظرة 👇</p>
-
-      <div class="gallery" id="gallery"></div>
-      <button class="btn prev" onclick="changeSlide(-1)">❮</button>
-      <button class="btn next" onclick="changeSlide(1)">❯</button>
-      <div class="dots" id="dots"></div>
-
-      <div style="margin-top:80px">
-        <h3>ليه تختارنا؟</h3>
-        <p style="font-size:18px;margin-top:20px;line-height:2">
-          بنصمم لوجو يثبت في دماغ العميل من أول نظرة.<br>
-          بنر يخلي إعلانك يوقف سكرول.<br>
-          تسليم سريع وتعديلات لحد ما ترضى 100%.
-        </p>
+      <h2>أعمالنا</h2>
+      <div class="grid">
+        <img src="images/work1.jpg" alt="عمل 1">
+        <img src="images/work2.jpg" alt="عمل 2">
+        <img src="images/work3.jpg" alt="عمل 3">
       </div>
     </div>
   </main>
@@ -100,73 +57,9 @@
   </footer>
 
   <a href="https://wa.me/2126XXXXXXXX?text=مرحبا" class="chat-btn" target="_blank">💬 شات واتساب</a>
-  <button onclick="topFunction()" id="topBtn" title="ارجع لفوق">⬆</button>
 
-  <!-- استدعاء data.js الأول -->
   <script src="data.js"></script>
-
-  <script>
-  // كود الـ loader - التفاحة مرة واحدة بس
-  document.addEventListener('DOMContentLoaded', function() {
-    if (sessionStorage.getItem('visited')!== 'yes') {
-      sessionStorage.setItem('visited', 'yes');
-      window.addEventListener('load', function(){
-        setTimeout(function(){
-          document.getElementById('loader').style.opacity = '0';
-          setTimeout(function(){document.getElementById('loader').style.display = 'none'}, 500);
-        }, 2000);
-      });
-    } else {
-      document.getElementById('loader').style.display = 'none';
-    }
-  });
-
-  // نبني السلايدر من data.js أوتوماتيك
-  const gallery = document.getElementById('gallery');
-  const dotsContainer = document.getElementById('dots');
-
-  works.forEach((img, index) => {
-    gallery.innerHTML += `<img src="${img}" ${index===0?'class="active"':''} alt="تصميم ${index+1}">`;
-    dotsContainer.innerHTML += `<span class="dot ${index===0?'active':''}" onclick="currentSlide(${index+1})"></span>`;
-  });
-
-  let slideIndex = 0;
-  const slides = document.querySelectorAll('.gallery img');
-  const dots = document.querySelectorAll('.dot');
-
-  function showSlide(n){
-    slides.forEach(slide => slide.classList.remove('active'));
-    dots.forEach(dot => dot.classList.remove('active'));
-    slideIndex = (n + slides.length) % slides.length;
-    slides[slideIndex].classList.add('active');
-    dots[slideIndex].classList.add('active');
-  }
-
-  function changeSlide(n){
-    showSlide(slideIndex + n);
-    resetAutoSlide();
-  }
-
-  function currentSlide(n){
-    showSlide(n - 1);
-    resetAutoSlide();
-  }
-
-  // أوتو كل 3 ثواني
-  let autoSlide = setInterval(() => changeSlide(1), 3000);
-  function resetAutoSlide(){
-    clearInterval(autoSlide);
-    autoSlide = setInterval(() => changeSlide(1), 3000);
-  }
-
-  // زر ارجع لفوق
-  window.onscroll = function() {
-    document.getElementById("topBtn").style.display = window.scrollY > 300? "block" : "none";
-  };
-  function topFunction() {
-    document.getElementById('top').scrollIntoView({behavior: 'smooth'});
-  }
-  </script>
+  <script src="error.js"></script>
   <script src="console.js"></script>
 </body>
 </html>
