@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang=ar dir=rtl>
+<head>
+<meta charset=UTF-8>
+<meta name=viewport content=width=device-width, initial-scale=1.0>
+<title>أعمالنا - تصميمات</title>
+<link rel=stylesheet href=style.css?v=2>
+<script src=https://unpkg.com/@supabase/supabase-js@2></script>
+</head>
+<body>
+
+<nav class=navbar>
+  <a href=index.html>الرئيسية</a>
+  <a href=aamal.html class=active>أعمالنا</a>
+  <a href=#contact>اطلب الآن</a>
+</nav>
+
+<section class=works-section>
+  <h2>أعمالنا الأخيرة</h2>
+  
+  <input type=text id=searchInput placeholder=ابحث عن عمل... 🔍>
+  
+  <div class=filter-buttons>
+    <button onclick=filterCategory(الكل) class=active>الكل</button>
+    <button onclick=filterCategory(لوجوهات)>لوجوهات</button>
+    <button onclick=filterCategory(بنرات)>بنرات</button>
+    <button onclick=filterCategory(هوية)>هوية</button>
+  </div>
+
+  <div id=works-grid class=works-grid>
+    <p id=loading-text>جاري تحميل الأعمال...</p>
+  </div>
+</section>
+
+<section id=contact class=contact-section>
+  <h2>اطلب تصميمك الآن</h2>
+  <form id=contact-form>
+    <input type=text id=name placeholder=اسمك الكريم required>
+    <input type=email id=email placeholder=إيميلك للتواصل required>
+    <select id=service>
+      <option value=لوجو>تصميم لوجو</option>
+      <option value=بنر>تصميم بنر</option>
+      <option value=هوية>هوية بصرية</option>
+    </select>
+    <textarea id=message placeholder=تفاصيل طلبك required></textarea>
+    <button type=submit>إرسال الطلب</button>
+  </form>
+  <p id=form-status></p>
+</section>
+
+<script>
+  // === حط الـ URL والـ KEY حقك هنا بدون ' ===
+  const supabaseUrl ='https://mirrxytqttjglglxrarq.supabase.co'
+  const supabaseKey ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+  
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+  
+  let allWorks = []
+  let currentCategory = الكل
+
+  // تحميل الأعمال من Supabase
+  async function loadWorks() {
+    const { data, error } = await supabase
+      .from(works)
+      .select(*)
+      .order(created_at, { ascending: false })
+
+    if (error) {
+      console.error(خطأ Supabase:, error)
+      document.getElementById(loading-text).innerText = خطأ في التحميل:  + error.message
+      return
+    }
+
+    allWorks = data
+    displayWorks(allWorks)
+  }
+
+  // عرض الكروت
+  function displayWorks(works) {
+    const grid = document.getElementById(works-grid)
+    document.getElementById(loading-text).style.display = none
+
+    if (works.length === 0) {
+      grid.innerHTML = <p>لا توجد أعمال بعد</p>
+      return
+    }
+
+    grid.innerHTML = works.map(work => `
+      <div class=work-card data-category=${work.category}>
+        <h3>${work.title}</h3>
+        <p>${work.description || }</p>
+        <span class=price>${work.price} ريال</span>
+        <span class=category>${work.category}</span>
+      </div>
+    `).join( )
+  }
+
+  // فلترة حسب التصنيف
+  function filterCategory(cat) {
+    currentCategory = cat
+    document.querySelectorAll(.filter-buttons button).forEach(b => b.classList.remove(active))
+    event.target.classList.add(active)
+
+    if (cat === الكل) {
+      displayWorks(allWorks)
+    } else {
+      const filtered = allWorks.filter(w => w.category === cat)
+      displayWorks(filtered)
+    }
+  }
+
+  // البحث
+  document.getElementById(searchInput).addEventListener(input, e => {
+    const term = e.target.value.toLowerCase()
+    const filtered = allWorks.filter(w => 
+      w.title.toLowerCase().includes(term) || 
+      w.description.toLowerCase().includes(term)
+    )
+    displayWorks(filtered)
+  })
+
+  // إرسال نموذج التواصل
+  document.getElementById(contact-form).addEventListener(submit, async e => {
+    e.preventDefault()
+    const status = document.getElementById(form-status)
+    status.innerText = جاري الإرسال...
+
+    const { error } = await supabase
+      .from(messages)
+      .insert([{
+        name: document.getElementById(name).value,
+        email: document.getElementById(email).value,
+        service: document.getElementById(service).value,
+        message: document.getElementById(message).value
+      }])
+
+    if (error) {
+      status.innerText = خطأ:  + error.message
+      console.error(error)
+    } else {
+      status.innerText = تم إرسال طلبك بنجاح! ✅
+      document.getElementById(contact-form).reset()
+    }
+  })
+
+  // شغل التحميل أول ما تفتح الصفحة
+  loadWorks()
+</script>
+
+</body>
+</html>
