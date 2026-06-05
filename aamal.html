@@ -3,47 +3,62 @@
 <head>
 <meta charset='UTF-8'>
 <title>معرض أعمالي - GREEN APPLE</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <script type="importmap">{"imports":{"@supabase/supabase-js":"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"}}</script>
 <style>
   html { scroll-behavior: smooth; }
-  nav { position:sticky; top:0; background:white; padding:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); z-index:100 }
-  nav a { margin:0 10px; cursor:pointer; color:#4CAF50; font-weight:bold }
+  body { font-family: 'Tajawal', sans-serif; background:#fafafa }
+  nav { position:sticky; top:0; background:white; padding:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); z-index:100; text-align:center }
+  nav h1 { margin:0 0 10px 0; color:#4CAF50 }
+  nav a { margin:0 15px; cursor:pointer; color:#FF6F00; font-weight:bold; font-size:16px }
+  nav a:hover { text-decoration:underline }
 
- .upload-box { margin:40px auto; padding:25px; max-width:500px; border:2px dashed #4CAF50; border-radius:15px; text-align:center; background:#f9fff9 }
- .upload-box button { background:#4CAF50; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:16px }
- .upload-box button:hover { transform:scale(1.05) }
-  #preview { width:100%; max-width:300px; margin-top:15px; border-radius:12px; display:none }
+.upload-box { margin:50px auto; padding:30px; max-width:500px; border:3px dashed #4CAF50; border-radius:20px; text-align:center; background:#f0fff4; box-shadow:0 4px 15px rgba(0,0,0,0.1) }
+.upload-box h3 { color:#2e7d32; margin-top:0 }
+.upload-box input { margin:15px 0 }
+.upload-box button { background:#4CAF50; color:white; border:none; padding:12px 25px; border-radius:10px; cursor:pointer; font-size:17px; font-weight:bold; transition:0.3s }
+.upload-box button:hover { background:#388e3c; transform:scale(1.05) }
+  #preview { width:100%; max-width:320px; margin-top:20px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:none }
 
-  #slider { max-width:700px; height:450px; margin:50px auto; position:relative; overflow:hidden; border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.2) }
+  #slider { max-width:750px; height:480px; margin:60px auto; position:relative; overflow:hidden; border-radius:25px; box-shadow:0 10px 30px rgba(0,0,0,0.25); background:#000 }
   #slider img { width:100%; height:100%; object-fit:cover; transition:opacity 0.8s }
 
- .search-box { text-align:center; margin:20px }
- .search-box input { padding:10px 15px; width:300px; border:2px solid #4CAF50; border-radius:8px; font-size:16px }
+ .search-box { text-align:center; margin:30px }
+ .search-box input { padding:12px 18px; width:320px; border:2px solid #4CAF50; border-radius:10px; font-size:16px; outline:none }
+ .search-box input:focus { border-color:#FF6F00 }
 
- .filter-bar { text-align:center; margin:20px }
- .filter-bar button { margin:5px; padding:8px 15px; border:2px solid #FF6F00; background:white; color:#FF6F00; border-radius:20px; cursor:pointer }
- .filter-bar button.active { background:#FF6F00; color:white }
+ .filter-bar { text-align:center; margin:25px }
+ .filter-bar button { margin:6px; padding:10px 18px; border:2px solid #FF6F00; background:white; color:#FF6F00; border-radius:25px; cursor:pointer; font-weight:bold; transition:0.3s }
+ .filter-bar button.active,.filter-bar button:hover { background:#FF6F00; color:white }
+
+ .works-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:20px; padding:20px }
+ .work-card { background:white; padding:10px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,0.1); text-align:center }
+ .work-card img { width:100%; border-radius:8px }
+ .work-card p { margin:8px 0 0 0; font-size:14px; color:#555 }
+
+  footer { text-align:center; padding:25px; background:#2e7d32; color:white; margin-top:50px }
 </style>
 </head>
 <body>
 <nav>
   <h1>معرض أعمالي ✨</h1>
   <a onclick="smoothScroll('#slider')">السلايدر</a>
+  <a onclick="smoothScroll('#works-grid')">الأعمال</a>
   <a onclick="smoothScroll('.upload-box')">ارفع صورة</a>
 </nav>
 
 <div class="container">
-  <!-- بحث فوري -->
+  <!-- بحث فوري من utils.js -->
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="ابحث عن صورة...">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن صورة بالاسم...">
   </div>
 
-  <!-- فلترة -->
+  <!-- فلترة من utils.js -->
   <div class="filter-bar" id="filter-bar">
     <button data-filter="all" class="active">الكل</button>
     <button data-filter="طبيعة">طبيعة</button>
     <button data-filter="تصميم">تصميم</button>
+    <button data-filter="فن">فن</button>
   </div>
 
   <!-- الكروت -->
@@ -58,69 +73,93 @@
     <input type="file" id="upload" accept="image/*">
     <button onclick="رفع_الصورة()">ارفع الآن</button>
     <img id="preview">
+    <p style="font-size:13px; color:#666; margin-top:10px">بعد الرفع حدث الصفحة عشان تظهر بالسلايدر</p>
   </div>
 </div>
 
 <footer>© 2026 second-sys | Powered by Supabase + GREEN APPLE ☁️</footer>
 
-<script type="module" src="script.js?v=6"></script>
-<script src="Coding_fun/Utils.js"></script> <!-- مكتبتك -->
+<!-- الترتيب مهم: script.js أول عشان يعرف supabase -->
+<script type="module" src="script.js?v=7"></script>
+<script src="Coding_fun/Utils.js"></script> <!-- مكتبة GREEN APPLE -->
 
 <script type="module">
-import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = 'حط-رابط-مشروعك-هنا'
-const supabaseKey = 'حط-anon-key-هنا'
-const supabase = createClient(supabaseUrl, supabaseKey)
-window.supabase = supabase;
+// كودنا يستخدم window.supabase من script.js
+// لا تعرف supabase من جديد عشان ما يتعارض
 
 // 1. جيب الصور من Supabase واملأ السلايدر + الكروت
 async function تحميل_الصور() {
-  const { data, error } = await supabase.storage.from('aamal-images').list('صور', { limit: 50 });
-  if (error) return console.error(error);
+  const { data, error } = await window.supabase.storage.from('aamal-images').list('صور', { limit: 50, sortBy: { column: 'created_at', order: 'desc' } });
+  if (error) {
+    console.error('خطأ جلب الصور:', error);
+    return;
+  }
 
   const slider = document.getElementById('slider');
   const grid = document.getElementById('works-grid');
 
+  if (!data || data.length === 0) {
+    grid.innerHTML = '<p style="text-align:center; grid-column:1/-1">لا توجد صور بعد. ارفع أول صورة 👆</p>';
+    return;
+  }
+
   data.forEach(file => {
-    const url = supabase.storage.from('aamal-images').getPublicUrl('صور/' + file.name).data.publicUrl;
+    const url = window.supabase.storage.from('aamal-images').getPublicUrl('صور/' + file.name).data.publicUrl;
 
     // للسلايدر
     const img = document.createElement('img');
     img.src = url;
+    img.alt = file.name;
     slider.appendChild(img);
 
     // للكروت عشان البحث والفلترة
     const card = document.createElement('div');
     card.className = 'work-card';
+    // خليت التصنيف عشوائي للتجربة، تقدر تغيره يدوي
+    const categories = ['طبيعة', 'تصميم', 'فن'];
+    const randomCat = categories[Math.floor(Math.random() * 3)];
+
     card.innerHTML = `
-      <img src="${url}" style="width:100%; border-radius:10px">
-      <span class="category" style="display:none">تصميم</span>
+      <img src="${url}" alt="${file.name}">
+      <span class="category" style="display:none">${randomCat}</span>
       <p>${file.name}</p>
     `;
     grid.appendChild(card);
   });
 
-  // شغل مكتبة GREEN APPLE
-  if (typeof initSlider === 'function') initSlider('slider', 4000);
-  if (typeof initSearch === 'function') initSearch('searchInput', '.work-card');
-  if (typeof initFilter === 'function') initFilter('.filter-bar button', '.work-card');
+  // شغل مكتبة GREEN APPLE بعد ما نعبي الصور
+  setTimeout(() => {
+    if (typeof initSlider === 'function') initSlider('slider', 4000);
+    if (typeof initSearch === 'function') initSearch('searchInput', '.work-card');
+    if (typeof initFilter === 'function') initFilter('.filter-bar button', '.work-card');
+  }, 500);
 }
 
-// 2. رفع صورة
+// 2. رفع صورة جديدة
 async function رفع_الصورة() {
   const file = document.getElementById('upload').files[0];
   const preview = document.getElementById('preview');
-  if (!file) return alert('اختر صورة أول');
+  if (!file) return alert('اختر صورة أول يا بطل 📸');
 
-  const { data, error } = await supabase.storage.from('aamal-images').upload('صور/' + Date.now() + '_' + file.name, file);
-  if (error) return alert('فشل: ' + error.message);
+  alert('جاري الرفع للسحابة...');
 
-  const url = supabase.storage.from('aamal-images').getPublicUrl(data.path).data.publicUrl;
+  const { data, error } = await window.supabase.storage
+  .from('aamal-images')
+  .upload('صور/' + Date.now() + '_' + file.name, file);
+
+  if (error) {
+    alert('فشل الرفع: ' + error.message);
+    console.error(error);
+    return;
+  }
+
+  const url = window.supabase.storage.from('aamal-images').getPublicUrl(data.path).data.publicUrl;
   preview.src = url;
   preview.style.display = 'block';
-  alert('تم الرفع بنجاح! حدث الصفحة عشان تظهر بالسلايدر ✅');
+  alert('تم الرفع بنجاح! ✅\nحدث الصفحة F5 عشان تشوفها بالسلايدر والكروت');
 }
 
+// شغل التحميل أول ما تفتح الصفحة
 تحميل_الصور();
 </script>
 </body>
