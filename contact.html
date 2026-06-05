@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تواصل معنا - GREEN APPLE DESIGN</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:'Cairo',sans-serif;background:#f8f8f8;padding:40px}
+.form{max-width:500px;margin:auto;background:white;padding:30px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
+input,textarea{width:100%;padding:12px;margin:10px 0;border:2px solid #ddd;border-radius:8px;font-family:'Cairo'}
+button{background:#2E7D32;color:white;border:none;padding:15px;border-radius:8px;width:100%;font-size:18px;cursor:pointer}
+button:hover{background:#1B5E20}
+.msg{padding:10px;margin:10px 0;border-radius:8px;display:none}
+.success{background:#d4edda;color:#155724}
+</style>
+</head>
+<body>
+<div class="form">
+  <h2>اطلب تصميمك الآن</h2>
+  <input id="name" placeholder="اسمك">
+  <input id="whatsapp" placeholder="رقم الواتساب">
+  <textarea id="message" rows="4" placeholder="اكتب تفاصيل طلبك..."></textarea>
+  <button onclick="sendMessage()">إرسال الطلب</button>
+  <div id="msg" class="msg success">تم الإرسال! بنرد عليك واتساب قريباً</div>
+</div>
+
+<script>
+const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+
+async function sendMessage(){
+  const name = document.getElementById('name').value
+  const whatsapp = document.getElementById('whatsapp').value
+  const message = document.getElementById('message').value
+  
+  if(!name || !whatsapp || !message){alert('عبي كل الحقول');return}
+  
+  const {error} = await supabase.from('messages').insert([{name, whatsapp, message}])
+  
+  if(error){alert('خطأ: '+error.message)}
+  else{
+    document.getElementById('msg').style.display='block'
+    document.getElementById('name').value=''
+    document.getElementById('whatsapp').value=''
+    document.getElementById('message').value=''
+  }
+}
+</script>
+</body>
+</html>
