@@ -1,150 +1,53 @@
 <!DOCTYPE html>
-<html lang=ar dir=rtl>
+<html lang="ar" dir="rtl">
 <head>
-<meta charset=UTF-8>
-<meta name=viewport content=width=device-width, initial-scale=1.0>
-<title>أعمالنا - تصميمات</title>
-<link rel=stylesheet href=style.css?v=2>
-<script src=https://unpkg.com/@supabase/supabase-js@2></script>
+<meta charset="UTF-8">
+<title>أعمالي</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:50px}
+.card{background:#1a1a1a;margin:20px;padding:20px;border-radius:15px;display:inline-block;width:300px}
+#loading{color:#00ff88;font-size:20px}
+</style>
 </head>
 <body>
-
-<nav class=navbar>
-  <a href=index.html>الرئيسية</a>
-  <a href=aamal.html class=active>أعمالنا</a>
-  <a href=#contact>اطلب الآن</a>
-</nav>
-
-<section class=works-section>
-  <h2>أعمالنا الأخيرة</h2>
-  
-  <input type=text id=searchInput placeholder=ابحث عن عمل... 🔍>
-  
-  <div class=filter-buttons>
-    <button onclick=filterCategory(الكل) class=active>الكل</button>
-    <button onclick=filterCategory(لوجوهات)>لوجوهات</button>
-    <button onclick=filterCategory(بنرات)>بنرات</button>
-    <button onclick=filterCategory(هوية)>هوية</button>
-  </div>
-
-  <div id=works-grid class=works-grid>
-    <p id=loading-text>جاري تحميل الأعمال...</p>
-  </div>
-</section>
-
-<section id=contact class=contact-section>
-  <h2>اطلب تصميمك الآن</h2>
-  <form id=contact-form>
-    <input type=text id=name placeholder=اسمك الكريم required>
-    <input type=email id=email placeholder=إيميلك للتواصل required>
-    <select id=service>
-      <option value=لوجو>تصميم لوجو</option>
-      <option value=بنر>تصميم بنر</option>
-      <option value=هوية>هوية بصرية</option>
-    </select>
-    <textarea id=message placeholder=تفاصيل طلبك required></textarea>
-    <button type=submit>إرسال الطلب</button>
-  </form>
-  <p id=form-status></p>
-</section>
+<h1>معرض أعمالي</h1>
+<div id="loading">جاري التحميل...</div>
+<div id="works-grid"></div>
 
 <script>
-// === حط هنا URL وال KEY بدون ' ===
-const supabaseUrl ='https://mirrxytqttjglglxrarq.supabase.co
-const supabaseKey ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+// === حط الرابط والمفتاح حقك هنا ===
+const supabaseUrl = https://mirrxytqtjglxrarq.supabase.co
+const supabaseKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdGpnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNjY5NjMsImV4cCI6MjA3Mjc0Mjk2M30.PTvNgqjPIPZJ9b5f_1FuNzkyPec6afcgMynSQ7CFeyI
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-let allWorks = []
-let currentCategory = الكل
-
-// تحميل الأعمال من Supabase
 async function loadWorks() {
-  const { data, error } = await supabase
-    .from('works')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error(خطأ Supabase:, error)
-      document.getElementById(loading-text).innerText = خطأ في التحميل:  + error.message
+  try {
+    const { data, error } = await supabase.from('works').select('*').order('created_at', { ascending: false })
+    if(error) throw error
+    
+    document.getElementById('loading').style.display = 'none'
+    const grid = document.getElementById('works-grid')
+    
+    if(data.length === 0) {
+      grid.innerHTML = '<p>لا توجد أعمال بعد</p>'
       return
     }
-
-    allWorks = data
-    displayWorks(allWorks)
-  }
-
-  // عرض الكروت
-  function displayWorks(works) {
-    const grid = document.getElementById(works-grid)
-    document.getElementById(loading-text).style.display = none
-
-    if (works.length === 0) {
-      grid.innerHTML = <p>لا توجد أعمال بعد</p>
-      return
-    }
-
-    grid.innerHTML = works.map(work => `
-      <div class=work-card data-category=${work.category}>
+    
+    grid.innerHTML = data.map(work => `
+      <div class="card">
         <h3>${work.title}</h3>
-        <p>${work.description || }</p>
-        <span class=price>${work.price} ريال</span>
-        <span class=category>${work.category}</span>
+        <p>${work.description}</p>
       </div>
-    `).join( )
+    `).join('')
+    
+    console.log('✅ تم تحميل ' + data.length + ' عمل')
+  } catch(e) {
+    document.getElementById('loading').innerHTML = '❌ خطأ: ' + e.message
   }
+}
 
-  // فلترة حسب التصنيف
-  function filterCategory(cat) {
-    currentCategory = cat
-    document.querySelectorAll(.filter-buttons button).forEach(b => b.classList.remove(active))
-    event.target.classList.add(active)
-
-    if (cat === الكل) {
-      displayWorks(allWorks)
-    } else {
-      const filtered = allWorks.filter(w => w.category === cat)
-      displayWorks(filtered)
-    }
-  }
-
-  // البحث
-  document.getElementById(searchInput).addEventListener(input, e => {
-    const term = e.target.value.toLowerCase()
-    const filtered = allWorks.filter(w => 
-      w.title.toLowerCase().includes(term) || 
-      w.description.toLowerCase().includes(term)
-    )
-    displayWorks(filtered)
-  })
-
-  // إرسال نموذج التواصل
-  document.getElementById(contact-form).addEventListener(submit, async e => {
-    e.preventDefault()
-    const status = document.getElementById(form-status)
-    status.innerText = جاري الإرسال...
-
-    const { error } = await supabase
-      .from(messages)
-      .insert([{
-        name: document.getElementById(name).value,
-        email: document.getElementById(email).value,
-        service: document.getElementById(service).value,
-        message: document.getElementById(message).value
-      }])
-
-    if (error) {
-      status.innerText = خطأ:  + error.message
-      console.error(error)
-    } else {
-      status.innerText = تم إرسال طلبك بنجاح! ✅
-      document.getElementById(contact-form).reset()
-    }
-  })
-
-  // شغل التحميل أول ما تفتح الصفحة
-  loadWorks()
+loadWorks()
 </script>
-<script src=console.js></script>
 </body>
 </html>
