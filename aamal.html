@@ -2,59 +2,235 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>أعمالي</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معرض أعمالي | Portfolio</title>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:50px}
-.card{background:#1a1a1a;margin:20px;padding:20px;border-radius:15px;display:inline-block;width:300px}
-#loading{color:#00ff88;font-size:20px}
-#error{color:red;font-size:18px;margin-top:30px}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  color: #fff;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+h1 {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #00ff88, #00d4ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+.subtitle {
+  text-align: center;
+  color: #888;
+  margin-bottom: 40px;
+  font-size: 1.2rem;
+}
+.filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.filter-btn {
+  padding: 12px 25px;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  color: #fff;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: 'Tajawal';
+  font-weight: 700;
+  transition: all 0.3s;
+}
+.filter-btn:hover, .filter-btn.active {
+  background: linear-gradient(90deg, #00ff88, #00d4ff);
+  border-color: #00ff88;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,255,136,0.3);
+}
+#loading {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #00ff88;
+  padding: 50px;
+}
+#error {
+  text-align: center;
+  color: #ff4444;
+  font-size: 1.2rem;
+  padding: 30px;
+  background: #2a0a0a;
+  border-radius: 15px;
+  margin: 20px;
+}
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  animation: fadeIn 0.5s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card {
+  background: #1a1a1a;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #333;
+  transition: all 0.4s;
+  cursor: pointer;
+}
+.card:hover {
+  transform: translateY(-10px);
+  border-color: #00ff88;
+  box-shadow: 0 20px 40px rgba(0,255,136,0.2);
+}
+.card-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  background: #2a2a2a;
+}
+.card-content { padding: 25px; }
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #00ff88;
+}
+.card-desc {
+  color: #aaa;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+.card-category {
+  display: inline-block;
+  padding: 5px 15px;
+  background: #2a2a2a;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #00d4ff;
+}
+.back-btn {
+  display: inline-block;
+  margin-bottom: 30px;
+  padding: 10px 25px;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.back-btn:hover {
+  border-color: #00ff88;
+  color: #00ff88;
+}
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  .works-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
-<h1>معرض أعمالي</h1>
-<div id="loading">جاري التحميل... 1</div>
-<div id="error"></div>
-<div id="works-grid"></div>
+<div class="container">
+  <a href="index.html" class="back-btn">← الرجوع للرئيسية</a>
+  <h1>معرض أعمالي</h1>
+  <p class="subtitle">أعمالي في التصميم والبرمجة</p>
+  
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-cat="الكل">الكل</button>
+  </div>
+  
+  <div id="loading">جاري تحميل الأعمال...</div>
+  <div id="error"></div>
+  <div class="works-grid" id="works-grid"></div>
+</div>
 
 <script>
-// === انتبه: لازم " حول الرابط والمفتاح ===
+// === حط الرابط والمفتاح حقك هنا - انتبه لل" ===
 const supabaseUrl = "https://mirrxytqttjglglxrarq.supabase.co"
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-document.getElementById('loading').innerHTML = 'جاري التحميل... 2 وصل للسطر 2'
+let allWorks = []
+let currentCategory = 'الكل'
 
-try {
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-  document.getElementById('loading').innerHTML = 'جاري التحميل... 3 اتصل بـ Supabase'
-  
-  supabase.from('works').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
-    document.getElementById('loading').innerHTML = 'جاري التحميل... 4 جات البيانات'
+async function loadWorks() {
+  try {
+    const { data, error } = await supabase
+      .from('works')
+      .select('*')
+      .order('created_at', { ascending: false })
     
-    if(error) {
-      document.getElementById('error').innerHTML = '❌ خطأ من Supabase: ' + error.message
-      return
-    }
+    if(error) throw error
     
     document.getElementById('loading').style.display = 'none'
-    const grid = document.getElementById('works-grid')
+    allWorks = data || []
     
-    if(data.length === 0) {
-      grid.innerHTML = '<p>لا توجد أعمال بعد</p>'
-      return
-    }
+    // إنشاء أزرار الفلترة
+    const categories = ['الكل', ...new Set(allWorks.map(w => w.category).filter(Boolean))]
+    const filtersDiv = document.getElementById('filters')
+    filtersDiv.innerHTML = categories.map(cat => 
+      `<button class="filter-btn ${cat==='الكل'?'active':''}" data-cat="${cat}">${cat}</button>`
+    ).join('')
     
-    grid.innerHTML = data.map(work => `
-      <div class="card">
-        <h3>${work.title}</h3>
-        <p>${work.description}</p>
-      </div>
-    `).join('')
-  })
-  
-} catch(e) {
-  document.getElementById('error').innerHTML = '❌ خطأ في الكود: ' + e.message
+    // إضافة حدث النقر للأزرار
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+        e.target.classList.add('active')
+        currentCategory = e.target.dataset.cat
+        displayWorks()
+      })
+    })
+    
+    displayWorks()
+    
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none'
+    document.getElementById('error').innerHTML = '❌ خطأ: ' + e.message
+    console.error(e)
+  }
 }
+
+function displayWorks() {
+  const grid = document.getElementById('works-grid')
+  const filtered = currentCategory === 'الكل' 
+    ? allWorks 
+    : allWorks.filter(w => w.category === currentCategory)
+  
+  if(filtered.length === 0) {
+    grid.innerHTML = '<p style="text-align:center;grid-column:1/-1;color:#888;font-size:1.3rem">لا توجد أعمال في هذا القسم</p>'
+    return
+  }
+  
+  grid.innerHTML = filtered.map(work => {
+    // الصورة: لو في عمود image_url نستخدمه، لو لا نجيب من مجلد images
+    const imgSrc = work.image_url || `images/${work.image || 'placeholder.jpg'}`
+    
+    return `
+      <div class="card">
+        <img src="${imgSrc}" alt="${work.title}" class="card-img" onerror="this.src='images/placeholder.jpg'">
+        <div class="card-content">
+          <h3 class="card-title">${work.title}</h3>
+          <p class="card-desc">${work.description || ''}</p>
+          ${work.category ? `<span class="card-category">${work.category}</span>` : ''}
+        </div>
+      </div>
+    `
+  }).join('')
+}
+
+loadWorks()
 </script>
 </body>
 </html>
