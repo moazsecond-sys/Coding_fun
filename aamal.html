@@ -191,32 +191,6 @@
   <p>© 2026 GREEN APPLE DESIGN - جميع الحقوق محفوظة</p>
 </footer>
 
-<!-- لوحة Console على الشاشة -->
-<div id="console-log" style="
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-height: 40vh;
-  background: rgba(0,0,0,0.95);
-  color: #0f0;
-  font-family: monospace;
-  font-size: 12px;
-  padding: 10px;
-  overflow-y: auto;
-  z-index: 9999;
-  border-top: 3px solid #2E7D32;
-  direction: ltr;
-  text-align: left;
-">
-  <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #333">
-    <b style="color:#2E7D32">Console Debug - اضغط X للإخفاء</b>
-    <button onclick="document.getElementById('console-log').style.display='none'"
-      style="background:#ff4444;color:white;border:none;padding:3px 10px;border-radius:5px;cursor:pointer">X</button>
-  </div>
-  <div id="console-content"></div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ===== 1. حط بيانات مشروعك هنا =====
@@ -224,40 +198,9 @@ const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 // ====================================
 
-// ===== 2. لوحة Console على الشاشة =====
-const consoleContent = document.getElementById('console-content');
-const oldLog = console.log;
-const oldError = console.error;
-const oldWarn = console.warn;
-
-function printToScreen(type, args) {
-  const msg = Array.from(args).map(a =>
-    typeof a === 'object'? JSON.stringify(a, null, 2) : String(a)
-  ).join(' ');
-
-  const color = type === 'error'? '#ff5555' : type === 'warn'? '#ffaa00' : '#4caf50';
-  const time = new Date().toLocaleTimeString();
-  consoleContent.innerHTML += `<div style="color:${color};margin:3px 0">[${time}] [${type}] ${msg}</div>`;
-  consoleContent.scrollTop = consoleContent.scrollHeight;
-}
-
-console.log = function(...args) {
-  oldLog(...args);
-  printToScreen('log', args);
-}
-console.error = function(...args) {
-  oldError(...args);
-  printToScreen('error', args);
-}
-console.warn = function(...args) {
-  oldWarn(...args);
-  printToScreen('warn', args);
-}
-
-// ===== 3. كود Supabase =====
 console.log('1. بدء تحميل الصفحة');
 console.log('2. الرابط:', supabaseUrl);
-console.log('3. المفتاح:', supabaseKey.substring(0,25) + '...');
+console.log('3. المفتاح أول 30 حرف:', supabaseKey.substring(0,30) + '...');
 
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 console.log('4. تم إنشاء اتصال Supabase');
@@ -272,7 +215,7 @@ async function loadWorks() {
       .order('created_at', {ascending: false});
     
     console.log('6. Status:', status, statusText);
-    console.log('7. البيانات:', data);
+    console.log('7. البيانات الراجعة:', data);
     console.log('8. الخطأ:', error);
     
     const grid = document.getElementById('worksGrid');
@@ -359,5 +302,6 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
 loadWorks();
 </script>
 
+<script src="console.js"></script>
 </body>
 </html>
