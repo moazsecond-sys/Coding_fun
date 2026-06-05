@@ -202,14 +202,15 @@ console.log('1. بدء تحميل الصفحة');
 console.log('2. الرابط:', supabaseUrl);
 console.log('3. المفتاح أول 30 حرف:', supabaseKey.substring(0,30) + '...');
 
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+// تم التعديل: غيرنا الاسم من supabase إلى supabaseClient عشان ما يصير تضارب
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 console.log('4. تم إنشاء اتصال Supabase');
 
 async function loadWorks() {
   console.log('5. جاري سحب الأعمال من جدول works...');
   
   try {
-    const { data, error, status, statusText } = await supabase
+    const { data, error, status, statusText } = await supabaseClient
       .from('works')
       .select('*')
       .order('created_at', {ascending: false});
@@ -275,7 +276,8 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
   btn.textContent = 'جاري الإرسال...';
   btn.disabled = true;
   
-  const { data, error } = await supabase.from('messages').insert([{
+  // تم التعديل: supabase → supabaseClient
+  const { data, error } = await supabaseClient.from('messages').insert([{
     name: form.name.value,
     email: form.email.value,
     service: form.service.value,
