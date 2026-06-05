@@ -2,17 +2,88 @@
 <html lang='ar' dir='rtl'>
 <head>
 <meta charset='UTF-8'>
-<title>معرض أعمالي</title>
-<link rel="stylesheet" href="style.css?v=3">
-<script type="importmap">{"imports":{"@supabase/supabase-js":"https://esm.sh/@supabase/supabase-js@2"}}</script>
+<title>معرض أعمالي الفخم</title>
+<link rel="stylesheet" href="style.css?v=4">
+<script type="importmap">{"imports":{"@supabase/supabase-js":"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"}}</script>
+<style>
+  html { scroll-behavior: smooth; } /* سكرول ناعم */
+ .upload-box { margin:40px auto; padding:25px; max-width:500px; border:2px dashed #4CAF50; border-radius:15px; text-align:center; background:#f9fff9 }
+ .upload-box button { background:#4CAF50; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:16px }
+ .upload-box button:hover { background:#45a049 }
+  #preview { width:100%; max-width:300px; margin-top:15px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.2) }
+
+  /* سلايدر */
+ .slider { max-width:600px; margin:40px auto; position:relative; overflow:hidden; border-radius:15px }
+ .slider img { width:100%; display:none }
+ .slider img.active { display:block }
+ .slider-btn { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; padding:10px 15px; cursor:pointer; font-size:20px }
+ .prev { left:10px }.next { right:10px }
+</style>
 </head>
 <body>
-<nav><h1>معرض أعمالي</h1></nav>
+<nav><h1>معرض أعمالي ✨</h1></nav>
+
 <div class="container">
   <div class="filter-bar" id="filter-bar"></div>
   <div class='works-grid' id='works-grid'></div>
+
+  <!-- سلايدر الصور -->
+  <div class="slider" id="slider">
+    <img src="" class="active" id="slide-img">
+    <button class="slider-btn prev" onclick="غير_الصورة(-1)">❮</button>
+    <button class="slider-btn next" onclick="غير_الصورة(1)">❯</button>
+  </div>
+
+  <!-- صندوق الرفع الفخم -->
+  <div class="upload-box">
+    <h3>📸 ارفع صورة جديدة للسحابة</h3>
+    <input type="file" id="upload" accept="image/*">
+    <button onclick="رفع_الصورة()">ارفع الآن</button>
+    <img id="preview" style="display:none">
+  </div>
 </div>
-<footer>© 2026 second-sys</footer>
-<script type="module" src="script.js?v=3"></script>
+
+<footer>© 2026 second-sys | كل شي على Supabase ☁️</footer>
+<script type="module" src="script.js?v=4"></script>
+
+<script type="module">
+let صور_السلايدر = [];
+let رقم_الصورة = 0;
+
+async function رفع_الصورة() {
+  const file = document.getElementById('upload').files[0];
+  const preview = document.getElementById('preview');
+  if (!file) return alert('اختر صورة أول');
+
+  const { data, error } = await supabase.storage
+  .from('aamal-images')
+  .upload('صور/' + Date.now() + '_' + file.name, file);
+
+  if (error) return alert('فشل: ' + error.message);
+
+  const { data: urlData } = supabase.storage.from('aamal-images').getPublicUrl(data.path);
+  preview.src = urlData.publicUrl;
+  preview.style.display = 'block';
+
+  // اضف الصورة للسلايدر
+  صور_السلايدر.push(urlData.publicUrl);
+  رقم_الصورة = صور_السلايدر.length - 1;
+  عرض_الصورة();
+  alert('تم الرفع + انضافت للسلايدر ✅');
+}
+
+function غير_الصورة(اتجاه) {
+  رقم_الصورة += اتجاه;
+  if (رقم_الصورة < 0) رقم_الصورة = صور_السلايدر.length - 1;
+  if (رقم_الصورة >= صور_السلايدر.length) رقم_الصورة = 0;
+  عرض_الصورة();
+}
+
+function عرض_الصورة() {
+  if (صور_السلايدر.length > 0) {
+    document.getElementById('slide-img').src = صور_السلايدر[رقم_الصورة];
+  }
+}
+</script>
 </body>
 </html>
