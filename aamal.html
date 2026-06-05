@@ -182,72 +182,96 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ===== غير هذي البيانات ببيانات مشروعك =====
-const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' // anon public key
-const supabase = supabase.createClient(supabaseUrl, supabaseKey)
-// ===========================================
+// ===== حط بياناتك هنا =====
+const supabaseUrl = 'https://xxxxx.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx'
+console.log('1. الرابط:', supabaseUrl);
+console.log('2. المفتاح أول 20 حرف:', supabaseKey.substring(0,20) + '...');
 
-// 1. عرض الأعمال من Supabase
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+console.log('3. تم إنشاء اتصال Supabase');
+
+// 1. عرض الأعمال مع Debug
 async function loadWorks() {
-  const { data, error } = await supabase
-    .from('works')
-    .select('*')
-    .order('created_at', {ascending: false});
+  console.log('4. بدأ تحميل الأعمال...');
   
-  const grid = document.getElementById('worksGrid');
-  
-  if(error) {
-    grid.innerHTML = '<p style="text-align:center;color:red">خطأ في تحميل الأعمال</p>';
-    console.error(error);
-    return;
-  }
-  
-  if(!data || data.length === 0) {
-    grid.innerHTML = '<p style="text-align:center">لا توجد أعمال بعد</p>';
-    return;
-  }
-  
-  grid.innerHTML = data.map(item => `
-    <div class="card">
-      <img src="${item.img_url}" alt="${item.title}" loading="lazy">
-      <div class="card-content">
-        <span class="category">${item.category}</span>
-        <h3>${item.title}</h3>
-        <p>${item.description || ''}</p>
-        <div class="price">${item.price}</div>
-        <button onclick="orderNow('${item.title}')">اطلب الآن</button>
+  try {
+    const { data, error, status } = await supabase
+      .from('works')
+      .select('*')
+      .order('created_at', {ascending: false});
+    
+    console.log('5. حالة الاستجابة:', status);
+    console.log('6. البيانات الراجعة:', data);
+    console.log('7. الخطأ لو فيه:', error);
+    
+    const grid = document.getElementById('worksGrid');
+    
+    if(error) {
+      console.error('8. خطأ Supabase:', error.message);
+      grid.innerHTML = `<p style="text-align:center;color:red">خطأ: ${error.message}<br>الكود: ${error.code}</p>`;
+      return;
+    }
+    
+    if(!data || data.length === 0) {
+      console.warn('8. الجدول فاضي، مافي أعمال');
+      grid.innerHTML = '<p style="text-align:center;color:orange">الجدول فاضي، أضف أعمال من Supabase</p>';
+      return;
+    }
+    
+    console.log('8. عدد الأعمال:', data.length);
+    grid.innerHTML = data.map(item => `
+      <div class="card">
+        <img src="${item.img_url}" alt="${item.title}">
+        <div class="card-content">
+          <span class="category">${item.category}</span>
+          <h3>${item.title}</h3>
+          <p>${item.description || ''}</p>
+          <div class="price">${item.price}</div>
+          <button onclick="orderNow('${item.title}')">اطلب الآن</button>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+    console.log('9. تم عرض الأعمال بنجاح ✅');
+    
+  } catch(err) {
+    console.error('خطأ عام:', err);
+    document.getElementById('worksGrid').innerHTML = '<p style="text-align:center;color:red">خطأ في الاتصال</p>';
+  }
 }
 
-// 2. زر اطلب الآن ينزل للفورم
+// 2. زر الطلب
 function orderNow(title) {
+  console.log('طلب على:', title);
   document.getElementById('service').value = title;
   document.getElementById('contactForm').scrollIntoView({behavior: 'smooth'});
 }
 
-// 3. إرسال الرسالة لـ Supabase
+// 3. إرسال الرسالة مع Debug
 document.getElementById('messageForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+  console.log('10. بدأ إرسال الرسالة...');
+  
   const form = e.target;
   const btn = form.querySelector('button');
   btn.textContent = 'جاري الإرسال...';
   btn.disabled = true;
   
-  const { error } = await supabase.from('messages').insert([{
+  const { data, error } = await supabase.from('messages').insert([{
     name: form.name.value,
     email: form.email.value,
     service: form.service.value,
     message: form.message.value
   }]);
   
+  console.log('11. نتيجة الإرسال - Data:', data);
+  console.log('12. نتيجة الإرسال - Error:', error);
+  
   if(error) {
-    alert('حدث خطأ، جرب مرة ثانية');
-    console.error(error);
+    alert('خطأ: ' + error.message);
+    console.error('خطأ الإرسال:', error);
   } else {
-    alert('تم إرسال طلبك بنجاح! بنتواصل معك قريباً على الإيميل');
+    alert('تم الإرسال بنجاح!');
     form.reset();
     document.getElementById('service').value = '';
   }
@@ -256,7 +280,8 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
   btn.disabled = false;
 });
 
-// شغل عرض الأعمال أول ما تفتح الصفحة
+// شغل التحميل
+console.log('13. الصفحة حملت، بنبدأ...');
 loadWorks();
 </script>
 
