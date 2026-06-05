@@ -1,37 +1,80 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><title>اختبار Supabase</title>
-<style>body{font-family:tahoma;padding:20px;background:#f5f5f5} 
-#log{background:#000;color:#0f0;padding:15px;font-family:monospace;white-space:pre-wrap}</style>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار Supabase</title>
+<style>
+body{font-family:tahoma;padding:20px;background:#f5f5f5;margin:0}
+h2{text-align:center;color:#2E7D32}
+#log{
+  background:#000;
+  color:#00ff00;
+  padding:15px;
+  font-family:'Courier New', monospace;
+  font-size:14px;
+  white-space:pre-wrap;
+  border-radius:8px;
+  min-height:200px;
+  direction:ltr;
+  text-align:left;
+}
+.success{color:#4CAF50}
+.error{color:#ff5555}
+.warn{color:#ffaa00}
+</style>
 </head>
 <body>
+
 <h2>اختبار الاتصال بـ Supabase</h2>
 <div id="log">جاري الاختبار...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const log = msg => document.getElementById('log').innerText += '\n' + msg;
+const logDiv = document.getElementById('log');
+const log = (msg, type='') => {
+  const color = type==='error'?'error':type==='success'?'success':type==='warn'?'warn':'';
+  logDiv.innerHTML += `<div class="${color}">${msg}</div>`;
+};
 
-// غير هالسطرين بس
+// ======= غير هالسطرين ببياناتك الحقيقية =======
 const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+// ===============================================
 
 log('1. بدأ الاختبار...');
+
 try {
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-  log('2. اتصال Supabase تم ✅');
+  // ملاحظة: سميناه supabaseClient عشان ما يصير تضارب مع اسم المكتبة
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+  log('2. اتصال Supabase تم ✅', 'success');
   
-  supabase.from('works').select('*').limit(1).then(res => {
-    log('3. Status: ' + res.status);
-    log('4. Data: ' + JSON.stringify(res.data));
-    log('5. Error: ' + JSON.stringify(res.error));
+  log('3. جاري سحب بيانات من جدول works...');
+  
+  supabaseClient.from('works').select('*').limit(3).then(res => {
+    log('4. Status Code: ' + res.status);
+    log('5. Data: ' + JSON.stringify(res.data, null, 2));
+    log('6. Error: ' + JSON.stringify(res.error));
     
-    if(res.error) log('المشكلة: ' + res.error.message);
-    else if(!res.data || res.data.length == 0) log('الجدول فاضي! ضيف صف تجريبي');
-    else log('نجح! الأعمال موجودة ✅');
+    if(res.error) {
+      log('❌ المشكلة: ' + res.error.message, 'error');
+      log('الكود: ' + res.error.code, 'error');
+      if(res.error.code === '42P01') log('الحل: الجدول "works" غير موجود', 'warn');
+      if(res.error.code === '42501') log('الحل: فعّل RLS Policy للقراءة', 'warn');
+    }
+    else if(!res.data || res.data.length == 0) {
+      log('⚠️ الجدول فاضي! لا توجد أعمال', 'warn');
+      log('الحل: روح Supabase → Table Editor → works → Insert row', 'warn');
+    }
+    else {
+      log('✅ نجح! لقيت ' + res.data.length + ' عمل', 'success');
+      log('الأعمال: ' + res.data.map(x => x.title).join(', '));
+    }
   });
+  
 } catch(e) {
-  log('خطأ فادح: ' + e.message);
+  log('❌ خطأ فادح: ' + e.message, 'error');
+  log('التفاصيل: ' + e.stack, 'error');
 }
 </script>
 </body>
