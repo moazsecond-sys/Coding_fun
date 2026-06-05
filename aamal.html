@@ -2,48 +2,56 @@
 <html lang='ar' dir='rtl'>
 <head>
 <meta charset='UTF-8'>
-<title>اختبار</title>
+<title>معرض أعمالي</title>
 <script src='https://unpkg.com/@supabase/supabase-js@2'></script>
 <style>
-body{background:#000;color:#0f0;font-family:monospace;padding:30px;font-size:18px}
-.box{border:2px solid #0f0;padding:20px;margin:10px;border-radius:10px}
-.ok{color:#0f0} .no{color:red}
+body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;padding:40px;text-align:center}
+h1{color:#00ff88;font-size:2.5rem;margin-bottom:30px}
+.works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:25px;max-width:1200px;margin:0 auto}
+.card{background:#1a1a1a;border-radius:20px;padding:20px;border:2px solid #333;transition:0.3s}
+.card:hover{border-color:#00ff88;transform:translateY(-5px)}
+.card h3{color:#00ff88;margin-bottom:10px;font-size:1.5rem}
+.card p{color:#aaa;line-height:1.6}
+#loading{color:#00ff88;font-size:1.3rem}
+#error{color:red;margin-top:20px}
 </style>
 </head>
 <body>
-<h1>🔍 فحص الموقع</h1>
-<div id='log'></div>
+<h1>معرض أعمالي</h1>
+<div id='loading'>جاري التحميل...</div>
+<div id='error'></div>
+<div class='works-grid' id='works-grid'></div>
 
 <script>
-const log = msg => document.getElementById('log').innerHTML += `<div class='box'>${msg}</div>`
+const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-log('1. بدأ الفحص...')
-
-try {
-  const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+supabase.from('works').select('*').order('created_at',{ascending:false}).then(({data, error})=>{
+  document.getElementById('loading').style.display='none'
   
-  log('2. <span class=ok>المفتاح والرابط موجودين</span>')
+  if(error){
+    document.getElementById('error').innerHTML = 'خطأ: '+error.message
+    return
+  }
   
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-  log('3. <span class=ok>اتصل بـ Supabase بنجاح</span>')
+  if(data.length===0){
+    document.getElementById('works-grid').innerHTML = '<p>لا توجد أعمال بعد</p>'
+    return
+  }
   
-  log('4. جاري سحب البيانات من جدول works...')
+  // هنا السر: map + join('') عشان ما يطلع فواصل
+  const cards = data.map(work=>{
+    return `
+      <div class='card'>
+        <h3>${work.title}</h3>
+        <p>${work.description || 'لا يوجد وصف'}</p>
+      </div>
+    `
+  }).join('') // <-- هذي ضرورية عشان تشيل الفواصل بين الكروت
   
-  supabase.from('works').select('*').limit(1).then(res=>{
-    if(res.error){
-      log(`5. <span class=no>❌ خطأ Supabase: ${res.error.message}</span>`)
-      log(`6. <span class=no>الحل: افتح Supabase → Table Editor → شوف اسم الجدول صح؟ وروح Authentication → Policies → فعل Select للـ anon</span>`)
-    } else {
-      log(`5. <span class=ok>✅ جات البيانات! عدد السجلات: ${res.data.length}</span>`)
-      log(`6. <span class=ok>المشكلة من الكود حق العرض بس. الجدول شغال</span>`)
-    }
-  })
-  
-} catch(e){
-  log(`2. <span class=no>❌ خطأ فادح: ${e.message}</span>`)
-  log(`3. <span class=no>معناها المفتاح مو بين ' او في حرف ناقص</span>`)
-}
+  document.getElementById('works-grid').innerHTML = cards
+})
 </script>
 </body>
 </html>
