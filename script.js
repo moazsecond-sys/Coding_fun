@@ -17,17 +17,36 @@ supabase.from('works').select('*').order('created_at',{ascending:false}).then(({
     return
   }
   
-  grid.innerHTML = data.map(w=>`
-    <div class='card'>
-      <h3>${w.title}</h3>
+  grid.innerHTML = data.map(w => `
+  <div class='card'>
+    ${w.img_url ? `
+      <img src="${w.img_url}" 
+           alt="${w.title}" 
+           loading="lazy"
+           onerror="this.src='https://via.placeholder.com/400x250?text=لا+توجد+صورة'">
+    ` : `
+      <div style="height:200px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#666;border-radius:8px">
+        لا توجد صورة
+      </div>
+    `}
+    
+    <div class='card-content'>
+      <h3>${w.title || 'بدون عنوان'}</h3>
       <p class='desc'>${w.description || 'لا يوجد وصف'}</p>
+      
       <div class='meta'>
-        <span class='category'>${w.category || 'عام'}</span>
+        <span class='category'>📁 ${w.category || 'عام'}</span>
         <span class='price'>${w.price ? w.price + ' ريال' : 'تواصل للسعر'}</span>
       </div>
-      <a href="https://wa.me/9665XXXXXXXX?text=مرحبا، مهتم بعمل: ${w.title}" target="_blank" class="btn-whatsapp">تواصل واتساب</a>
+      
+      <a href="https://wa.me/9665XXXXXXXX?text=مرحبا، مهتم بعمل: ${encodeURIComponent(w.title)}" 
+         target="_blank" 
+         class="btn-whatsapp">
+         💬 تواصل واتساب
+      </a>
     </div>
-  `).join('')
+  </div>
+`).join('')
 })
 window.supabase = supabase;
 console.log('Supabase متصل ✅');
