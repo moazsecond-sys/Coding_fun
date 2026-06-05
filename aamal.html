@@ -1,84 +1,264 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>أعمالنا - GREEN APPLE DESIGN</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Cairo',sans-serif;background:#f8f8f8;color:#333;text-align:center;padding-bottom:100px}
-    header{background:#2E7D32;padding:40px 20px;color:white}
-    .logo{max-width:160px;width:100%;height:auto;margin-bottom:15px;display:block;margin:auto}
-    h1{font-size:32px;margin-top:10px}
-    nav{margin-top:15px}
-    nav a{color:white;margin:0 10px;text-decoration:none;font-size:18px;font-weight:700;transition:0.3s}
-    nav a:hover{opacity:0.8}
-    nav a.active{opacity:0.6;text-decoration:underline;cursor:default}
-    .content{padding:50px 20px;max-width:1000px;margin:auto;background:white;border-radius:12px;margin-top:30px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:30px}
-    .grid img{width:100%;border-radius:8px}
-    footer{background:#2E7D32;color:white;padding:20px;margin-top:50px}
-    .chat-btn{position:fixed;bottom:20px;left:20px;background:#25D366;color:white;padding:15px 25px;border-radius:50px;text-decoration:none;font-size:18px;font-weight:700;box-shadow:0 4px 15px rgba(37,211,102,0.4);z-index:999;transition:0.3s}
-    .chat-btn:hover{transform:scale(1.05)}
-    @media (max-width: 600px){
-      h1{font-size:26px}
-      .logo{max-width:120px}
-      nav a{font-size:16px;margin:0 7px}
-      .content{padding:30px 15px}
+    * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif;}
+    body {background: #f5f5f5; color: #333;}
+    
+    header {
+      background: linear-gradient(135deg, #2E7D32, #1B5E20);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    header h1 {font-size: 32px; margin-bottom: 10px;}
+    header p {font-size: 16px; opacity: 0.9;}
+    
+    nav {
+      background: white;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    nav a {
+      color: #2E7D32;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    h2 {
+      text-align: center;
+      color: #2E7D32;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 60px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .card:hover {transform: translateY(-5px);}
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    .card-content {
+      padding: 20px;
+    }
+    .card h3 {color: #2E7D32; margin-bottom: 8px; font-size: 20px;}
+    .card p {color: #666; margin-bottom: 5px;}
+    .price {
+      color: #FF6F00;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .category {
+      background: #E8F5E9;
+      color: #2E7D32;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .card button {
+      width: 100%;
+      background: #2E7D32;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .card button:hover {background: #1B5E20;}
+    
+    .contact-section {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .contact-section h2 {margin-bottom: 25px;}
+    .contact-section input, 
+    .contact-section textarea {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    .contact-section input:focus, 
+    .contact-section textarea:focus {
+      border-color: #2E7D32;
+      outline: none;
+    }
+    .contact-section button {
+      width: 100%;
+      background: #FF6F00;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    .contact-section button:hover {background: #E65100;}
+    .loading {text-align: center; padding: 50px; color: #666;}
+    
+    footer {
+      background: #1B5E20;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 60px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <img src="images/logo.png" alt="GREEN APPLE DESIGN Logo" class="logo">
-    <h1>GREEN APPLE DESIGN</h1>
-    <nav>
-      <a href="index.html">الرئيسية</a>
-      <a href="safahat.html">صفحات</a>
-      <a href="aamal.html" class="active">أعمالنا</a>
-    </nav>
-  </header>
+<header>
+  <h1>GREEN APPLE DESIGN</h1>
+  <p>تصاميم احترافية ترفع براندك</p>
+</header>
 
-  <main>
-    <div class="content">
-      <h2>أعمالنا</h2>
-      <div class="grid">
-        <img src="images/work1.jpg" alt="عمل 1">
-        <img src="images/work2.jpg" alt="عمل 2">
-        <img src="images/work3.jpg" alt="عمل 3">
+<nav>
+  <a href="index.html">الرئيسية</a>
+  <a href="aamal.html">أعمالنا</a>
+  <a href="#contactForm">اطلب الآن</a>
+</nav>
+
+<div class="container">
+  <h2>أعمالنا الأخيرة</h2>
+  <div class="grid" id="worksGrid">
+    <div class="loading">جاري تحميل الأعمال...</div>
+  </div>
+
+  <div class="contact-section" id="contactForm">
+    <h2>اطلب تصميمك الآن</h2>
+    <form id="messageForm">
+      <input type="text" name="name" placeholder="اسمك الكريم" required>
+      <input type="email" name="email" placeholder="إيميلك للتواصل" required>
+      <input type="text" name="service" id="service" placeholder="الخدمة المطلوبة" readonly>
+      <textarea name="message" placeholder="اكتب تفاصيل طلبك..." required></textarea>
+      <button type="submit">إرسال الطلب</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 GREEN APPLE DESIGN - جميع الحقوق محفوظة</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ===== غير هذي البيانات ببيانات مشروعك =====
+const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' // anon public key
+const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+// ===========================================
+
+// 1. عرض الأعمال من Supabase
+async function loadWorks() {
+  const { data, error } = await supabase
+    .from('works')
+    .select('*')
+    .order('created_at', {ascending: false});
+  
+  const grid = document.getElementById('worksGrid');
+  
+  if(error) {
+    grid.innerHTML = '<p style="text-align:center;color:red">خطأ في تحميل الأعمال</p>';
+    console.error(error);
+    return;
+  }
+  
+  if(!data || data.length === 0) {
+    grid.innerHTML = '<p style="text-align:center">لا توجد أعمال بعد</p>';
+    return;
+  }
+  
+  grid.innerHTML = data.map(item => `
+    <div class="card">
+      <img src="${item.img_url}" alt="${item.title}" loading="lazy">
+      <div class="card-content">
+        <span class="category">${item.category}</span>
+        <h3>${item.title}</h3>
+        <p>${item.description || ''}</p>
+        <div class="price">${item.price}</div>
+        <button onclick="orderNow('${item.title}')">اطلب الآن</button>
       </div>
     </div>
-  </main>
+  `).join('');
+}
 
-  <footer>
-    <p>© 2026 GREEN APPLE DESIGN</p>
-  </footer>
+// 2. زر اطلب الآن ينزل للفورم
+function orderNow(title) {
+  document.getElementById('service').value = title;
+  document.getElementById('contactForm').scrollIntoView({behavior: 'smooth'});
+}
 
-  <a href="https://wa.me/2126XXXXXXXX?text=مرحبا" class="chat-btn" target="_blank">💬 شات واتساب</a>
+// 3. إرسال الرسالة لـ Supabase
+document.getElementById('messageForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button');
+  btn.textContent = 'جاري الإرسال...';
+  btn.disabled = true;
+  
+  const { error } = await supabase.from('messages').insert([{
+    name: form.name.value,
+    email: form.email.value,
+    service: form.service.value,
+    message: form.message.value
+  }]);
+  
+  if(error) {
+    alert('حدث خطأ، جرب مرة ثانية');
+    console.error(error);
+  } else {
+    alert('تم إرسال طلبك بنجاح! بنتواصل معك قريباً على الإيميل');
+    form.reset();
+    document.getElementById('service').value = '';
+  }
+  
+  btn.textContent = 'إرسال الطلب';
+  btn.disabled = false;
+});
 
-  <script src="data.js"></script>
-  <script src="error.js"></script>
-  <script src="console.js"></script>
-  <script>
-fetch('data.json')
-  .then(res => res.json())
-  .then(data => {
-    const grid = document.querySelector('.grid');
-    grid.innerHTML = ''; // امسح الصور الثابتة
-    
-    data.products.forEach(item => {
-      grid.innerHTML += `
-        <div class="card">
-          <img src="${item.img}" alt="${item.name}">
-          <h3>${item.name}</h3>
-          <p>${item.price}</p>
-        </div>
-      `;
-    });
-  })
-  .catch(err => console.log('خطأ:', err));
+// شغل عرض الأعمال أول ما تفتح الصفحة
+loadWorks();
 </script>
+
 </body>
 </html>
