@@ -34,12 +34,14 @@ async function loadWorks() {
   
   // 6. عرض البيانات في grid
   grid.innerHTML = data.map(work => `
-    <div class="card">
-      <img src="${work.image_url}" alt="${work.title}">
-      <h3>${work.title}</h3>
-      <p>${work.description}</p>
-    </div>
-  `).join('')
+  <div class="card">
+    ${work.image_url ? `<img src="${work.image_url}" alt="${work.title}">` : ''}
+    <h3>${work.title}</h3>
+    <p>${work.description}</p>
+    <p><b>السعر:</b> ${work.price} ريال</p>
+    <span class="tag">${work.category}</span>
+  </div>
+`).join('')
 }
 
 // 7. شغل الدالة أول ما الصفحة تفتح
