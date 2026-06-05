@@ -4,148 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>أعمالنا - GREEN APPLE DESIGN</title>
-  <style>
-    * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', Tahoma, sans-serif;}
-    body {background: #f5f5f5; color: #333; padding-bottom: 45vh;}
-    
-    header {
-      background: linear-gradient(135deg, #2E7D32, #1B5E20);
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    header h1 {font-size: 32px; margin-bottom: 10px;}
-    header p {font-size: 16px; opacity: 0.9;}
-    
-    nav {
-      background: white;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    nav a {
-      color: #2E7D32;
-      text-decoration: none;
-      margin: 0 15px;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    
-    h2 {
-      text-align: center;
-      color: #2E7D32;
-      margin-bottom: 30px;
-      font-size: 28px;
-    }
-    
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 25px;
-      margin-bottom: 60px;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-    }
-    .card:hover {transform: translateY(-5px);}
-    .card img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      background: #e0e0e0;
-      display: block;
-    }
-    .card-content {
-      padding: 20px;
-    }
-    .card h3 {color: #2E7D32; margin-bottom: 8px; font-size: 20px;}
-    .card p {color: #666; margin-bottom: 5px; font-size: 14px; line-height: 1.6;}
-    .price {
-      color: #FF6F00;
-      font-size: 22px;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-    .category {
-      background: #E8F5E9;
-      color: #2E7D32;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
-    .card button {
-      width: 100%;
-      background: #2E7D32;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    .card button:hover {background: #1B5E20;}
-    
-    .contact-section {
-      background: white;
-      padding: 40px 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .contact-section h2 {margin-bottom: 25px;}
-    .contact-section input, 
-    .contact-section textarea {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 16px;
-      font-family: inherit;
-    }
-    .contact-section button {
-      width: 100%;
-      background: #FF6F00;
-      color: white;
-      border: none;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-    
-    .loading {text-align: center; padding: 50px; color: #666; font-size: 18px;}
-    
-    footer {
-      background: #1B5E20;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      margin-top: 60px;
-    }
-  </style>
+  <link rel="stylesheet" href="css.html">
 </head>
 <body>
 
@@ -185,7 +44,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
   const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 
@@ -197,21 +55,18 @@ document.addEventListener('DOMContentLoaded', function() {
       .select('*')
       .order('created_at', {ascending: false});
     
-    console.log('البيانات:', data);
-    
     const grid = document.getElementById('worksGrid');
     
     if(error) {
-      grid.innerHTML = `<p style="text-align:center;color:red;padding:30px">خطأ: ${error.message}</p>`;
+      grid.innerHTML = `<p class="error">خطأ: ${error.message}</p>`;
       return;
     }
     
     if(!data || data.length === 0) {
-      grid.innerHTML = `<p style="text-align:center;color:orange;padding:30px">لا توجد أعمال حالياً</p>`;
+      grid.innerHTML = `<p class="warning">لا توجد أعمال حالياً</p>`;
       return;
     }
     
-    // السر هنا: لو ما في img_url نحط صورة افتراضية حلوة من الإنترنت
     grid.innerHTML = data.map(item => `
       <div class="card">
         <img src="${item.img_url && item.img_url.trim() !== '' 
@@ -228,8 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
     `).join('');
-    
-    console.log('تم عرض الأعمال ✅');
   }
 
   window.orderNow = function(title) {
@@ -253,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if(error) alert('خطأ: ' + error.message);
     else {
-      alert('تم الإرسال بنجاح!');
+      alert('تم الإرسال بنجاح! بنتواصل معك قريباً');
       form.reset();
       document.getElementById('service').value = '';
     }
@@ -266,6 +119,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<script src="console.js"></script>
 </body>
 </html>
