@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><title>اختبار Supabase</title>
+<style>body{font-family:tahoma;padding:20px;background:#f5f5f5} 
+#log{background:#000;color:#0f0;padding:15px;font-family:monospace;white-space:pre-wrap}</style>
+</head>
+<body>
+<h2>اختبار الاتصال بـ Supabase</h2>
+<div id="log">جاري الاختبار...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const log = msg => document.getElementById('log').innerText += '\n' + msg;
+
+// غير هالسطرين بس
+const supabaseUrl = 'https://xxxxx.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx'
+
+log('1. بدأ الاختبار...');
+try {
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  log('2. اتصال Supabase تم ✅');
+  
+  supabase.from('works').select('*').limit(1).then(res => {
+    log('3. Status: ' + res.status);
+    log('4. Data: ' + JSON.stringify(res.data));
+    log('5. Error: ' + JSON.stringify(res.error));
+    
+    if(res.error) log('المشكلة: ' + res.error.message);
+    else if(!res.data || res.data.length == 0) log('الجدول فاضي! ضيف صف تجريبي');
+    else log('نجح! الأعمال موجودة ✅');
+  });
+} catch(e) {
+  log('خطأ فادح: ' + e.message);
+}
+</script>
+</body>
+</html>
