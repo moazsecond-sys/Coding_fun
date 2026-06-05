@@ -7,12 +7,13 @@
 <style>
 body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:40px}
 h1{color:#00ff88;font-size:2.5rem;margin-bottom:30px}
+#loading{color:#00ff88;font-size:1.4rem;margin:50px}
+#error{color:red;font-size:1.2rem;margin:30px}
 .works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px;max-width:1200px;margin:30px auto}
-.card{background:#1a1a1a;border-radius:20px;padding:25px;border:2px solid #333;text-align:right;transition:0.3s}
-.card:hover{border-color:#00ff88;transform:translateY(-5px)}
+.card{background:#1a1a1a;border-radius:20px;padding:25px;border:2px solid #333;text-align:right}
 .card h3{color:#00ff88;font-size:1.6rem;margin-bottom:10px}
 .card .desc{color:#aaa;line-height:1.7;margin:15px 0}
-.card .meta{display:flex;justify-content:space-between;margin-top:15px;font-size:0.95rem}
+.card .meta{display:flex;justify-content:space-between;margin-top:15px}
 .card .category{background:#00ff88;color:#000;padding:5px 12px;border-radius:20px;font-weight:bold}
 .card .price{color:#00ff88;font-size:1.3rem;font-weight:bold}
 .empty{color:#888;font-size:1.3rem;margin-top:50px}
@@ -20,7 +21,9 @@ h1{color:#00ff88;font-size:2.5rem;margin-bottom:30px}
 </head>
 <body>
 <h1>معرض أعمالي</h1>
-<div id='works-grid'></div>
+<div id='loading'>⏳ جاري التحميل من قاعدة البيانات...</div>
+<div id='error'></div>
+<div class='works-grid' id='works-grid'></div>
 
 <script>
 const supabase = window.supabase.createClient(
@@ -29,19 +32,19 @@ const supabase = window.supabase.createClient(
 )
 
 supabase.from('works').select('*').order('created_at',{ascending:false}).then(({data, error})=>{
-  const grid = document.getElementById('works-grid')
+  document.getElementById('loading').style.display='none' // اخفي التحميل
   
   if(error){
-    grid.innerHTML = '<p style="color:red">خطأ: '+error.message+'</p>'
+    document.getElementById('error').innerHTML = '❌ خطأ Supabase: '+error.message
     return
   }
   
   if(!data || data.length === 0){
-    grid.innerHTML = '<p class="empty">📦 الجدول فاضي حالياً</p>'
+    document.getElementById('works-grid').innerHTML = '<p class="empty">📦 الجدول works فاضي<br>ضيف عمل تجريبي من Supabase</p>'
     return
   }
   
-  grid.innerHTML = data.map(w=>`
+  document.getElementById('works-grid').innerHTML = data.map(w=>`
     <div class='card'>
       <h3>${w.title}</h3>
       <p class='desc'>${w.description || 'لا يوجد وصف'}</p>
