@@ -5,27 +5,35 @@
 <title>أعمالي</title>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
-body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:50px}
+body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:50px}
 .card{background:#1a1a1a;margin:20px;padding:20px;border-radius:15px;display:inline-block;width:300px}
 #loading{color:#00ff88;font-size:20px}
+#error{color:red;font-size:18px;margin-top:30px}
 </style>
 </head>
 <body>
 <h1>معرض أعمالي</h1>
-<div id="loading">جاري التحميل...</div>
+<div id="loading">جاري التحميل... 1</div>
+<div id="error"></div>
 <div id="works-grid"></div>
 
 <script>
-// === حط الرابط والمفتاح حقك هنا ===
 const supabaseUrl =https://mirrxytqttjglglxrarq.supabase.co
 const supabaseKey =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo
-  
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-async function loadWorks() {
-  try {
-    const { data, error } = await supabase.from('works').select('*').order('created_at', { ascending: false })
-    if(error) throw error
+document.getElementById('loading').innerHTML = 'جاري التحميل... 2 وصل للسطر 2'
+
+try {
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+  document.getElementById('loading').innerHTML = 'جاري التحميل... 3 اتصل بـ Supabase'
+  
+  supabase.from('works').select('*').order('created_at', { ascending: false }).then(({ data, error }) => {
+    document.getElementById('loading').innerHTML = 'جاري التحميل... 4 جات البيانات'
+    
+    if(error) {
+      document.getElementById('error').innerHTML = '❌ خطأ من Supabase: ' + error.message
+      return
+    }
     
     document.getElementById('loading').style.display = 'none'
     const grid = document.getElementById('works-grid')
@@ -41,14 +49,11 @@ async function loadWorks() {
         <p>${work.description}</p>
       </div>
     `).join('')
-    
-    console.log('✅ تم تحميل ' + data.length + ' عمل')
-  } catch(e) {
-    document.getElementById('loading').innerHTML = '❌ خطأ: ' + e.message
-  }
+  })
+  
+} catch(e) {
+  document.getElementById('error').innerHTML = '❌ خطأ في الكود: ' + e.message
 }
-
-loadWorks()
 </script>
 </body>
 </html>
