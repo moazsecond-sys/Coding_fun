@@ -2,88 +2,126 @@
 <html lang='ar' dir='rtl'>
 <head>
 <meta charset='UTF-8'>
-<title>معرض أعمالي الفخم</title>
-<link rel="stylesheet" href="style.css?v=4">
+<title>معرض أعمالي - GREEN APPLE</title>
+<link rel="stylesheet" href="style.css?v=6">
 <script type="importmap">{"imports":{"@supabase/supabase-js":"https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"}}</script>
 <style>
-  html { scroll-behavior: smooth; } /* سكرول ناعم */
+  html { scroll-behavior: smooth; }
+  nav { position:sticky; top:0; background:white; padding:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); z-index:100 }
+  nav a { margin:0 10px; cursor:pointer; color:#4CAF50; font-weight:bold }
+
  .upload-box { margin:40px auto; padding:25px; max-width:500px; border:2px dashed #4CAF50; border-radius:15px; text-align:center; background:#f9fff9 }
  .upload-box button { background:#4CAF50; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:16px }
- .upload-box button:hover { background:#45a049 }
-  #preview { width:100%; max-width:300px; margin-top:15px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.2) }
+ .upload-box button:hover { transform:scale(1.05) }
+  #preview { width:100%; max-width:300px; margin-top:15px; border-radius:12px; display:none }
 
-  /* سلايدر */
- .slider { max-width:600px; margin:40px auto; position:relative; overflow:hidden; border-radius:15px }
- .slider img { width:100%; display:none }
- .slider img.active { display:block }
- .slider-btn { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:white; border:none; padding:10px 15px; cursor:pointer; font-size:20px }
- .prev { left:10px }.next { right:10px }
+  #slider { max-width:700px; height:450px; margin:50px auto; position:relative; overflow:hidden; border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.2) }
+  #slider img { width:100%; height:100%; object-fit:cover; transition:opacity 0.8s }
+
+ .search-box { text-align:center; margin:20px }
+ .search-box input { padding:10px 15px; width:300px; border:2px solid #4CAF50; border-radius:8px; font-size:16px }
+
+ .filter-bar { text-align:center; margin:20px }
+ .filter-bar button { margin:5px; padding:8px 15px; border:2px solid #FF6F00; background:white; color:#FF6F00; border-radius:20px; cursor:pointer }
+ .filter-bar button.active { background:#FF6F00; color:white }
 </style>
 </head>
 <body>
-<nav><h1>معرض أعمالي ✨</h1></nav>
+<nav>
+  <h1>معرض أعمالي ✨</h1>
+  <a onclick="smoothScroll('#slider')">السلايدر</a>
+  <a onclick="smoothScroll('.upload-box')">ارفع صورة</a>
+</nav>
 
 <div class="container">
-  <div class="filter-bar" id="filter-bar"></div>
-  <div class='works-grid' id='works-grid'></div>
-
-  <!-- سلايدر الصور -->
-  <div class="slider" id="slider">
-    <img src="" class="active" id="slide-img">
-    <button class="slider-btn prev" onclick="غير_الصورة(-1)">❮</button>
-    <button class="slider-btn next" onclick="غير_الصورة(1)">❯</button>
+  <!-- بحث فوري -->
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="ابحث عن صورة...">
   </div>
 
-  <!-- صندوق الرفع الفخم -->
+  <!-- فلترة -->
+  <div class="filter-bar" id="filter-bar">
+    <button data-filter="all" class="active">الكل</button>
+    <button data-filter="طبيعة">طبيعة</button>
+    <button data-filter="تصميم">تصميم</button>
+  </div>
+
+  <!-- الكروت -->
+  <div class='works-grid' id='works-grid'></div>
+
+  <!-- سلايدر GREEN APPLE -->
+  <div id="slider"></div>
+
+  <!-- رفع الصور -->
   <div class="upload-box">
     <h3>📸 ارفع صورة جديدة للسحابة</h3>
     <input type="file" id="upload" accept="image/*">
     <button onclick="رفع_الصورة()">ارفع الآن</button>
-    <img id="preview" style="display:none">
+    <img id="preview">
   </div>
 </div>
 
-<footer>© 2026 second-sys | كل شي على Supabase ☁️</footer>
-<script type="module" src="script.js?v=4"></script>
+<footer>© 2026 second-sys | Powered by Supabase + GREEN APPLE ☁️</footer>
+
+<script type="module" src="script.js?v=6"></script>
+<script src="Coding_fun/Utils.js"></script> <!-- مكتبتك -->
 
 <script type="module">
-let صور_السلايدر = [];
-let رقم_الصورة = 0;
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = 'حط-رابط-مشروعك-هنا'
+const supabaseKey = 'حط-anon-key-هنا'
+const supabase = createClient(supabaseUrl, supabaseKey)
+window.supabase = supabase;
 
+// 1. جيب الصور من Supabase واملأ السلايدر + الكروت
+async function تحميل_الصور() {
+  const { data, error } = await supabase.storage.from('aamal-images').list('صور', { limit: 50 });
+  if (error) return console.error(error);
+
+  const slider = document.getElementById('slider');
+  const grid = document.getElementById('works-grid');
+
+  data.forEach(file => {
+    const url = supabase.storage.from('aamal-images').getPublicUrl('صور/' + file.name).data.publicUrl;
+
+    // للسلايدر
+    const img = document.createElement('img');
+    img.src = url;
+    slider.appendChild(img);
+
+    // للكروت عشان البحث والفلترة
+    const card = document.createElement('div');
+    card.className = 'work-card';
+    card.innerHTML = `
+      <img src="${url}" style="width:100%; border-radius:10px">
+      <span class="category" style="display:none">تصميم</span>
+      <p>${file.name}</p>
+    `;
+    grid.appendChild(card);
+  });
+
+  // شغل مكتبة GREEN APPLE
+  if (typeof initSlider === 'function') initSlider('slider', 4000);
+  if (typeof initSearch === 'function') initSearch('searchInput', '.work-card');
+  if (typeof initFilter === 'function') initFilter('.filter-bar button', '.work-card');
+}
+
+// 2. رفع صورة
 async function رفع_الصورة() {
   const file = document.getElementById('upload').files[0];
   const preview = document.getElementById('preview');
   if (!file) return alert('اختر صورة أول');
 
-  const { data, error } = await supabase.storage
-  .from('aamal-images')
-  .upload('صور/' + Date.now() + '_' + file.name, file);
-
+  const { data, error } = await supabase.storage.from('aamal-images').upload('صور/' + Date.now() + '_' + file.name, file);
   if (error) return alert('فشل: ' + error.message);
 
-  const { data: urlData } = supabase.storage.from('aamal-images').getPublicUrl(data.path);
-  preview.src = urlData.publicUrl;
+  const url = supabase.storage.from('aamal-images').getPublicUrl(data.path).data.publicUrl;
+  preview.src = url;
   preview.style.display = 'block';
-
-  // اضف الصورة للسلايدر
-  صور_السلايدر.push(urlData.publicUrl);
-  رقم_الصورة = صور_السلايدر.length - 1;
-  عرض_الصورة();
-  alert('تم الرفع + انضافت للسلايدر ✅');
+  alert('تم الرفع بنجاح! حدث الصفحة عشان تظهر بالسلايدر ✅');
 }
 
-function غير_الصورة(اتجاه) {
-  رقم_الصورة += اتجاه;
-  if (رقم_الصورة < 0) رقم_الصورة = صور_السلايدر.length - 1;
-  if (رقم_الصورة >= صور_السلايدر.length) رقم_الصورة = 0;
-  عرض_الصورة();
-}
-
-function عرض_الصورة() {
-  if (صور_السلايدر.length > 0) {
-    document.getElementById('slide-img').src = صور_السلايدر[رقم_الصورة];
-  }
-}
+تحميل_الصور();
 </script>
 </body>
 </html>
