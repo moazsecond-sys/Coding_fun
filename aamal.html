@@ -2,36 +2,66 @@
 <html lang='ar' dir='rtl'>
 <head>
 <meta charset='UTF-8'>
-<title>تشخيص</title>
-<script src='https://unpkg.com/@supabase/supabase-js@2'></script>
-<style>body{background:#000;color:#0f0;font-family:tahoma;padding:30px;text-align:center} #log{text-align:right;margin-top:30px;font-size:18px}</style>
+<title>معرض أعمالي</title>
+<script type="importmap">
+{
+  "imports": {
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+  }
+}
+</script>
+<style>
+body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:40px}
+h1{color:#00ff88;font-size:2.5rem}
+#log{color:#0f0;margin-top:30px;font-size:1.2rem;text-align:right;max-width:600px;margin:auto}
+.card{background:#1a1a1a;border-radius:20px;padding:25px;margin:20px auto;max-width:400px;border:2px solid #00ff88;text-align:right}
+.card h3{color:#00ff88}
+</style>
 </head>
 <body>
 <h1>معرض أعمالي</h1>
 <div id='log'>1. بدأ التحميل...</div>
+<div id='works'></div>
 
-<script>
+<script type="module">
 const log = document.getElementById('log')
 const add = (t)=> log.innerHTML += '<br>'+t
 
-add('2. Supabase محمل')
+add('2. تحميل المكتبة...')
 
-const supabase = window.supabase.createClient(
+import { createClient } from '@supabase/supabase-js'
+
+add('3. المكتبة اشتغلت ✓')
+
+const supabase = createClient(
   'https://mirrxytqttjglglxrarq.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 )
 
-add('3. الاتصال جاهز... بطلب البيانات')
+add('4. الاتصال جاهز... بجيب البيانات')
 
-supabase.from('works').select('*').limit(5).then(res=>{
-  add('4. وصل الرد من Supabase')
-  add('5. Error: '+JSON.stringify(res.error))
-  add('6. Data length: '+(res.data?res.data.length:'null'))
-  add('7. البيانات: '+JSON.stringify(res.data))
+supabase.from('works').select('*').then(({data, error})=>{
+  add('5. وصل الرد')
   
-  if(res.error) log.style.color='red'
-  else if(!res.data || res.data.length==0) add('8. الجدول فاضي!')
-  else add('8. نجح! فيه '+res.data.length+' أعمال')
+  if(error){
+    add('❌ خطأ: '+error.message)
+    log.style.color='red'
+    return
+  }
+  
+  if(!data || data.length==0){
+    add('📦 الجدول فاضي - ضيف سطر تجريبي')
+    return
+  }
+  
+  add('✓ نجح! عدد الأعمال: '+data.length)
+  document.getElementById('works').innerHTML = data.map(w=>`
+    <div class='card'>
+      <h3>${w.title}</h3>
+      <p>${w.description}</p>
+      <p><b>القسم:</b> ${w.category || 'عام'} | <b>السعر:</b> ${w.price || '---'} ريال</p>
+    </div>
+  `).join('')
 })
 </script>
 </body>
