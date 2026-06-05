@@ -1,56 +1,25 @@
 <!DOCTYPE html>
 <html lang='ar' dir='rtl'>
-<head>
-<meta charset='UTF-8'>
-<title>معرض أعمالي</title>
+<head><meta charset='UTF-8'><title>أعمالي</title>
 <script src='https://unpkg.com/@supabase/supabase-js@2'></script>
-<style>
-body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;padding:40px;text-align:center}
-h1{color:#00ff88;font-size:2.5rem;margin-bottom:30px}
-.works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:25px;max-width:1200px;margin:0 auto}
-.card{background:#1a1a1a;border-radius:20px;padding:20px;border:2px solid #333;transition:0.3s}
-.card:hover{border-color:#00ff88;transform:translateY(-5px)}
-.card h3{color:#00ff88;margin-bottom:10px;font-size:1.5rem}
-.card p{color:#aaa;line-height:1.6}
-#loading{color:#00ff88;font-size:1.3rem}
-#error{color:red;margin-top:20px}
-</style>
+<style>body{background:#111;color:#fff;text-align:center;padding:50px;font-family:Tajawal}
+.card{background:#222;margin:20px auto;padding:20px;border-radius:15px;max-width:400px;border:1px solid #0f0}</style>
 </head>
 <body>
 <h1>معرض أعمالي</h1>
-<div id='loading'>جاري التحميل...</div>
-<div id='error'></div>
-<div class='works-grid' id='works-grid'></div>
+<div id='status'>جاري التحميل...</div>
+<div id='out'></div>
 
 <script>
-const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+const supabase = window.supabase.createClient(
+  'https://mirrxytqttjglglxrarq.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+)
 
-supabase.from('works').select('*').order('created_at',{ascending:false}).then(({data, error})=>{
-  document.getElementById('loading').style.display='none'
-  
-  if(error){
-    document.getElementById('error').innerHTML = 'خطأ: '+error.message
-    return
-  }
-  
-  if(data.length===0){
-    document.getElementById('works-grid').innerHTML = '<p>لا توجد أعمال بعد</p>'
-    return
-  }
-  
-  // هنا السر: map + join('') عشان ما يطلع فواصل
-  const cards = data.map(work=>{
-    return `
-      <div class='card'>
-        <h3>${work.title}</h3>
-        <p>${work.description || 'لا يوجد وصف'}</p>
-      </div>
-    `
-  }).join('') // <-- هذي ضرورية عشان تشيل الفواصل بين الكروت
-  
-  document.getElementById('works-grid').innerHTML = cards
+supabase.from('works').select('*').then(r=>{
+  if(r.error){document.getElementById('status').innerHTML='خطأ: '+r.error.message; return}
+  document.getElementById('status').style.display='none'
+  document.getElementById('out').innerHTML = r.data.map(w=>`<div class='card'><h3>${w.title}</h3><p>${w.description}</p></div>`).join('')
 })
 </script>
 </body>
