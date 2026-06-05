@@ -101,7 +101,6 @@
       cursor: pointer;
       margin-top: 10px;
       font-weight: bold;
-      transition: background 0.3s;
     }
     .card button:hover {background: #1B5E20;}
     
@@ -124,11 +123,6 @@
       font-size: 16px;
       font-family: inherit;
     }
-    .contact-section input:focus, 
-    .contact-section textarea:focus {
-      border-color: #2E7D32;
-      outline: none;
-    }
     .contact-section button {
       width: 100%;
       background: #FF6F00;
@@ -140,12 +134,6 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 15px;
-      transition: background 0.3s;
-    }
-    .contact-section button:hover {background: #E65100;}
-    .contact-section button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
     }
     
     .loading {text-align: center; padding: 50px; color: #666; font-size: 18px;}
@@ -196,29 +184,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ===== بيانات Supabase =====
-const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+document.addEventListener('DOMContentLoaded', function() {
 
-console.log('1. بدء تحميل الصفحة');
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-console.log('2. اتصال Supabase تم');
+  const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 
-async function loadWorks() {
-  console.log('3. جاري سحب الأعمال...');
-  
-  try {
-    const { data, error, status } = await supabaseClient
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  async function loadWorks() {
+    const { data, error } = await supabaseClient
       .from('works')
       .select('*')
       .order('created_at', {ascending: false});
     
-    console.log('4. Status:', status);
-    console.log('5. البيانات:', data);
-    console.log('6. الخطأ:', error);
+    console.log('البيانات:', data);
     
     const grid = document.getElementById('worksGrid');
-    console.log('7. عنصر grid:', grid);
     
     if(error) {
       grid.innerHTML = `<p style="text-align:center;color:red;padding:30px">خطأ: ${error.message}</p>`;
@@ -230,13 +211,14 @@ async function loadWorks() {
       return;
     }
     
-    // الصور: لو img_url فاضي يحط صورة افتراضية
+    // السر هنا: لو ما في img_url نحط صورة افتراضية حلوة من الإنترنت
     grid.innerHTML = data.map(item => `
       <div class="card">
-        <img src="${item.img_url || 'https://via.placeholder.com/400x300/2E7D32/ffffff?text=No+Image'}" 
+        <img src="${item.img_url && item.img_url.trim() !== '' 
+          ? item.img_url 
+          : 'https://via.placeholder.com/400x300/2E7D32/ffffff?text=' + encodeURIComponent(item.title)}" 
              alt="${item.title}" 
-             loading="lazy"
-             onerror="this.src='https://via.placeholder.com/400x300/cccccc/666?text=خطأ+في+الصورة'">
+             onerror="this.src='https://via.placeholder.com/400x300/cccccc/666?text=No+Image'">
         <div class="card-content">
           <span class="category">${item.category || 'عام'}</span>
           <h3>${item.title}</h3>
@@ -247,49 +229,43 @@ async function loadWorks() {
       </div>
     `).join('');
     
-    console.log('8. تم عرض الأعمال بنجاح ✅');
+    console.log('تم عرض الأعمال ✅');
+  }
+
+  window.orderNow = function(title) {
+    document.getElementById('service').value = title;
+    document.getElementById('contactForm').scrollIntoView({behavior: 'smooth'});
+  }
+
+  document.getElementById('messageForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('button');
+    btn.textContent = 'جاري الإرسال...';
+    btn.disabled = true;
     
-  } catch(err) {
-    console.error('خطأ عام:', err);
-    document.getElementById('worksGrid').innerHTML = '<p style="text-align:center;color:red;padding:30px">خطأ في الاتصال</p>';
-  }
-}
+    const { error } = await supabaseClient.from('messages').insert([{
+      name: form.name.value,
+      email: form.email.value,
+      service: form.service.value,
+      message: form.message.value
+    }]);
+    
+    if(error) alert('خطأ: ' + error.message);
+    else {
+      alert('تم الإرسال بنجاح!');
+      form.reset();
+      document.getElementById('service').value = '';
+    }
+    
+    btn.textContent = 'إرسال الطلب';
+    btn.disabled = false;
+  });
 
-function orderNow(title) {
-  console.log('العميل طلب:', title);
-  document.getElementById('service').value = title;
-  document.getElementById('contactForm').scrollIntoView({behavior: 'smooth'});
-}
-
-document.getElementById('messageForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const btn = form.querySelector('button');
-  btn.textContent = 'جاري الإرسال...';
-  btn.disabled = true;
-  
-  const { error } = await supabaseClient.from('messages').insert([{
-    name: form.name.value,
-    email: form.email.value,
-    service: form.service.value,
-    message: form.message.value
-  }]);
-  
-  if(error) {
-    alert('حدث خطأ: ' + error.message);
-  } else {
-    alert('تم إرسال طلبك بنجاح! بنتواصل معك قريباً');
-    form.reset();
-    document.getElementById('service').value = '';
-  }
-  
-  btn.textContent = 'إرسال الطلب';
-  btn.disabled = false;
+  loadWorks();
 });
-
-loadWorks();
 </script>
 
-<script src="console.js?v=1"></script>
+<script src="console.js"></script>
 </body>
 </html>
