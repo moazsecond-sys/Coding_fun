@@ -2,59 +2,56 @@
 <html lang='ar' dir='rtl'>
 <head>
 <meta charset='UTF-8'>
-<title>تشريح المشكلة</title>
+<title>معرض أعمالي</title>
 <script src='https://unpkg.com/@supabase/supabase-js@2'></script>
 <style>
-body{background:#000;color:#0f0;font-family:monospace;padding:20px;font-size:16px}
-div{border:1px solid #0f0;margin:5px;padding:10px;border-radius:5px}
-.red{color:red;border-color:red}
-.green{color:#0f0}
+body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:40px}
+h1{color:#00ff88;font-size:2.5rem;margin-bottom:30px}
+.works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px;max-width:1200px;margin:30px auto}
+.card{background:#1a1a1a;border-radius:20px;padding:25px;border:2px solid #333;text-align:right;transition:0.3s}
+.card:hover{border-color:#00ff88;transform:translateY(-5px)}
+.card h3{color:#00ff88;font-size:1.6rem;margin-bottom:10px}
+.card .desc{color:#aaa;line-height:1.7;margin:15px 0}
+.card .meta{display:flex;justify-content:space-between;margin-top:15px;font-size:0.95rem}
+.card .category{background:#00ff88;color:#000;padding:5px 12px;border-radius:20px;font-weight:bold}
+.card .price{color:#00ff88;font-size:1.3rem;font-weight:bold}
+.empty{color:#888;font-size:1.3rem;margin-top:50px}
 </style>
 </head>
 <body>
-<h2>🔬 تشريح كود أعمالي</h2>
-<div id='s1'>1. بدأ...</div>
-<div id='s2'></div>
-<div id='s3'></div>
-<div id='s4'></div>
-<div id='s5'></div>
-<div id='out'></div>
+<h1>معرض أعمالي</h1>
+<div id='works-grid'></div>
 
 <script>
-function write(id,msg){document.getElementById(id).innerHTML=msg}
+const supabase = window.supabase.createClient(
+  'https://mirrxytqttjglglxrarq.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+)
 
-write('s2','2. سكربت Supabase محمل: '+typeof window.supabase)
-
-try{
-  const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-  write('s3','3. المفتاح والرابط جاهزين')
+supabase.from('works').select('*').order('created_at',{ascending:false}).then(({data, error})=>{
+  const grid = document.getElementById('works-grid')
   
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-  write('s4','4. تم انشاء client')
+  if(error){
+    grid.innerHTML = '<p style="color:red">خطأ: '+error.message+'</p>'
+    return
+  }
   
-  write('s5','5. برسل طلب لـ works...')
+  if(!data || data.length === 0){
+    grid.innerHTML = '<p class="empty">📦 الجدول فاضي حالياً</p>'
+    return
+  }
   
-  supabase.from('works').select('*').then(res=>{
-    if(res.error){
-      write('out','<div class=red>خطأ Supabase: '+res.error.message+'</div>')
-      return
-    }
-    write('out','<div class=green>6. جات البيانات عدد='+res.data.length+'</div>')
-    write('out','<div class=green>7. برسم الكروت...</div>')
-    
-    try{
-      const html = res.data.map(w=>`<div style="border:1px solid #0f0;margin:10px;padding:10px">${w.title}</div>`).join('')
-      document.getElementById('out').innerHTML += html
-      write('out','<div class=green>8. تم الرسم بنجاح!</div>')
-    }catch(e){
-      write('out','<div class=red>خطأ في الرسم: '+e.message+'</div>')
-    }
-  })
-  
-}catch(e){
-  write('s5','<div class=red>خطأ فادح: '+e.message+'</div>')
-}
+  grid.innerHTML = data.map(w=>`
+    <div class='card'>
+      <h3>${w.title}</h3>
+      <p class='desc'>${w.description || 'لا يوجد وصف'}</p>
+      <div class='meta'>
+        <span class='category'>${w.category || 'عام'}</span>
+        <span class='price'>${w.price ? w.price + ' ريال' : 'السعر عند التواصل'}</span>
+      </div>
+    </div>
+  `).join('')
+})
 </script>
 </body>
 </html>
