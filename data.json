@@ -1,8 +1,0 @@
-{
-  "products": [
-    {"id": 1, "name": "تصميم لوجو", "price": "200$", "img": "images/work1.jpg"},
-    {"id": 2, "name": "بنر إعلان", "price": "150$", "img": "images/work2.jpg"},
-    {"id": 3, "name": "هوية كاملة", "price": "500$", "img": "images/work3.jpg"}
-  ],
-  "about": "احنا GREEN APPLE DESIGN..."
-}
