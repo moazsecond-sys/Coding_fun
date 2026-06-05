@@ -61,5 +61,24 @@
   <script src="data.js"></script>
   <script src="error.js"></script>
   <script src="console.js"></script>
+  <script>
+fetch('data.json')
+  .then(res => res.json())
+  .then(data => {
+    const grid = document.querySelector('.grid');
+    grid.innerHTML = ''; // امسح الصور الثابتة
+    
+    data.products.forEach(item => {
+      grid.innerHTML += `
+        <div class="card">
+          <img src="${item.img}" alt="${item.name}">
+          <h3>${item.name}</h3>
+          <p>${item.price}</p>
+        </div>
+      `;
+    });
+  })
+  .catch(err => console.log('خطأ:', err));
+</script>
 </body>
 </html>
