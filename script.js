@@ -29,3 +29,5 @@ supabase.from('works').select('*').order('created_at',{ascending:false}).then(({
     </div>
   `).join('')
 })
+window.supabase = supabase;
+console.log('Supabase متصل ✅');
