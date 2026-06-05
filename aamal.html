@@ -68,12 +68,13 @@
       height: 220px;
       object-fit: cover;
       background: #e0e0e0;
+      display: block;
     }
     .card-content {
       padding: 20px;
     }
     .card h3 {color: #2E7D32; margin-bottom: 8px; font-size: 20px;}
-    .card p {color: #666; margin-bottom: 5px; font-size: 14px;}
+    .card p {color: #666; margin-bottom: 5px; font-size: 14px; line-height: 1.6;}
     .price {
       color: #FF6F00;
       font-size: 22px;
@@ -100,6 +101,7 @@
       cursor: pointer;
       margin-top: 10px;
       font-weight: bold;
+      transition: background 0.3s;
     }
     .card button:hover {background: #1B5E20;}
     
@@ -138,6 +140,7 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 15px;
+      transition: background 0.3s;
     }
     .contact-section button:hover {background: #E65100;}
     .contact-section button:disabled {
@@ -193,57 +196,47 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ===== 1. حط بيانات مشروعك هنا =====
+// ===== بيانات Supabase =====
 const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-// ====================================
 
 console.log('1. بدء تحميل الصفحة');
-console.log('2. الرابط:', supabaseUrl);
-console.log('3. المفتاح أول 30 حرف:', supabaseKey.substring(0,30) + '...');
-
-// تم التعديل: غيرنا الاسم من supabase إلى supabaseClient عشان ما يصير تضارب
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-console.log('4. تم إنشاء اتصال Supabase');
+console.log('2. اتصال Supabase تم');
 
 async function loadWorks() {
-  console.log('5. جاري سحب الأعمال من جدول works...');
+  console.log('3. جاري سحب الأعمال...');
   
   try {
-    const { data, error, status, statusText } = await supabaseClient
+    const { data, error, status } = await supabaseClient
       .from('works')
       .select('*')
       .order('created_at', {ascending: false});
     
-    console.log('6. Status:', status, statusText);
-    console.log('7. البيانات الراجعة:', data);
-    console.log('8. الخطأ:', error);
+    console.log('4. Status:', status);
+    console.log('5. البيانات:', data);
+    console.log('6. الخطأ:', error);
     
     const grid = document.getElementById('worksGrid');
+    console.log('7. عنصر grid:', grid);
     
     if(error) {
-      console.error('9. خطأ من Supabase:', error.message, 'الكود:', error.code);
-      grid.innerHTML = `<p style="text-align:center;color:red;padding:30px">
-        خطأ: ${error.message}<br>
-        الكود: ${error.code}<br>
-        شوف اللوحة تحت للتفاصيل
-      </p>`;
+      grid.innerHTML = `<p style="text-align:center;color:red;padding:30px">خطأ: ${error.message}</p>`;
       return;
     }
     
     if(!data || data.length === 0) {
-      console.warn('9. الجدول فاضي، لا توجد أعمال');
-      grid.innerHTML = `<p style="text-align:center;color:orange;padding:30px">
-        الجدول فاضي! روح Supabase → Table Editor → works → Insert row وأضف أعمال
-      </p>`;
+      grid.innerHTML = `<p style="text-align:center;color:orange;padding:30px">لا توجد أعمال حالياً</p>`;
       return;
     }
     
-    console.log('9. تم جلب', data.length, 'عمل بنجاح ✅');
-    
+    // الصور: لو img_url فاضي يحط صورة افتراضية
     grid.innerHTML = data.map(item => `
       <div class="card">
-        <img src="${item.img_url}" alt="${item.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300/cccccc/666?text=No+Image'">
+        <img src="${item.img_url || 'https://via.placeholder.com/400x300/2E7D32/ffffff?text=No+Image'}" 
+             alt="${item.title}" 
+             loading="lazy"
+             onerror="this.src='https://via.placeholder.com/400x300/cccccc/666?text=خطأ+في+الصورة'">
         <div class="card-content">
           <span class="category">${item.category || 'عام'}</span>
           <h3>${item.title}</h3>
@@ -253,43 +246,37 @@ async function loadWorks() {
         </div>
       </div>
     `).join('');
-    console.log('10. تم عرض الأعمال في الصفحة ✅');
+    
+    console.log('8. تم عرض الأعمال بنجاح ✅');
     
   } catch(err) {
-    console.error('خطأ عام في loadWorks:', err);
-    document.getElementById('worksGrid').innerHTML = '<p style="text-align:center;color:red;padding:30px">خطأ في الاتصال بالسيرفر</p>';
+    console.error('خطأ عام:', err);
+    document.getElementById('worksGrid').innerHTML = '<p style="text-align:center;color:red;padding:30px">خطأ في الاتصال</p>';
   }
 }
 
 function orderNow(title) {
-  console.log('11. العميل طلب:', title);
+  console.log('العميل طلب:', title);
   document.getElementById('service').value = title;
   document.getElementById('contactForm').scrollIntoView({behavior: 'smooth'});
 }
 
 document.getElementById('messageForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  console.log('12. بدأ إرسال الرسالة...');
-  
   const form = e.target;
   const btn = form.querySelector('button');
   btn.textContent = 'جاري الإرسال...';
   btn.disabled = true;
   
-  // تم التعديل: supabase → supabaseClient
-  const { data, error } = await supabaseClient.from('messages').insert([{
+  const { error } = await supabaseClient.from('messages').insert([{
     name: form.name.value,
     email: form.email.value,
     service: form.service.value,
     message: form.message.value
   }]);
   
-  console.log('13. نتيجة الإرسال - Data:', data);
-  console.log('14. نتيجة الإرسال - Error:', error);
-  
   if(error) {
     alert('حدث خطأ: ' + error.message);
-    console.error('خطأ الإرسال:', error);
   } else {
     alert('تم إرسال طلبك بنجاح! بنتواصل معك قريباً');
     form.reset();
@@ -300,10 +287,9 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
   btn.disabled = false;
 });
 
-// شغل التحميل أول ما تفتح الصفحة
 loadWorks();
 </script>
 
-<script src="console.js"></script>
+<script src="console.js?v=1"></script>
 </body>
 </html>
