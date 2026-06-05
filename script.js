@@ -1,8 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabase = createClient(
-  'https://mirrxytqtjglxrarq.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdGpnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNjY5NjMsImV4cCI6MjA3Mjc0Mjk2M30.PTvNgqjPIPZJ9b5f_1FuNzkyPec6afcgMynSQ7CFeyI'
+  'https://mirrxytqttjglglxrarq.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 )
 
 supabase.from('works').select('*').order('created_at',{ascending:false}).then(({data, error})=>{
