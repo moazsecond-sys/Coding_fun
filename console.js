@@ -1,54 +1,132 @@
-// console.js - نسخة مبسطة بدون أخطاء
+// ========================================
+// ملف فحص أخطاء Supabase - نسخة قوية
+// ========================================
 (function() {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initConsole);
-  } else {
-    initConsole();
+  console.log('=== 🔍 فحص Supabase بدأ ===')
+
+  const loadingEl = document.getElementById('loading-text')
+  const gridEl = document.getElementById('works-grid')
+
+  // دالة طباعة الخطأ في الصفحة + Console
+  function showError(msg, detail = '') {
+    console.error('❌', msg, detail)
+    if (loadingEl) {
+      loadingEl.innerHTML = `❌ <b>خطأ:</b> ${msg}<br><small>${detail}</small>`
+      loadingEl.style.color = 'red'
+      loadingEl.style.background = '#ffe0e0'
+      loadingEl.style.padding = '15px'
+      loadingEl.style.borderRadius = '8px'
+      loadingEl.style.margin = '20px'
+    }
   }
 
-  function initConsole() {
-    // إنشاء اللوحة
-    const div = document.createElement('div');
-    div.id = 'console-log';
-    div.style.cssText = `
-      position: fixed; bottom: 0; left: 0; right: 0; max-height: 40vh;
-      background: #000; color: #00ff00; font-family: monospace;
-      font-size: 12px; padding: 10px; overflow-y: auto; z-index: 9999;
-      border-top: 3px solid #2E7D32; direction: ltr; text-align: left;
-    `;
+  // دالة طباعة النجاح
+  function showSuccess(msg) {
+    console.log('✅', msg)
+    if (loadingEl) {
+      loadingEl.innerText = '✅ ' + msg
+      loadingEl.style.color = 'green'
+    }
+  }
 
-    div.innerHTML = `
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-        <b style="color:#4CAF50">DEBUG CONSOLE</b>
-        <button onclick="document.getElementById('console-log').remove()"
-          style="background:red;color:white;border:none;padding:4px 10px;border-radius:5px">X</button>
-      </div>
-      <div id="console-content"></div>
-    `;
+  // انتظر 2 ثانية عشان aamal.html يعرف المتغيرات
+  setTimeout(async () => {
 
-    document.body.appendChild(div);
-    const consoleContent = document.getElementById('console-content');
+    // === فحص 1: مكتبة Supabase ===
+    console.log('فحص 1: هل مكتبة Supabase محملة؟')
+    if (typeof window.supabase === 'undefined') {
+      showError('مكتبة Supabase ما انحملت', 'تأكد من سطر: script src=https://unpkg.com/@supabase/supabase-js@2')
+      return
+    }
+    console.log('✅ مكتبة Supabase موجودة')
 
-    // نعيد تعريف console
-    const oldLog = console.log;
-    const oldError = console.error;
-    const oldWarn = console.warn;
+    // === فحص 2: المتغيرات ===
+    console.log('فحص 2: هل supabaseUrl و supabaseKey معرفين؟')
 
-    function print(type, args) {
-      const msg = Array.from(args).map(a => {
-        try { return typeof a === 'object'? JSON.stringify(a) : String(a); }
-        catch(e) { return String(a); }
-      }).join(' ');
+    if (typeof supabaseUrl === 'undefined' ||!supabaseUrl || supabaseUrl.trim() === '') {
+      showError('supabaseUrl فاضي', 'روح aamal.html سطر 35 وحط رابط المشروع كامل')
+      return
+    }
+    if (!supabaseUrl.startsWith('https://') ||!supabaseUrl.includes('.supabase.co')) {
+      showError('supabaseUrl غلط', 'لازم يبدأ بـ https:// وينتهي بـ.supabase.co')
+      return
+    }
+    console.log('✅ URL:', supabaseUrl)
 
-      const color = type === 'error'? '#ff5555' : type === 'warn'? '#ffaa00' : '#00ff00';
-      consoleContent.innerHTML += `<div style="color:${color};margin:3px 0">[${type}] ${msg}</div>`;
-      consoleContent.scrollTop = consoleContent.scrollHeight;
+    if (typeof supabaseKey === 'undefined' ||!supabaseKey || supabaseKey.trim() === '') {
+      showError('supabaseKey فاضي', 'روح aamal.html سطر 36 وحط anon public key')
+      return
+    }
+    if (supabaseKey.length < 100) {
+      showError('supabaseKey قصير جداً', 'انسخ المفتاح كامل من Supabase > Project Settings > API')
+      return
+    }
+    if (supabaseKey.includes('service_role')) {
+      showError('تحذير: انت حاط service_role', 'لازم تستخدم anon public key مو service_role')
+    }
+    console.log('✅ Key: ' + supabaseKey.substring(0,30) + '...')
+
+    // === فحص 3: إنشاء العميل ===
+    console.log('فحص 3: إنشاء عميل Supabase...')
+    let client
+    try {
+      client = window.supabase.createClient(supabaseUrl, supabaseKey)
+      console.log('✅ العميل انشئ بنجاح')
+    } catch (e) {
+      showError('فشل إنشاء العميل', e.message)
+      return
     }
 
-    console.log = function(...args) { oldLog(...args); print('log', args); }
-    console.error = function(...args) { oldError(...args); print('error', args); }
-    console.warn = function(...args) { oldWarn(...args); print('warn', args); }
+    // === فحص 4: الاتصال + جلب البيانات ===
+    console.log('فحص 4: جاري الاتصال بجدول works...')
+    showSuccess('جاري الاتصال بـ Supabase...')
 
-    console.log('Console جاهز...');
-  }
-})();
+    try {
+      const { data, error, status, statusText } = await client
+       .from('works')
+       .select('*')
+       .order('created_at', { ascending: false })
+       .limit(10)
+
+      console.log('Status:', status, statusText)
+
+      if (error) {
+        console.error('تفاصيل الخطأ الكاملة:', error)
+
+        // ترجمة الأخطاء الشائعة
+        if (error.code === 'PGRST116') {
+          showError('الجدول works غير موجود', 'روح Supabase > Table Editor وتأكد اسم الجدول works حروف صغيرة')
+        } else if (error.code === '42501' || error.message.includes('permission')) {
+          showError('ممنوع الوصول RLS', 'سياسة RLS غلط. شغل الكود SQL اللي أرسلته لك كامل')
+        } else if (error.code === '22P02') {
+          showError('نوع البيانات غلط', 'عمود price لازم يكون numeric مو text')
+        } else if (error.message.includes('Invalid API key')) {
+          showError('المفتاح غلط', 'انسخ anon public key من جديد')
+        } else {
+          showError('خطأ Supabase: ' + error.message, 'Code: ' + error.code)
+        }
+        return
+      }
+
+      // === فحص 5: البيانات ===
+      console.log('فحص 5: البيانات اللي رجعت:', data)
+
+      if (!data || data.length === 0) {
+        showError('الجدول فاضي', 'ما فيه أي أعمال. ضيف داتا تجريبية من SQL')
+        return
+      }
+
+      showSuccess('تم تحميل ' + data.length + ' عمل بنجاح!')
+      console.log('✅ كل الفحوصات نجحت! المشكلة الحين في عرض الكروت فقط')
+
+      // اطبع أول صف عشان نشوف الأعمدة
+      console.log('أعمدة أول صف:', Object.keys(data[0]))
+
+    } catch (e) {
+      showError('خطأ فادح في الاتصال', e.message)
+      console.error('Stack:', e.stack)
+    }
+
+  }, 2000)
+
+})()
