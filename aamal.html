@@ -15,12 +15,31 @@
 
 <nav>
   <a href="index.html">الرئيسية</a>
-  <a href="aamal.html">أعمالنا</a>
-  <a href="#contactForm">اطلب الآن</a>
+  <a href="aamal.html" class="active">أعمالنا</a>
+  <a href="#contactForm" onclick="smoothScroll('#contactForm')">اطلب الآن</a>
 </nav>
+
+<!-- سلايدر الأعمال المميزة -->
+<div class="slider-container" id="heroSlider">
+  <img src="https://via.placeholder.com/1200x400/2E7D32/FFFFFF?text=تصميم+لوجوهات+احترافية" alt="slide1">
+  <img src="https://via.placeholder.com/1200x400/1B5E20/FFFFFF?text=هويات+بصرية+كاملة" alt="slide2">
+  <img src="https://via.placeholder.com/1200x400/FF6F00/FFFFFF?text=بنرات+سوشيال+ميديا" alt="slide3">
+</div>
 
 <div class="container">
   <h2>أعمالنا الأخيرة</h2>
+
+  <!-- شريط البحث + الفلترة -->
+  <div class="tools-bar">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث عن عمل...">
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">الكل</button>
+      <button class="filter-btn" data-filter="لوجوهات">لوجوهات</button>
+      <button class="filter-btn" data-filter="بنرات">بنرات</button>
+      <button class="filter-btn" data-filter="هوية">هوية</button>
+    </div>
+  </div>
+
   <div class="grid" id="worksGrid">
     <div class="loading">جاري تحميل الأعمال...</div>
   </div>
@@ -42,38 +61,34 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="utils.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // شغل السلايدر
+  initSlider('heroSlider', 3500);
+
   const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
   async function loadWorks() {
-    const { data, error } = await supabaseClient
-      .from('works')
-      .select('*')
-      .order('created_at', {ascending: false});
-    
+    const { data, error } = await supabaseClient.from('works').select('*').order('created_at', {ascending: false});
     const grid = document.getElementById('worksGrid');
-    
+
     if(error) {
       grid.innerHTML = `<p class="error">خطأ: ${error.message}</p>`;
       return;
     }
-    
     if(!data || data.length === 0) {
       grid.innerHTML = `<p class="warning">لا توجد أعمال حالياً</p>`;
       return;
     }
-    
+
     grid.innerHTML = data.map(item => `
       <div class="card">
-        <img src="${item.img_url && item.img_url.trim() !== '' 
-          ? item.img_url 
-          : 'https://via.placeholder.com/400x300/2E7D32/ffffff?text=' + encodeURIComponent(item.title)}" 
-             alt="${item.title}" 
-             onerror="this.src='https://via.placeholder.com/400x300/cccccc/666?text=No+Image'">
+        <div class="card-img" style="background:${item.img_url? 'url('+item.img_url+') center/cover' : 'linear-gradient(135deg,#2E7D32,#1B5E20)'}">
+          ${!item.img_url? `<span style="color:white;font-size:24px;font-weight:bold">${item.title}</span>` : ''}
+        </div>
         <div class="card-content">
           <span class="category">${item.category || 'عام'}</span>
           <h3>${item.title}</h3>
@@ -83,11 +98,15 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
     `).join('');
+
+    // شغل البحث والفلترة بعد ما تتحمل الكروت
+    initSearch('searchInput', '.card');
+    initFilter('.filter-btn', '.card');
   }
 
   window.orderNow = function(title) {
     document.getElementById('service').value = title;
-    document.getElementById('contactForm').scrollIntoView({behavior: 'smooth'});
+    smoothScroll('#contactForm');
   }
 
   document.getElementById('messageForm').addEventListener('submit', async (e) => {
@@ -96,21 +115,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const btn = form.querySelector('button');
     btn.textContent = 'جاري الإرسال...';
     btn.disabled = true;
-    
+
     const { error } = await supabaseClient.from('messages').insert([{
       name: form.name.value,
       email: form.email.value,
       service: form.service.value,
       message: form.message.value
     }]);
-    
+
     if(error) alert('خطأ: ' + error.message);
     else {
       alert('تم الإرسال بنجاح! بنتواصل معك قريباً');
       form.reset();
       document.getElementById('service').value = '';
     }
-    
+
     btn.textContent = 'إرسال الطلب';
     btn.disabled = false;
   });
