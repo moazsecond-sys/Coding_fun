@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة الرسائل</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:'Cairo';padding:20px;background:#f8f8f8}
+.card{background:white;padding:15px;margin:10px 0;border-radius:8px;border-left:4px solid #2E7D32}
+.reply{margin-top:10px}
+textarea{width:100%;padding:8px}
+button{background:#25D366;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer}
+</style>
+</head>
+<body>
+<h2>الرسائل الواردة</h2>
+<div id="messages">جاري التحميل...</div>
+
+<script>
+const supabaseUrl = 'YOUR_URL'
+const supabaseKey = 'YOUR_ANON_KEY'
+const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+
+async function loadMessages(){
+  const {data} = await supabase.from('messages').select('*').order('created_at',{ascending:false})
+  let html = ''
+  data.forEach(m=>{
+    html += `<div class="card">
+      <b>${m.name}</b> - ${m.whatsapp}<br>
+      <p>${m.message}</p>
+      ${m.reply?'<p style="color:green">ردك: '+m.reply+'</p>':''}
+      <div class="reply">
+        <textarea id="r${m.id}" placeholder="اكتب ردك هنا..."></textarea>
+        <button onclick="reply('${m.id}')">إرسال الرد</button>
+      </div>
+    </div>`
+  })
+  document.getElementById('messages').innerHTML = html
+}
+
+async function reply(id){
+  const reply = document.getElementById('r'+id).value
+  await supabase.from('messages').update({reply}).eq('id',id)
+  loadMessages()
+}
+
+// تحديث لحظي
+supabase.channel('room1').on('postgres_changes',{event:'*',schema:'public',table:'messages'},loadMessages).subscribe()
+loadMessages()
+</script>
+</body>
+</html>
