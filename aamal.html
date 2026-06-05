@@ -2,58 +2,36 @@
 <html lang='ar' dir='rtl'>
 <head>
 <meta charset='UTF-8'>
-<title>معرض أعمالي</title>
+<title>تشخيص</title>
 <script src='https://unpkg.com/@supabase/supabase-js@2'></script>
-<style>
-body{font-family:Tajawal,sans-serif;background:#0a0a0a;color:#fff;text-align:center;padding:40px}
-h1{color:#00ff88;font-size:2.5rem;margin-bottom:30px}
-#loading{color:#00ff88;font-size:1.4rem;margin:50px}
-#error{color:red;font-size:1.2rem;margin:30px}
-.works-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px;max-width:1200px;margin:30px auto}
-.card{background:#1a1a1a;border-radius:20px;padding:25px;border:2px solid #333;text-align:right}
-.card h3{color:#00ff88;font-size:1.6rem;margin-bottom:10px}
-.card .desc{color:#aaa;line-height:1.7;margin:15px 0}
-.card .meta{display:flex;justify-content:space-between;margin-top:15px}
-.card .category{background:#00ff88;color:#000;padding:5px 12px;border-radius:20px;font-weight:bold}
-.card .price{color:#00ff88;font-size:1.3rem;font-weight:bold}
-.empty{color:#888;font-size:1.3rem;margin-top:50px}
-</style>
+<style>body{background:#000;color:#0f0;font-family:tahoma;padding:30px;text-align:center} #log{text-align:right;margin-top:30px;font-size:18px}</style>
 </head>
 <body>
 <h1>معرض أعمالي</h1>
-<div id='loading'>⏳ جاري التحميل من قاعدة البيانات...</div>
-<div id='error'></div>
-<div class='works-grid' id='works-grid'></div>
+<div id='log'>1. بدأ التحميل...</div>
 
 <script>
+const log = document.getElementById('log')
+const add = (t)=> log.innerHTML += '<br>'+t
+
+add('2. Supabase محمل')
+
 const supabase = window.supabase.createClient(
   'https://mirrxytqttjglglxrarq.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 )
 
-supabase.from('works').select('*').order('created_at',{ascending:false}).then(({data, error})=>{
-  document.getElementById('loading').style.display='none' // اخفي التحميل
+add('3. الاتصال جاهز... بطلب البيانات')
+
+supabase.from('works').select('*').limit(5).then(res=>{
+  add('4. وصل الرد من Supabase')
+  add('5. Error: '+JSON.stringify(res.error))
+  add('6. Data length: '+(res.data?res.data.length:'null'))
+  add('7. البيانات: '+JSON.stringify(res.data))
   
-  if(error){
-    document.getElementById('error').innerHTML = '❌ خطأ Supabase: '+error.message
-    return
-  }
-  
-  if(!data || data.length === 0){
-    document.getElementById('works-grid').innerHTML = '<p class="empty">📦 الجدول works فاضي<br>ضيف عمل تجريبي من Supabase</p>'
-    return
-  }
-  
-  document.getElementById('works-grid').innerHTML = data.map(w=>`
-    <div class='card'>
-      <h3>${w.title}</h3>
-      <p class='desc'>${w.description || 'لا يوجد وصف'}</p>
-      <div class='meta'>
-        <span class='category'>${w.category || 'عام'}</span>
-        <span class='price'>${w.price ? w.price + ' ريال' : 'السعر عند التواصل'}</span>
-      </div>
-    </div>
-  `).join('')
+  if(res.error) log.style.color='red'
+  else if(!res.data || res.data.length==0) add('8. الجدول فاضي!')
+  else add('8. نجح! فيه '+res.data.length+' أعمال')
 })
 </script>
 </body>
