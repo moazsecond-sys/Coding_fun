@@ -2,60 +2,70 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>اختبار Supabase</title>
+<title>اختبار Supabase كامل</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { font-family: 'Tajawal', sans-serif; text-align:center; padding:50px }
-#works-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; margin-top:30px }
-.work-card img { width:100%; border-radius:10px }
+body { font-family: 'Tajawal', sans-serif; background:#0b1020; color:#fff; text-align:center; padding:20px }
+h1 { color:#2dd4bf }
+#works-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin-top:30px }
+.work-card { background:#1a2238; padding:10px; border-radius:12px }
+.work-card img { width:100%; border-radius:8px }
+.error-box { background:#3b0a0a; color:#ff9b9b; padding:15px; border-radius:10px; text-align:right; white-space:pre-wrap; font-size:12px }
 </style>
 </head>
 <body>
 
-<h1>معرض الاختبار ✨</h1>
-<div id="works-grid">جاري التحميل...</div>
+<h1>اختبار جلب الصور ✨</h1>
+<div id="works-grid">جاري التحميل... انتظر التنبيهات</div>
 
-<!-- 1. مكتبة Supabase أول شي -->
+<!-- مكتبة Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-alert("1. الجافاسكربت بدأ")
+alert("1. الجافاسكربت بدأ ✅")
 
-const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
-const SUPABASE_ANON_KEY = "sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu"
+// حط مفاتيحك هنا
+const SUPABASE_URL = 'https://zxvradngllvfxxmhikba.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp4dnJhZG5nbGx2Znh4bWhpa2JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MDM5MzgsImV4cCI6MjA3MzQ3OTkzOH0.0TLIPksFq4EzyPX1eFI_qyN60aZpYw1_C9ad15UmfwY'
 
-alert("2. المفاتيح جاهزة")
+alert("2. المفاتيح جاهزة ✅")
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-alert("3. Supabase اتصل!")
+alert("3. اتصل بـ Supabase ✅")
 
 async function تحميل_الصور() {
-  alert("4. بدأ جلب الصور من Storage")
-  
-  const { data, error } = await supabase.storage.from('aamal-images').list('صور', { limit: 10 })
+  alert("4. بحاول أجيب الصور من مجلد 'صور'...")
   
   const grid = document.getElementById('works-grid')
   
+  // هذي أهم خطوة - بنجيب كل التفاصيل
+  const { data, error } = await supabase.storage.from('aamal-images').list('صور', { limit: 20 })
+  
   if (error) {
-    alert("خطأ Supabase: " + error.message)
-    grid.innerHTML = "خطأ: " + error.message
+    alert("5. طلع خطأ ❌: " + error.message)
+    grid.innerHTML = `<div class="error-box">تفاصيل الخطأ الكاملة:\n${JSON.stringify(error, null, 2)}\n\nتأكد من:\n1. اسم البكت: aamal-images\n2. اسم المجلد: صور\n3. البكت Public</div>`
     return
   }
   
-  alert("5. جلبت " + data.length + " صورة")
+  alert("5. نجح! لقيت " + data.length + " ملف ✅")
   
   if (data.length === 0) {
-    grid.innerHTML = "لا توجد صور في مجلد 'صور' داخل البكت aamal-images"
+    grid.innerHTML = "المجلد 'صور' فاضي. ارفع صورة جواه في Supabase"
     return
   }
   
   grid.innerHTML = ''
   data.forEach(file => {
+    if(file.name === '.emptyFolderPlaceholder') return
     const url = supabase.storage.from('aamal-images').getPublicUrl('صور/' + file.name).data.publicUrl
-    grid.innerHTML += `<div class="work-card"><img src="${url}"><p>${file.name}</p></div>`
+    grid.innerHTML += `<div class="work-card"><img src="${url}" loading="lazy"><p style="font-size:12px">${file.name}</p></div>`
   })
+  
+  alert("6. عرضت الصور بنجاح 🎉")
 }
 
 تحميل_الصور()
 </script>
+
 </body>
 </html>
