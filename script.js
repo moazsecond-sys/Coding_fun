@@ -1,20 +1,17 @@
 document.getElementById('grid').innerHTML = "جاري التحميل..."
 
-const url = "https://mirrxytqttjglglxrarq.supabase.co";
-const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo";
-
-fetch(url, {
+fetch("https://mirrxytqttjglxrarq.supabase.co/storage/v1/object/list/AAMAL-IMAGES/", {
   method: 'POST',
   headers: {
-    'apikey': key,
-    'Authorization': 'Bearer ' + key,
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
     'Content-Type': 'application/json'
   },
-  body: JSON.stringify({limit: 10})
+  body: JSON.stringify({prefix: 'images', limit: 10})
 .then(r => r.json())
 .then(data => {
-  document.getElementById('grid').innerHTML = "النتيجة: " + JSON.stringify(data)
+  document.getElementById('grid').innerHTML = "نجحنا! لقينا: <br>" + JSON.stringify(data, null, 2)
 })
 .catch(e => {
-  document.getElementById('grid').innerHTML = "خطأ الشبكة: " + e.message
+  document.getElementById('grid').innerHTML = "فشل: " + e.message
 })
