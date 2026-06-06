@@ -1,55 +1,76 @@
-  
-// 2. حط مفاتيحك هنا بين " "
-const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
-const SUPABASE_ANON_KEY = "sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu"
+// =================== بيانات Supabase ===================
+const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co" // صحح الـ URL لو فيه gl مكررة
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
+
+// =================== الاتصال ===================
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-document.getElementById('works-grid').innerHTML = "<p>انا شغال</p>"
 
+// =================== العناصر ===================
+const grid = document.getElementById('grid')
+const empty = document.getElementById('empty')
 
+// =================== تحميل الأعمال ===================
 async function loadWorks() {
-  const { data, error } = await supabase.from('works').select('*')
+  grid.innerHTML = "<p style='text-align:center; padding:40px'>جاري التحميل...</p>"
   
-  const grid = document.getElementById('works-grid')
+  // يجيب كل الملفات من مجلد images داخل البكت aamal-images
+  const { data, error } = await supabase.storage.from('aamal-images').list('images')
   
   if (error) {
-    grid.innerHTML = `<p style="color:red; text-align:center;">خطأ: ${error.message}</p>`
+    grid.innerHTML = `<p style="color:red; text-align:center; padding:40px">خطأ: ${error.message}</p>`
+    console.error(error)
     return
   }
   
-  if (data.length === 0) {
-    grid.innerHTML = `<p style="text-align:center;">الجدول فاضي - ما فيه أعمال</p>`
+  if (!data || data.length === 0) {
+    grid.style.display = 'none'
+    empty.style.display = 'block'
     return
   }
   
-  grid.innerHTML = data.map(w => `
-    <div class="card">
-      ${w.image_url ? `<img src="${w.image_url}">` : '<p>ما فيه صورة</p>'}
-      <h3>${w.title}</h3>
-      <p>${w.description}</p>
-    </div>
-  `).join('')
-}
-}
-loadWorks()
-// كود الفحص - احذفه بعد ما نضبط
-async function debug() {
-  console.log("1. بدأ الفحص...")
-
-  const { data, error } = await supabase.from('works').select('*')
-
-  if (error) {
-    console.error("2. فيه خطأ:", error.message)
+  // فلتر الصور بس
+  const images = data.filter(f => f.name.match(/\.(png|jpg|jpeg|webp|gif)$/i))
+  
+  if (images.length === 0) {
+    grid.style.display = 'none'
+    empty.style.display = 'block'
     return
   }
-
-  console.log("2. البيانات اللي جات من Supabase:", data)
-  console.log("3. عدد الكروت:", data.length)
-
-  if (data.length > 0) {
-    console.log("4. رابط أول صورة:", data[0].image_url)
-  }
-
-  const grid = document.getElementById('works-grid')
-  console.log("5. هل لقينا div#works-grid؟", grid)
+  
+  grid.style.display = 'grid'
+  grid.innerHTML = ''
+  
+  // اعرض الكروت
+  images.forEach(file => {
+    const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/aamal-images/images/${file.name}`
+    const category = file.name.toLowerCase().includes('logo') ? 'logo' : 'banner'
+    
+    grid.innerHTML += `
+      <div class="work-card" data-cat="${category}">
+        <img src="${imageUrl}" alt="${file.name}" loading="lazy">
+        <h3>${file.name.replace(/\.[^/.]+$/, "")}</h3>
+      </div>
+    `
+  })
 }
-debug()
+
+// =================== الفلترة ===================
+document.addEventListener('DOMContentLoaded', () => {
+  loadWorks()
+  
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      
+      const cat = btn.dataset.cat
+      document.querySelectorAll('.work-card').forEach(card => {
+        if (cat === 'all' || card.dataset.cat === cat) {
+          card.style.display = 'block'
+        } else {
+          card.style.display = 'none'
+        }
+      })
+    })
+  })
+})
