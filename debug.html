@@ -1,33 +1,54 @@
 <!DOCTYPE html>
 <html>
-<head><title>فحص المجلدات</title></head>
+<head>
+  <title>فحص Supabase</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; direction: rtl; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    .error { color: red; font-weight: bold; }
+    .success { color: green; font-weight: bold; }
+  </style>
+</head>
 <body>
-<h3>النتيجة:</h3>
-<div id="result">جاري التحميل...</div>
+  <h3>🔍 فحص الاتصال بـ Supabase</h3>
+  <div id="log">جاري التحميل...</div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-const supabase = window.supabase.createClient(
-  'https://mirrxytqttjglglxrarq.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-);
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // حط بياناتك هنا
+    const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
 
-document.getElementById('result').innerHTML += '<br>1. بدأ الاتصال...';
+    const log = document.getElementById('log');
+    
+    function addLog(text, type = '') {
+      log.innerHTML += `<pre class="${type}">${text}</pre>`;
+    }
 
-supabase.storage.from('aamal-images').list('', { limit: 100 })
-.then(({data, error}) => {
-  document.getElementById('result').innerHTML += '<br>2. وصل الرد من Supabase';
-  
-  if(error) {
-    document.getElementById('result').innerHTML += '<br>❌ خطأ: ' + error.message;
-    return;
-  }
-  
-  document.getElementById('result').innerHTML += '<br>✅ نجح! النتيجة:<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-})
-.catch(err => {
-  document.getElementById('result').innerHTML += '<br>💥 خطأ فادح: ' + err.message;
-});
-</script>
+    addLog('1. بدأ الاختبار...');
+    addLog('URL: ' + SUPABASE_URL);
+
+    try {
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      addLog('2. تم إنشاء العميل بنجاح ✅', 'success');
+
+      supabase.storage.from('aamal-images').list()
+        .then(({ data, error }) => {
+          if (error) {
+            addLog('3. ❌ خطأ من Supabase: ' + error.message, 'error');
+            addLog('تفاصيل: ' + JSON.stringify(error));
+          } else {
+            addLog('3. ✅ نجح! المجلدات الموجودة:', 'success');
+            addLog(JSON.stringify(data, null, 2));
+          }
+        })
+        .catch(err => {
+          addLog('3. ❌ خطأ فادح: ' + err.message, 'error');
+        });
+
+    } catch (e) {
+      addLog('2. ❌ خطأ في إنشاء العميل: ' + e.message, 'error');
+    }
+  </script>
 </body>
 </html>
