@@ -17,43 +17,29 @@
    
 
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // حط بياناتك هنا
-    const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+const supabaseUrl = "https://mirrxytqttjglglxrarq.supabase.co"
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-    const log = document.getElementById('log');
-    
-    function addLog(text, type = '') {
-      log.innerHTML += `<pre class="${type}">${text}</pre>`;
-    }
+async function test() {
+  // 1. نجيب الملفات
+  const { data, error } = await supabase.storage.from('aamal-images').list('images')
+  console.log('الملفات:', data, 'خطأ:', error)
 
-    addLog('1. بدأ الاختبار...');
-    addLog('URL: ' + SUPABASE_URL);
+  if(data && data.length > 0) {
+    // 2. نطلع رابط أول صورة
+    const firstFile = data[0].name
+    const { data: urlData } = supabase.storage.from('aamal-images').getPublicUrl(`images/${firstFile}`)
+    console.log('رابط الصورة:', urlData.publicUrl)
 
-    try {
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      addLog('2. تم إنشاء العميل بنجاح ✅', 'success');
-
-      supabase.storage.from('aamal-images').list()
-        .then(({ data, error }) => {
-          if (error) {
-            addLog('3. ❌ خطأ من Supabase: ' + error.message, 'error');
-            addLog('تفاصيل: ' + JSON.stringify(error));
-          } else {
-            addLog('3. ✅ نجح! المجلدات الموجودة:', 'success');
-            addLog(JSON.stringify(data, null, 2));
-          }
-        })
-        .catch(err => {
-          addLog('3. ❌ خطأ فادح: ' + err.message, 'error');
-        });
-
-    } catch (e) {
-      addLog('2. ❌ خطأ في إنشاء العميل: ' + e.message, 'error');
-    }
-  </script>
+    // 3. نعرضها مباشر
+    document.body.innerHTML += `<img src="${urlData.publicUrl}" style="width:200px;border:3px solid red">`
+  }
+}
+test()
+</script>
      <script src="script.js"></script>
 </body>
 </html>
