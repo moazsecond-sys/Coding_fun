@@ -11,13 +11,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <script>
-    const SUPABASE_URL = "https://mirrxytqttjglxrarq.supabase.co";
+    const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo";
     
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    document.getElementById('grid').innerHTML = "جاري التحميل... رقم 2"
     
-    supabase.storage.from('AAMAL-IMAGES').list('images', {limit:10}).then(r => {
+    supabase.storage.from('AAMAL-IMAGES').list('', {limit:20}).then(r => {
       if(r.error) {
         document.getElementById('grid').innerHTML = "الخطأ: " + r.error.message
         return
@@ -30,8 +29,11 @@
       let html = ''
       r.data.forEach(f => {
         if(f.name.match(/\.(png|jpg|jpeg|webp)$/i)) {
-          let url = supabase.storage.from('AAMAL-IMAGES').getPublicUrl('images/'+f.name).data.publicUrl
-          html += `<div style="display:inline-block;margin:10px"><img src="${url}" style="width:200px;border-radius:8px"><br>${f.name}</div>`
+          let url = supabase.storage.from('AAMAL-IMAGES').getPublicUrl(f.name).data.publicUrl
+          html += `<div style="display:inline-block;margin:15px">
+                    <img src="${url}" style="width:200px;height:200px;object-fit:cover;border-radius:10px">
+                    <br>${f.name}
+                   </div>`
         }
       })
       document.getElementById('grid').innerHTML = html || "ما لقيت صور"
