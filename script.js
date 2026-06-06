@@ -1,6 +1,6 @@
 document.getElementById('grid').innerHTML = "جاري التحميل..."
 
-fetch("https://mirrxytqttjglxrarq.supabase.co/storage/v1/object/list/AAMAL-IMAGES/", {
+fetch("https://mirrxytqttjglglxrarq.supabase.co/storage/v1/object/list/AAMAL-IMAGES/", {
   method: 'POST',
   headers: {
     'apikey': SUPABASE_ANON_KEY,
