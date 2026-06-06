@@ -9,11 +9,13 @@ function renderWorks(filter = 'all') {
     
     const filtered = allFiles.filter(file => {
         if (filter === 'all') return true;
-        return file.name.toLowerCase().includes(filter.toLowerCase());
+        if (filter === 'logo') return file.name.toLowerCase().includes('logo');
+        if (filter === 'banner') return file.name.toLowerCase().includes('banner');
+        return true;
     });
 
     if(filtered.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#aaa">لا توجد أعمال في هذا القسم</p>';
+        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#aaa">لا توجد أعمال في هذا القسم بعد</p>';
         return;
     }
 
@@ -21,31 +23,49 @@ function renderWorks(filter = 'all') {
         if(!file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) return;
         
         const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
+        const nameClean = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ');
         
         grid.innerHTML += `
-            <div class="card">
-                <img src="${data.publicUrl}" alt="${file.name}" loading="lazy">
-                <h3>${file.name.replace(/\.[^/.]+$/, "")}</h3>
+            <div class="card" data-url="${data.publicUrl}">
+                <img src="${data.publicUrl}" alt="${nameClean}" loading="lazy">
+                <h3>${nameClean}</h3>
             </div>
         `;
     });
+
+    // تفعيل تكبير الصورة
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', () => {
+            const url = card.dataset.url;
+            showModal(url);
+        });
+    });
+}
+
+function showModal(imgUrl) {
+    let modal = document.getElementById('imgModal');
+    if(!modal) {
+        modal = document.createElement('div');
+        modal.id = 'imgModal';
+        modal.className = 'modal';
+        modal.innerHTML = '<span class="close">&times;</span><img src="">';
+        document.body.appendChild(modal);
+        
+        modal.querySelector('.close').onclick = () => modal.style.display = 'none';
+        modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; }
+    }
+    modal.querySelector('img').src = imgUrl;
+    modal.style.display = 'flex';
 }
 
 async function loadWorks() {
-    grid.innerHTML = '<div class="loading">جاري تحميل الأعمال...</div>';
-    
     try {
         const { data: files, error } = await supabaseClient.storage.from(BUCKET).list();
         
-        if(error) {
-            grid.innerHTML = `<p style="color:red; text-align:center">خطأ: ${error.message}</p>`;
-            return;
-        }
-
+        if(error) throw error;
         allFiles = files;
         renderWorks();
 
-        // تفعيل الازرار
         filters.forEach(btn => {
             btn.addEventListener('click', () => {
                 filters.forEach(b => b.classList.remove('active'));
@@ -55,7 +75,7 @@ async function loadWorks() {
         });
 
     } catch(err) {
-        grid.innerHTML = `<p style="color:red; text-align:center">خطأ: ${err.message}</p>`;
+        grid.innerHTML = `<p style="color:red; text-align:center; padding:50px">خطأ في التحميل: ${err.message}</p>`;
     }
 }
 
