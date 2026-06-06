@@ -1,52 +1,40 @@
-// ====== 1. انشاء عميل Supabase ======
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// ====== 2. نجيب الديف ======
 const grid = document.getElementById('grid');
 
-// ====== 3. نجيب الصور ونعرضها ======
 async function loadWorks() {
-    grid.innerHTML = '<div class="loading">جاري تحميل الأعمال...</div>';
+    grid.innerHTML = '<div class="loading">جاري التحميل... انتظر</div>';
+    
+    console.log('1. الرابط:', SUPABASE_URL);
+    console.log('2. البكت:', BUCKET);
     
     try {
-        // فحص سريع
-        if(!SUPABASE_URL || !SUPABASE_KEY) {
-            grid.innerHTML = '<p style="color:red">❌ config.js فاضي او مو مربوط</p>';
-            return;
-        }
-
-        // نجيب الملفات من البكت
         const { data: files, error } = await supabaseClient.storage.from(BUCKET).list();
         
         if(error) {
-            grid.innerHTML = `<p style="color:red">❌ خطأ: ${error.message}</p>`;
+            grid.innerHTML = `<p style="color:red; text-align:center">❌ خطأ Supabase<br>${error.message}<br>Code: ${error.code}</p>`;
+            console.error('خطأ Supabase:', error);
             return;
         }
-
+        
+        console.log('3. الملفات اللي لقيتها:', files);
+        
         if(!files || files.length === 0) {
-            grid.innerHTML = '<p>البكت فاضي</p>';
+            grid.innerHTML = '<p style="text-align:center">البكت فاضي، ارفع صور png</p>';
             return;
         }
 
-        // نعرض الصور
         grid.innerHTML = '';
         files.forEach(file => {
             if(!file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) return;
             
             const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
-            
-            grid.innerHTML += `
-                <div class="card">
-                    <img src="${data.publicUrl}" alt="${file.name}">
-                    <h3>${file.name.replace('.png','')}</h3>
-                </div>
-            `;
+            grid.innerHTML += `<div class="card"><img src="${data.publicUrl}"><h3>${file.name}</h3></div>`;
         });
 
     } catch(err) {
         grid.innerHTML = `<p style="color:red">❌ خطأ عام: ${err.message}</p>`;
+        console.error(err);
     }
 }
 
-// شغل اول ما تفتح الصفحة
 loadWorks();
