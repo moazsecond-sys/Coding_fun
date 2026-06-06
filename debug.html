@@ -12,6 +12,10 @@
 <body>
   <h3>🔍 فحص الاتصال بـ Supabase</h3>
   <div id="log">جاري التحميل...</div>
+     <div id="grid"></div>
+   <div id="empty" style="display:none">فاضي</div>
+   
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -50,5 +54,6 @@
       addLog('2. ❌ خطأ في إنشاء العميل: ' + e.message, 'error');
     }
   </script>
+     <script src="script.js"></script>
 </body>
 </html>
