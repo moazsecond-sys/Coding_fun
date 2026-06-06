@@ -2,51 +2,91 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة الرسائل</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | GREEN APPLE DESIGN</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
-body{font-family:'Cairo';padding:20px;background:#f8f8f8}
-.card{background:white;padding:15px;margin:10px 0;border-radius:8px;border-left:4px solid #2E7D32}
-.reply{margin-top:10px}
-textarea{width:100%;padding:8px}
-button{background:#25D366;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;padding:20px;min-height:100vh}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;border-bottom:2px solid #222;padding-bottom:15px}
+.header a{color:#4ade80;text-decoration:none;font-weight:700}
+.header a:hover{text-decoration:underline}
+h2{color:#4ade80;font-size:1.8rem}
+.card{background:#1a1a1a;padding:20px;margin:15px 0;border-radius:12px;border-left:4px solid #4ade80;transition:0.3s}
+.card:hover{border-color:#fff;transform:translateX(-5px)}
+.card b{color:#4ade80;font-size:1.1rem}
+.card p{margin:10px 0;color:#ccc;line-height:1.6}
+.reply{margin-top:15px}
+textarea{width:100%;padding:12px;background:#0a0a0a;border:2px solid #333;color:#fff;border-radius:8px;font-family:'Tajawal';resize:vertical}
+textarea:focus{border-color:#4ade80;outline:none}
+button{background:#4ade80;color:#000;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-family:'Tajawal';margin-top:10px;transition:0.3s}
+button:hover{background:#22c55e;transform:scale(1.05)}
+.loading{text-align:center;padding:60px;color:#4ade80;font-size:1.2rem}
+.date{color:#666;font-size:0.85rem}
 </style>
 </head>
 <body>
-<h2>الرسائل الواردة</h2>
-<div id="messages">جاري التحميل...</div>
 
+<div class="header">
+  <h2>📩 لوحة الرسائل الواردة</h2>
+  <a href="index.html">← الرجوع للموقع</a>
+</div>
+
+<div id="messages" class="loading">جاري تحميل الرسائل...</div>
+
+<script src="config.js"></script>
 <script>
-const supabaseUrl = 'https://mirrxytqttjglglxrarq.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function loadMessages(){
-  const {data} = await supabase.from('messages').select('*').order('created_at',{ascending:false})
-  let html = ''
-  data.forEach(m=>{
-    html += `<div class="card">
-      <b>${m.name}</b> - ${m.whatsapp}<br>
-      <p>${m.message}</p>
-      ${m.reply?'<p style="color:green">ردك: '+m.reply+'</p>':''}
-      <div class="reply">
-        <textarea id="r${m.id}" placeholder="اكتب ردك هنا..."></textarea>
-        <button onclick="reply('${m.id}')">إرسال الرد</button>
-      </div>
-    </div>`
-  })
-  document.getElementById('messages').innerHTML = html
+  try {
+    const {data, error} = await supabaseClient.from('messages').select('*').order('created_at',{ascending:false});
+    
+    if(error) throw error;
+    
+    if(!data || data.length === 0) {
+      document.getElementById('messages').innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد رسائل بعد</p>';
+      return;
+    }
+    
+    let html = '';
+    data.forEach(m=>{
+      const date = new Date(m.created_at).toLocaleString('ar-EG');
+      html += `<div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+          <b>${m.name || 'بدون اسم'}</b>
+          <span class="date">${date}</span>
+        </div>
+        <p style="color:#4ade80">${m.whatsapp || 'لا يوجد واتساب'}</p>
+        <p>${m.message}</p>
+        ${m.reply?'<p style="color:#4ade80;margin-top:10px"><b>ردك:</b> '+m.reply+'</p>':''}
+        <div class="reply">
+          <textarea id="r${m.id}" placeholder="اكتب ردك هنا...">${m.reply || ''}</textarea>
+          <button onclick="reply('${m.id}')">إرسال/تحديث الرد</button>
+        </div>
+      </div>`;
+    });
+    document.getElementById('messages').innerHTML = html;
+  } catch(err) {
+    document.getElementById('messages').innerHTML = `<p style="color:red;text-align:center">خطأ: ${err.message}</p>`;
+  }
 }
 
 async function reply(id){
-  const reply = document.getElementById('r'+id).value
-  await supabase.from('messages').update({reply}).eq('id',id)
-  loadMessages()
+  const replyText = document.getElementById('r'+id).value.trim();
+  if(!replyText) return alert('اكتب الرد اول');
+  
+  const {error} = await supabaseClient.from('messages').update({reply: replyText}).eq('id',id);
+  
+  if(error) alert('خطأ: '+error.message);
+  else loadMessages();
 }
 
 // تحديث لحظي
-supabase.channel('room1').on('postgres_changes',{event:'*',schema:'public',table:'messages'},loadMessages).subscribe()
-loadMessages()
+supabaseClient.channel('messages-channel').on('postgres_changes',{event:'*',schema:'public',table:'messages'},loadMessages).subscribe();
+
+loadMessages();
 </script>
 </body>
 </html>
