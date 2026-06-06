@@ -1,41 +1,61 @@
 const grid = document.getElementById('grid');
+const filters = document.querySelectorAll('.filters button');
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+let allFiles = [];
+
+function renderWorks(filter = 'all') {
+    grid.innerHTML = '';
+    
+    const filtered = allFiles.filter(file => {
+        if (filter === 'all') return true;
+        return file.name.toLowerCase().includes(filter.toLowerCase());
+    });
+
+    if(filtered.length === 0) {
+        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#aaa">لا توجد أعمال في هذا القسم</p>';
+        return;
+    }
+
+    filtered.forEach(file => {
+        if(!file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) return;
+        
+        const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
+        
+        grid.innerHTML += `
+            <div class="card">
+                <img src="${data.publicUrl}" alt="${file.name}" loading="lazy">
+                <h3>${file.name.replace(/\.[^/.]+$/, "")}</h3>
+            </div>
+        `;
+    });
+}
+
 async function loadWorks() {
-    grid.innerHTML = '<p style="color:yellow; padding:10px">جاري التحميل...</p>';
+    grid.innerHTML = '<div class="loading">جاري تحميل الأعمال...</div>';
     
     try {
         const { data: files, error } = await supabaseClient.storage.from(BUCKET).list();
         
         if(error) {
-            grid.innerHTML = `<p style="color:red; padding:20px">خطأ: ${error.message}</p>`;
+            grid.innerHTML = `<p style="color:red; text-align:center">خطأ: ${error.message}</p>`;
             return;
         }
 
-        if(!files || files.length === 0) {
-            grid.innerHTML = '<p style="color:orange; padding:20px">البكت فاضي</p>';
-            return;
-        }
+        allFiles = files;
+        renderWorks();
 
-        grid.innerHTML = '';
-        files.forEach(file => {
-            if(!file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) return;
-            
-            const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
-            const url = data.publicUrl;
-            
-            // كرت قوي وواضح عشان نشوفه
-            grid.innerHTML += `
-                <div style="border:2px solid #00ff88; margin:10px; padding:10px; background:#222; border-radius:10px">
-                    <img src="${url}" style="width:100%; max-width:300px; display:block; border:2px solid red">
-                    <p style="color:white; word-break:break-all; font-size:12px">${url}</p>
-                    <p style="color:#00ff88">اسم الملف: ${file.name}</p>
-                </div>
-            `;
+        // تفعيل الازرار
+        filters.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filters.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderWorks(btn.dataset.cat);
+            });
         });
 
     } catch(err) {
-        grid.innerHTML = `<p style="color:red">خطأ: ${err.message}</p>`;
+        grid.innerHTML = `<p style="color:red; text-align:center">خطأ: ${err.message}</p>`;
     }
 }
 
