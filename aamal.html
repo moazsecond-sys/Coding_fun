@@ -73,22 +73,7 @@
 
 <footer>© 2026 second-sys | Powered by Supabase + GREEN APPLE ☁️</footer>
 
-
-<!-- 3. مكتبة GREEN APPLE -->
-<script src="Coding_fun/Utils.js"></script>
-
 <script>
-// كودنا يستخدم window.supabase من المكتبة اللي فوق
-const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
-const SUPABASE_ANON_KEY = "sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu"
-
-// عرف supabase عشان الكل يشوفه
-alert("1. الصفحة فتحت")
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-alert("2. Supabase اشتغل")
-window.supabase = supabase
-alert("3. حفظته في window")
-
 function smoothScroll(target) {
   document.querySelector(target).scrollIntoView({ behavior: 'smooth' })
 }
@@ -175,6 +160,8 @@ async function رفع_الصورة() {
 <script src="data.js"></script>
 <script src="config.js"></script>
 <script src="script.js"></script>
+  <!-- 3. مكتبة GREEN APPLE -->
+<script src="Coding_fun/Utils.js"></script>
 <script src="error.js"></script>
 <script src="console.js"></script>
 </body>
