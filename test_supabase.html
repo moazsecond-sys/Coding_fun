@@ -2,70 +2,47 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>اختبار Supabase كامل</title>
+<title>اختبار Supabase</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body { font-family: 'Tajawal', sans-serif; background:#0b1020; color:#fff; text-align:center; padding:20px }
+body { background:#0b1020; color:#fff; text-align:center; padding:20px; font-family:sans-serif }
 h1 { color:#2dd4bf }
-#works-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin-top:30px }
-.work-card { background:#1a2238; padding:10px; border-radius:12px }
-.work-card img { width:100%; border-radius:8px }
-.error-box { background:#3b0a0a; color:#ff9b9b; padding:15px; border-radius:10px; text-align:right; white-space:pre-wrap; font-size:12px }
+#box { margin-top:30px; padding:20px; background:#1a2238; border-radius:12px }
 </style>
 </head>
 <body>
 
-<h1>اختبار جلب الصور ✨</h1>
-<div id="works-grid">جاري التحميل... انتظر التنبيهات</div>
-
-<!-- مكتبة Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<h1>✨ اختبار جلب الصور</h1>
+<div id="box">1. الجافاسكربت شغال...</div>
 
 <script>
-alert("1. الجافاسكربت بدأ ✅")
-
-// حط مفاتيحك هنا
-const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
+// رابط Supabase الرسمي - يشتغل على كل الجوالات
+import('https://cdn.skypack.dev/@supabase/supabase-js@2').then(({ createClient }) => {
   
-const SUPABASE_ANON_KEY = "sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu"
-
-alert("2. المفاتيح جاهزة ✅")
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-alert("3. اتصل بـ Supabase ✅")
-
-async function تحميل_الصور() {
-  alert("4. بحاول أجيب الصور من مجلد 'صور'...")
+  document.getElementById('box').innerHTML += "<br>2. مكتبة Supabase حملت ✅"
   
-  const grid = document.getElementById('works-grid')
+  const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+  const SUPABASE_ANON_KEY = 'sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu'
   
-  // هذي أهم خطوة - بنجيب كل التفاصيل
-  const { data, error } = await supabase.storage.from('aamal-images').list('صور', { limit: 20 })
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  document.getElementById('box').innerHTML += "<br>3. اتصلنا بـ Supabase ✅"
   
-  if (error) {
-    alert("5. طلع خطأ ❌: " + error.message)
-    grid.innerHTML = `<div class="error-box">تفاصيل الخطأ الكاملة:\n${JSON.stringify(error, null, 2)}\n\nتأكد من:\n1. اسم البكت: aamal-images\n2. اسم المجلد: صور\n3. البكت Public</div>`
-    return
-  }
-  
-  alert("5. نجح! لقيت " + data.length + " ملف ✅")
-  
-  if (data.length === 0) {
-    grid.innerHTML = "المجلد 'صور' فاضي. ارفع صورة جواه في Supabase"
-    return
-  }
-  
-  grid.innerHTML = ''
-  data.forEach(file => {
-    if(file.name === '.emptyFolderPlaceholder') return
-    const url = supabase.storage.from('aamal-images').getPublicUrl('صور/' + file.name).data.publicUrl
-    grid.innerHTML += `<div class="work-card"><img src="${url}" loading="lazy"><p style="font-size:12px">${file.name}</p></div>`
+  supabase.storage.from('aamal-images').list('صور', { limit: 5 }).then(({ data, error }) => {
+    if (error) {
+      document.getElementById('box').innerHTML += `<br><br><b style="color:red">4. خطأ: ${error.message}</b>`
+      return
+    }
+    document.getElementById('box').innerHTML += `<br>4. نجح! لقيت ${data.length} صورة 🎉`
+    
+    data.forEach(f => {
+      const url = supabase.storage.from('aamal-images').getPublicUrl('صور/' + f.name).data.publicUrl
+      document.getElementById('box').innerHTML += `<br><img src="${url}" style="width:100px; margin:5px">`
+    })
   })
   
-  alert("6. عرضت الصور بنجاح 🎉")
-}
-
-تحميل_الصور()
+}).catch(e => {
+  document.getElementById('box').innerHTML = "فشل تحميل مكتبة Supabase: " + e.message
+})
 </script>
 
 </body>
