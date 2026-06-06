@@ -1,45 +1,25 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>فحص Supabase</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; direction: rtl; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
-    .error { color: red; font-weight: bold; }
-    .success { color: green; font-weight: bold; }
-  </style>
-</head>
+<html dir="rtl">
 <body>
-  <h3>🔍 فحص الاتصال بـ Supabase</h3>
-  <div id="log">جاري التحميل...</div>
-     <div id="grid"></div>
-   <div id="empty" style="display:none">فاضي</div>
-   
+<div id="grid">جاري التحميل...</div>
 
-
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
 const supabaseUrl = "https://mirrxytqttjglglxrarq.supabase.co"
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-async function test() {
-  // 1. نجيب الملفات
-  const { data, error } = await supabase.storage.from('aamal-images').list('images')
-  console.log('الملفات:', data, 'خطأ:', error)
-
-  if(data && data.length > 0) {
-    // 2. نطلع رابط أول صورة
-    const firstFile = data[0].name
-    const { data: urlData } = supabase.storage.from('aamal-images').getPublicUrl(`images/${firstFile}`)
-    console.log('رابط الصورة:', urlData.publicUrl)
-
-    // 3. نعرضها مباشر
-    document.body.innerHTML += `<img src="${urlData.publicUrl}" style="width:200px;border:3px solid red">`
-  }
+try {
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+  console.log('تم الاتصال')
+  
+  supabase.storage.from('aamal-images').list('images').then(res => {
+    console.log('النتيجة:', res)
+    document.getElementById('grid').innerText = JSON.stringify(res.data)
+  })
+} catch(e) {
+  console.error('خطأ فادح:', e)
+  document.getElementById('grid').innerText = 'خطأ: ' + e.message
 }
-test()
 </script>
-     <script src="script.js"></script>
 </body>
 </html>
