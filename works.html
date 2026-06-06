@@ -4,15 +4,44 @@
   <meta charset="UTF-8">
   <title>أعمالي</title>
   <style>
-    img {width:250px; margin:10px; border-radius:10px}
-    body {background:#111; color:#fff; text-align:center; font-family:tahoma}
+    body {background:#111; color:#fff; text-align:center; font-family:tahoma; padding:40px}
+    .grid {display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:30px}
+    img {width:250px; height:250px; object-fit:cover; border-radius:15px; border:2px solid #0ff}
+    .error {color:#ff5555; font-size:18px}
   </style>
 </head>
 <body>
   <h2>معرض أعمالي</h2>
-  
-  <img src="https://mirrxytqttjglxrarq.supabase.co/storage/v1/object/public/AAMAL-IMAGES/logo.png">
-  <img src="https://mirrxytqttjglxrarq.supabase.co/storage/v1/object/public/AAMAL-IMAGES/logo1.png">
-  
+  <div id="grid">جاري التحميل...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://mirrxytqttjglxrarq.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo";
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    
+    supabase.storage.from('AAMAL-IMAGES').list('').then(({data, error}) => {
+      if(error) {
+        document.getElementById('grid').innerHTML = `<div class="error">خطأ: ${error.message}</div>`
+        return
+      }
+      
+      if(!data || data.length === 0) {
+        document.getElementById('grid').innerHTML = "البكت فاضي، ارفع صور"
+        return
+      }
+      
+      let html = '<div class="grid">'
+      data.forEach(file => {
+        if(file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
+          let url = SUPABASE_URL + '/storage/v1/object/public/AAMAL-IMAGES/' + encodeURIComponent(file.name)
+          html += `<img src="${url}" alt="${file.name}">`
+        }
+      })
+      html += '</div>'
+      document.getElementById('grid').innerHTML = html
+    })
+  </script>
 </body>
 </html>
