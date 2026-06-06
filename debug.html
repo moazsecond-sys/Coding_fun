@@ -60,38 +60,42 @@ const empty = document.getElementById('empty')
 async function testSupabase() {
   try {
     status.textContent = 'تم الاتصال بـ Supabase بنجاح ✅'
-    console.log('الاتصال تم')
+    console.log('1. الاتصال تم. URL:', SUPABASE_URL)
     
     // جلب الملفات من البكت
+    console.log('2. بجرب أجيب الملفات من البكت aamal-images')
     const { data, error } = await supabase.storage
       .from('aamal-images')
       .list('', { limit: 100 })
     
-    if (error) throw error
+    console.log('3. النتيجة:', data)
+    console.log('4. الخطأ لو فيه:', error)
     
-    console.log('النتيجة:', data)
+    if (error) throw error
     
     if (!data || data.length === 0) {
       grid.style.display = 'none'
       empty.style.display = 'block'
       status.textContent = 'البكت فاضي أو ما عنده صلاحية قراءة'
+      console.log('5. الداتا فاضية')
       return
     }
     
     // عرض الصور
     grid.innerHTML = ''
     data.forEach(file => {
-      // تجاهل المجلدات
       if (file.id === null) return
       
       const url = supabase.storage
         .from('aamal-images')
         .getPublicUrl(file.name).data.publicUrl
       
+      console.log('رابط الصورة:', url)
+      
       grid.innerHTML += `
         <div class="item">
-          <img src="${url}" alt="${file.name}" onerror="this.src='https://via.placeholder.com/200?text=خطأ'">
-          <p style="font-size:12px; margin-top:5px">${file.name}</p>
+          <img src="${url}" alt="${file.name}">
+          <p style="font-size:12px">${file.name}</p>
         </div>
       `
     })
