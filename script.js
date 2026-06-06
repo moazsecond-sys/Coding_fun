@@ -1,22 +1,15 @@
-// =================== الاتصال ===================
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-// =================== العناصر ===================
 const grid = document.getElementById('grid')
 const empty = document.getElementById('empty')
 
-// =================== تحميل الأعمال ===================
 async function loadWorks() {
   if(!grid) return
   grid.innerHTML = "<p style='text-align:center; padding:40px'>جاري التحميل...</p>"
   
   try {
-    // نجيب كل الملفات من البكت مباشرة بدون مجلد
-    const { data, error } = await supabase.storage.from('aamal-images').list('', { limit: 100 })
-    
+    // نبحث داخل مجلد images
+    const { data, error } = await supabase.storage.from('aamal-images').list('images', { limit: 100 })
     if (error) throw error
-    
-    console.log('الملفات اللي لقاها:', data)
     
     if (!data || data.length === 0) {
       grid.style.display = 'none'
@@ -24,7 +17,6 @@ async function loadWorks() {
       return
     }
     
-    // فلتر الصور بس
     const images = data.filter(f => f.name && f.name.match(/\.(png|jpg|jpeg|webp|gif)$/i))
     
     if (images.length === 0) {
@@ -36,12 +28,10 @@ async function loadWorks() {
     grid.style.display = 'grid'
     grid.innerHTML = ''
     
-    // اعرض الكروت
     images.forEach(file => {
-      const { data: urlData } = supabase.storage.from('aamal-images').getPublicUrl(file.name)
+      // نضيف images/ للرابط
+      const { data: urlData } = supabase.storage.from('aamal-images').getPublicUrl(`images/${file.name}`)
       const imageUrl = urlData.publicUrl
-      
-      console.log('رابط الصورة:', imageUrl)
       
       const category = file.name.toLowerCase().includes('logo') ? 'logo' : 'banner'
       
@@ -55,11 +45,9 @@ async function loadWorks() {
     
   } catch(e) {
     grid.innerHTML = `<p style="color:red; text-align:center; padding:40px">خطأ: ${e.message}</p>`
-    console.error('خطأ فادح:', e)
   }
 }
 
-// =================== التشغيل ===================
 document.addEventListener('DOMContentLoaded', () => {
   loadWorks()
 })
