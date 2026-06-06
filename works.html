@@ -6,7 +6,7 @@
 </head>
 <body style="background:#111; color:#fff; font-family:tahoma; text-align:center">
   <h2 style="padding:30px">معرض أعمالي</h2>
-  <div id="grid" style="padding:20px">جاري التحميل...</div>
+  <div id="grid" style="padding:20px">1. بدأ التحميل...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
@@ -14,24 +14,34 @@
     const SUPABASE_URL = "https://mirrxytqttjglxrarq.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo";
     
-    document.getElementById('grid').innerHTML = "كود جديد شغال... رقم " + Date.now()
+    document.getElementById('grid').innerHTML = "2. الكود شغال..."
     
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     
+    document.getElementById('grid').innerHTML += "<br>3. جاري جلب الملفات..."
+    
     supabase.storage.from('AAMAL-IMAGES').list('', {limit:20}).then(r => {
-      console.log(r)
       if(r.error) {
-        document.getElementById('grid').innerHTML = "خطأ: " + r.error.message
+        document.getElementById('grid').innerHTML = "4. خطأ Supabase: " + r.error.message
         return
       }
-      let html = ''
+      document.getElementById('grid').innerHTML += "<br>4. لقينا " + r.data.length + " ملف"
+      
+      if(r.data.length==0) {
+        document.getElementById('grid').innerHTML += "<br>البكت فاضي"
+        return
+      }
+      
+      let html = '<br>5. الصور:<br>'
       r.data.forEach(f => {
         if(f.name.match(/\.(png|jpg|jpeg|webp)$/i)) {
           let url = supabase.storage.from('AAMAL-IMAGES').getPublicUrl(f.name).data.publicUrl
           html += `<img src="${url}" style="width:200px;margin:10px;border-radius:10px"><br>`
         }
       })
-      document.getElementById('grid').innerHTML = html || "ما لقيت صور"
+      document.getElementById('grid').innerHTML = html
+    }).catch(e => {
+      document.getElementById('grid').innerHTML = "خطأ عام: " + e.message
     })
   </script>
 </body>
