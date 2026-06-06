@@ -2,32 +2,40 @@ const grid = document.getElementById('grid');
 const filters = document.querySelectorAll('.filters button');
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// هل احنا في الصفحة الرئيسية؟
+const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+
 let allFiles = [];
 
-// تنظيف اسم الملف: logo-green-apple.png → logo green apple
+// تنظيف اسم الملف
 function cleanName(filename) {
     return filename
-        .replace(/\.[^/.]+$/, "") // احذف الامتداد .png
-        .replace(/[-_]/g, ' ') // استبدل - و _ بمسافة
-        .replace(/\b\w/g, l => l.toUpperCase()); // اول حرف كابتل
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
 }
 
-// تحديد التصنيف من اسم الملف
+// تحديد التصنيف
 function getCategory(filename) {
     const name = filename.toLowerCase();
     if(name.includes('logo')) return 'logo';
     if(name.includes('banner')) return 'banner';
-    if(name.includes('poster')) return 'poster';
+    if(name.includes('poster') || name.includes('تصميم')) return 'poster';
     return 'other';
 }
 
 function renderWorks(filter = 'all') {
     grid.innerHTML = '';
     
-    const filtered = allFiles.filter(file => {
+    let filtered = allFiles.filter(file => {
         if (filter === 'all') return true;
         return getCategory(file.name) === filter;
     });
+
+    // في الرئيسية نعرض 6 بس
+    if(isHomePage) {
+        filtered = filtered.slice(0, 6);
+    }
 
     if(filtered.length === 0) {
         grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#aaa; padding:40px">لا توجد أعمال في هذا القسم بعد</p>';
@@ -43,7 +51,7 @@ function renderWorks(filter = 'all') {
         
         grid.innerHTML += `
             <div class="card" data-url="${data.publicUrl}">
-                <img src="${data.publicUrl}" alt="${nameClean} - GREEN APPLE DESIGN" loading="lazy">
+                <img src="${data.publicUrl}" alt="${nameClean} - تصميم GREEN APPLE DESIGN" loading="lazy">
                 <div class="info">
                     <div class="name">${nameClean}</div>
                     <div class="cat">${category.toUpperCase()}</div>
@@ -51,33 +59,30 @@ function renderWorks(filter = 'all') {
             </div>
         `;
 
-        // انيميشن الظهور المتتابع
+        // انيميشن الظهور
         setTimeout(() => {
             const cards = grid.querySelectorAll('.card');
             if(cards[index]) cards[index].classList.add('show');
         }, index * 80);
     });
 
-    // تفعيل lightbox تكبير الصورة
     activateLightbox();
 }
 
-// lightbox احترافي
+// lightbox تكبير الصورة
 function activateLightbox() {
     let lightbox = document.getElementById('lightbox');
     
-    // انشاء lightbox لو مو موجود
     if(!lightbox) {
         lightbox = document.createElement('div');
         lightbox.id = 'lightbox';
         lightbox.className = 'lightbox';
-        lightbox.innerHTML = '<span class="close">&times;</span><img src="">';
+        lightbox.innerHTML = '<span class="close">&times;</span><img src="" alt="">';
         document.body.appendChild(lightbox);
         
         lightbox.querySelector('.close').onclick = () => lightbox.style.display = 'none';
         lightbox.onclick = (e) => { if(e.target === lightbox) lightbox.style.display = 'none'; }
         
-        // اغلاق بـ ESC
         document.addEventListener('keydown', (e) => {
             if(e.key === 'Escape') lightbox.style.display = 'none';
         });
@@ -108,19 +113,25 @@ async function loadWorks() {
         allFiles = files;
         renderWorks();
 
-        // تفعيل الازرار
-        filters.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filters.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                renderWorks(btn.dataset.cat);
+        // اخفي الازرار لو في الرئيسية عشان ما تلخبط
+        if(!isHomePage) {
+            filters.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filters.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderWorks(btn.dataset.cat);
+                });
             });
-        });
+        } else {
+            // في الرئيسية اخفي الفلاتر لو موجودة
+            const filterDiv = document.querySelector('.filters');
+            if(filterDiv) filterDiv.style.display = 'none';
+        }
 
     } catch(err) {
-        grid.innerHTML = `<p style="color:red; text-align:center; padding:60px">❌ خطأ في التحميل: ${err.message}</p>`;
+        grid.innerHTML = `<p style="color:red; text-align:center; padding:60px">❌ خطأ: ${err.message}</p>`;
+        console.error(err);
     }
 }
 
-// شغل عند فتح الصفحة
 loadWorks();
