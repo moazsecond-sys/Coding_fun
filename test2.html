@@ -17,7 +17,7 @@ setTimeout(async ()=>{
       'sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu'
     );
     
-    const {data, error} = await supabase.storage.from('aamal-images').list('images');
+    const {data, error} = await supabase.storage.from('aamal-images').list('images/');
     
     if(error) {
       document.getElementById('result').innerHTML = '❌ خطأ: ' + error.message;
