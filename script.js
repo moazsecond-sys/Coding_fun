@@ -2,7 +2,8 @@
 // 2. حط مفاتيحك هنا بين " "
 const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
 const SUPABASE_ANON_KEY = "sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu"
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+document.getElementById('works-grid').innerHTML = "<p>انا شغال</p>"
 
 
 async function loadWorks() {
