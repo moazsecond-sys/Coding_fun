@@ -2,144 +2,31 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>أعمالنا | GREEN APPLE DESIGN</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;padding:40px 20px}
-    h1{text-align:center;margin-bottom:30px;color:#4ade80;font-size:2.5rem}
-    
-    /* الفلترة */
-    .filters{display:flex;gap:15px;justify-content:center;margin-bottom:40px;flex-wrap:wrap}
-    .filters button{padding:12px 25px;background:#1a1a1a;border:2px solid #333;color:#fff;border-radius:50px;cursor:pointer;font-weight:700;transition:0.3s;font-family:'Tajawal'}
-    .filters button.active,.filters button:hover{background:#4ade80;border-color:#4ade80;color:#0a0a0a}
-    
-    /* الشبكة */
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:25px;max-width:1200px;margin:auto}
-    .card{background:#1a1a1a;border-radius:20px;overflow:hidden;cursor:pointer;transition:0.4s;opacity:0;transform:translateY(20px)}
-    .card.show{opacity:1;transform:translateY(0)}
-    .card:hover{transform:translateY(-8px);box-shadow:0 15px 40px rgba(74,222,128,0.2)}
-    .card img{width:100%;height:250px;object-fit:cover;display:block}
-    .card .info{padding:15px}
-    .card .name{font-weight:700;font-size:1.1rem;margin-bottom:5px}
-    .card .cat{font-size:0.85rem;color:#4ade80}
-    
-    /* لايت بوكس */
-    .lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:999;justify-content:center;align-items:center}
-    .lightbox img{max-width:90%;max-height:90%;border-radius:15px}
-    .lightbox .close{position:absolute;top:30px;right:40px;font-size:40px;color:#fff;cursor:pointer}
-    
-    .loading{text-align:center;padding:60px;font-size:1.2rem;color:#666}
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <h1>🍏 أعمالنا</h1>
   
-  <!-- ازرار الفلترة -->
   <div class="filters">
     <button class="active" data-cat="all">الكل</button>
     <button data-cat="logo">لوجوهات</button>
     <button data-cat="banner">بنرات</button>
   </div>
 
-  <!-- الشبكة بتتعبى تلقائي من Supabase -->
   <div class="grid" id="works-grid">
     <div class="loading">جاري تحميل الأعمال...</div>
   </div>
 
-  <!-- لايت بوكس -->
   <div class="lightbox" id="lightbox">
     <span class="close">&times;</span>
     <img src="" alt="">
   </div>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // ===== حط بيانات مشروعك هنا =====
-    const SUPABASE_URL = 'https://vdqaevlbyiwklqcnmwaw.supabase.co';
-    const SUPABASE_KEY = 'ضع_مفتاح_anon_key_حقك_هنا';
-    const BUCKET = 'AAMAL-IMAGES';
-    // =================================
-
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const grid = document.getElementById('works-grid');
-    let allWorks = [];
-
-    // 1. نجيب كل الصور من البكت
-    async function loadWorks() {
-      const { data, error } = await supabase.storage.from(BUCKET).list('', {
-        limit: 100,
-        sortBy: { column: 'created_at', order: 'desc' }
-      });
-
-      if(error) {
-        grid.innerHTML = '<div class="loading">خطأ في تحميل الصور: '+error.message+'</div>';
-        return;
-      }
-
-      // فلتر الصور بس
-      allWorks = data.filter(f => f.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)).map(f => {
-        const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${f.name}`;
-        // نحدد التصنيف من اسم الملف: لو فيه logo = لوجو، لو banner = بنر
-        const cat = f.name.toLowerCase().includes('banner') ? 'banner' : 'logo';
-        return { url, name: f.name.replace(/\.[^/.]+$/, ""), cat };
-      });
-
-      renderWorks('all');
-    }
-
-    // 2. نعرض الصور حسب الفلتر
-    function renderWorks(cat) {
-      const filtered = cat === 'all' ? allWorks : allWorks.filter(w => w.cat === cat);
-      
-      if(filtered.length === 0) {
-        grid.innerHTML = '<div class="loading">مافي أعمال في هذا التصنيف</div>';
-        return;
-      }
-
-      grid.innerHTML = filtered.map((w,i) => `
-        <div class="card" style="transition-delay:${i*0.05}s" data-cat="${w.cat}">
-          <img src="${w.url}" loading="lazy" alt="${w.name}">
-          <div class="info">
-            <div class="name">${w.name}</div>
-            <div class="cat">${w.cat === 'logo' ? 'لوجو' : 'بنر'}</div>
-          </div>
-        </div>
-      `).join('');
-
-      // انيميشن الظهور
-      setTimeout(() => document.querySelectorAll('.card').forEach(c => c.classList.add('show')), 50);
-
-      // تفعيل التكبير
-      document.querySelectorAll('.card img').forEach(img => {
-        img.onclick = () => {
-          document.getElementById('lightbox').style.display = 'flex';
-          document.getElementById('lightbox').querySelector('img').src = img.src;
-        }
-      });
-    }
-
-    // 3. ازرار الفلترة
-    document.querySelectorAll('.filters button').forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderWorks(btn.dataset.cat);
-      }
-    });
-
-    // 4. اغلاق اللايت بوكس
-    document.getElementById('lightbox').onclick = (e) => {
-      if(e.target.id === 'lightbox' || e.target.className === 'close') {
-        document.getElementById('lightbox').style.display = 'none';
-      }
-    }
-
-    // شغل!
-    loadWorks();
-  </script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
