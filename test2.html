@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>اختبار سريع</title>
+</head>
+<body style="font-family:tahoma;padding:20px;text-align:center">
+<h2>اختبار Supabase</h2>
+<div id="result" style="font-size:24px;margin-top:50px">جاري التحميل...</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+setTimeout(async ()=>{
+  try{
+    const supabase = window.supabase.createClient(
+      'https://mirrxytqttjglglxrarq.supabase.co',
+      'sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu'
+    );
+    
+    const {data, error} = await supabase.storage.from('aamal-images').list('images');
+    
+    if(error) {
+      document.getElementById('result').innerHTML = '❌ خطأ: ' + error.message;
+    } else if(data.length==0) {
+      document.getElementById('result').innerHTML = '❌ المجلد فاضي';
+    } else {
+      document.getElementById('result').innerHTML = '✅ نجح! عندك ' + data.length + ' صورة';
+    }
+  }catch(e){
+    document.getElementById('result').innerHTML = '❌ الكود ما اشتغل: ' + e.message;
+  }
+}, 2000);
+</script>
+</body>
+</html>
