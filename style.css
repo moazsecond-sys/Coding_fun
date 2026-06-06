@@ -1,233 +1,28 @@
-/* ========================================
-   ستايل موقع فاخر - نسخة محسنة 2026
-   ألوان نيون أخضر + دارك مود
-======================================== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;padding:40px 20px;min-height:100vh}
+h1{text-align:center;margin-bottom:30px;color:#4ade80;font-size:2.5rem;font-weight:900}
 
-@import url('https://fonts.googleapis2.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+.filters{display:flex;gap:15px;justify-content:center;margin-bottom:40px;flex-wrap:wrap}
+.filters button{padding:12px 25px;background:#1a1a1a;border:2px solid #333;color:#fff;border-radius:50px;cursor:pointer;font-weight:700;transition:0.3s;font-family:'Tajawal';font-size:1rem}
+.filters button.active,.filters button:hover{background:#4ade80;border-color:#4ade80;color:#0a0a0a;transform:scale(1.05)}
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:25px;max-width:1200px;margin:auto}
+.card{background:#1a1a1a;border-radius:20px;overflow:hidden;cursor:pointer;transition:0.4s;opacity:0;transform:translateY(20px);border:1px solid #222}
+.card.show{opacity:1;transform:translateY(0)}
+.card:hover{transform:translateY(-8px);box-shadow:0 15px 40px rgba(74,222,128,0.25);border-color:#4ade80}
+.card img{width:100%;height:250px;object-fit:cover;display:block}
+.card .info{padding:15px}
+.card .name{font-weight:700;font-size:1.1rem;margin-bottom:5px;color:#fff}
+.card .cat{font-size:0.85rem;color:#4ade80;font-weight:700}
 
-body {
-  font-family: 'Tajawal', sans-serif;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-  color: #fff;
-  min-height: 100vh;
-  line-height: 1.6;
-}
+.lightbox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:999;justify-content:center;align-items:center;backdrop-filter:blur(5px)}
+.lightbox img{max-width:90%;max-height:90%;border-radius:15px;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
+.lightbox .close{position:absolute;top:30px;right:40px;font-size:40px;color:#fff;cursor:pointer;transition:0.3s}
+.lightbox .close:hover{color:#4ade80;transform:rotate(90deg)}
 
-/* الهيدر */
-nav {
-  background: rgba(17, 17, 17, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 25px 20px;
-  text-align: center;
-  border-bottom: 2px solid #00ff88;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 4px 30px rgba(0, 255, 136, 0.2);
-}
+.loading{text-align:center;padding:60px;font-size:1.2rem;color:#666}
 
-nav h1 {
-  color: #00ff88;
-  font-size: 2.2rem;
-  font-weight: 900;
-  text-shadow: 0 0 20px #00ff88, 0 0 40px rgba(0, 255, 136, 0.5);
-  letter-spacing: 1px;
-}
-
-/* الحاوية */
-.container {
-  max-width: 1200px;
-  margin: 50px auto;
-  padding: 0 20px;
-}
-
-/* شبكة الكروت */
-.works-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 30px;
-  margin-top: 40px;
-}
-
-/* الكرت الفاخر */
-.work-card {
-  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-  border-radius: 20px;
-  overflow: hidden;
-  border: 2px solid #333;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
-}
-
-.work-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #00ff88, #00ccff);
-  transform: scaleX(0);
-  transition: transform 0.4s;
-}
-
-.work-card:hover::before {
-  transform: scaleX(1);
-}
-
-.work-card:hover {
-  border-color: #00ff88;
-  transform: translateY(-12px);
-  box-shadow: 0 20px 50px rgba(0, 255, 136, 0.4);
-}
-
-.work-card img {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s;
-}
-
-.work-card:hover img {
-  transform: scale(1.05);
-}
-
-.work-card-content {
-  padding: 25px;
-}
-
-.work-card h3 {
-  color: #00ff88;
-  font-size: 1.6rem;
-  font-weight: 900;
-  margin-bottom: 12px;
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-}
-
-.work-card p {
-  color: #ccc;
-  font-size: 1rem;
-  margin-bottom: 18px;
-  line-height: 1.8;
-}
-
-/* زر الواتساب */
-.btn-whatsapp {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
-  color: #000;
-  padding: 14px 28px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 900;
-  font-size: 1.1rem;
-  transition: all 0.3s;
-  width: 100%;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
-}
-
-.btn-whatsapp:hover {
-  background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
-  transform: scale(1.03);
-  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.6);
-}
-
-/* رسالة لو مافي أعمال */
-.empty {
-  text-align: center;
-  color: #666;
-  font-size: 1.4rem;
-  margin-top: 100px;
-  grid-column: 1 / -1;
-}
-
-/* فلاتر */
-.filter-bar {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 40px;
-}
-
-.filter-btn {
-  background: #222;
-  color: #00ff88;
-  border: 2px solid #00ff88;
-  padding: 12px 28px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 700;
-  transition: all 0.3s;
-  font-family: 'Tajawal';
-}
-
-.filter-btn.active,
-.filter-btn:hover {
-  background: #00ff88;
-  color: #000;
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-}
-
-/* فوتر */
-footer {
-  text-align: center;
-  padding: 40px 20px;
-  color: #555;
-  margin-top: 80px;
-  border-top: 1px solid #222;
-  font-size: 1.1rem;
-}
-
-/* الموبايل */
-@media (max-width: 768px) {
-  nav h1 {
-    font-size: 1.6rem;
-  }
-  
-  .works-grid {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
-  
-  .container {
-    padding: 0 15px;
-    margin: 30px auto;
-  }
-  
-  .work-card-content {
-    padding: 20px;
-  }
-}
-
-/* سكرول بار نيون */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #00ff88, #00cc66);
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #00ff88;
-}
+@media(max-width:768px){
+  h1{font-size:1.8rem}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:15px}
+  .card img{height:180px}
