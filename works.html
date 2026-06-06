@@ -3,14 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>أعمالنا | GREEN APPLE DESIGN</title>
+  
+  <!-- SEO + روابط متشابكة -->
+  <title>معرض الأعمال | GREEN APPLE DESIGN - تصميم لوجوهات وبنرات</title>
+  <meta name="description" content="شاهد أعمال GREEN APPLE DESIGN في تصميم اللوجوهات والبنرات الاحترافية. معرض أعمالنا يعرض نماذج حقيقية من مشاريعنا.">
+  <link rel="canonical" href="https://moazsecond-sys.github.io/works.html">
+  
+  <!-- روابط داخلية تقوي الموقع -->
+  <link rel="prev" href="https://moazsecond-sys.github.io/index.html">
+  
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>🍏 أعمالنا</h1>
-  
+  <header>
+    <nav>
+      <a href="index.html">الرئيسية</a> / 
+      <span>أعمالنا</span>
+    </nav>
+    <h1>🍏 معرض أعمالنا</h1>
+    <p class="subtitle">تصاميم لوجوهات وبنرات احترافية - شاهد جودة شغلنا</p>
+  </header>
+
   <div class="filters">
     <button class="active" data-cat="all">الكل</button>
     <button data-cat="logo">لوجوهات</button>
@@ -21,13 +36,13 @@
     <div class="loading">جاري تحميل الأعمال...</div>
   </div>
 
-  <!-- 1. اول شي: مكتبة Supabase لازم فوق الكل -->
+  <footer>
+    <p>عجبك الشغل؟ <a href="index.html#contact">تواصل معنا</a> عشان نبدأ مشروعك</p>
+  </footer>
+
+  <!-- ترتيب السكربتات مهم -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
-  
-  <!-- 2. ثاني شي: الاسرار حقتك -->
   <script src="config.js"></script>
-  
-  <!-- 3. اخر شي: الكود حقنا -->
   <script src="script.js"></script>
 </body>
 </html>
