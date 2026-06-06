@@ -1,22 +1,15 @@
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-document.getElementById('grid').innerHTML = "<p style='text-align:center'>جاري التحميل...</p>"
+document.getElementById('grid').innerHTML = "جاري التحميل..."
 
-supabase.storage.from('aamal-images').list('images', {limit:50}).then(({data, error}) => {
-  if(error) {
-    document.getElementById('grid').innerHTML = "<p style='color:red; text-align:center'>الخطأ: "+error.message+"</p>"
+supabase.storage.from('AAMAL-IMAGES').list('', {limit:5}).then(r => {
+  console.log("النتيجة:", r)
+  if(r.error) {
+    document.getElementById('grid').innerHTML = "خطأ: " + r.error.message
     return
   }
-  if(!data || data.length==0) {
-    document.getElementById('grid').innerHTML = "<p style='color:orange; text-align:center'>البكت فاضي</p>"
+  if(r.data.length == 0) {
+    document.getElementById('grid').innerHTML = "البكت فاضي تماماً"
     return
   }
-  
-  let html = ''
-  data.forEach(f => {
-    if(f.name.match(/\.(png|jpg|jpeg|gif)$/i)) {
-      let url = supabase.storage.from('aamal-images').getPublicUrl('images/'+f.name).data.publicUrl
-      html += `<div><img src="${url}" style="width:100%"><p>${f.name}</p></div>`
-    }
-  })
-  document.getElementById('grid').innerHTML = html
+  document.getElementById('grid').innerHTML = "لقينا " + r.data.length + " عنصر:<br><br>" + JSON.stringify(r.data, null, 2)
 })
