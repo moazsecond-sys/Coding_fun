@@ -4,13 +4,39 @@
   <meta charset="UTF-8">
   <title>أعمالي</title>
 </head>
-<body style="background:#111; color:#fff; font-family:tahoma">
-  <h2 style="text-align:center; padding:30px">معرض أعمالي</h2>
-  <div id="grid" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; padding:20px"></div>
-  <div id="empty" style="display:none; text-align:center; padding:40px">فاضي</div>
+<body style="background:#111; color:#fff; font-family:tahoma; text-align:center">
+  <h2 style="padding:30px">معرض أعمالي</h2>
+  <div id="grid" style="padding:20px">جاري التحميل...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  
+  <script>
+    // حط المفاتيح هنا مؤقتاً عشان نختبر
+    const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo";
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    document.getElementById('grid').innerHTML = "جاري التحميل... رقم 2"
+    
+    supabase.storage.from('aamal-images').list('images', {limit:10}).then(r => {
+      if(r.error) {
+        document.getElementById('grid').innerHTML = "الخطأ: " + r.error.message
+        return
+      }
+      if(!r.data || r.data.length==0) {
+        document.getElementById('grid').innerHTML = "البكت فاضي"
+        return
+      }
+      
+      let html = ''
+      r.data.forEach(f => {
+        if(f.name.match(/\.(png|jpg)$/i)) {
+          let url = supabase.storage.from('aamal-images').getPublicUrl('images/'+f.name).data.publicUrl
+          html += `<div style="margin:10px"><img src="${url}" style="width:200px"><br>${f.name}</div>`
+        }
+      })
+      document.getElementById('grid').innerHTML = html || "ما لقيت صور"
+    })
+  </script>
 </body>
 </html>
