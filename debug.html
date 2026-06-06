@@ -1,25 +1,114 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فحص اتصال Supabase</title>
+  <style>
+    body { font-family: Tahoma; padding: 20px; background: #f5f5f5; }
+    #grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px; 
+      margin-top: 20px;
+    }
+    .item { 
+      background: white; 
+      padding: 10px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .item img { 
+      width: 100%; 
+      height: 150px; 
+      object-fit: cover; 
+      border-radius: 5px;
+    }
+    #status { 
+      background: #e3f2fd; 
+      padding: 10px; 
+      border-radius: 5px; 
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
 <body>
+
+<h2>فحص صور البكت aamal-images</h2>
+<div id="status">جاري الاتصال...</div>
 <div id="grid">جاري التحميل...</div>
+<div id="empty" style="display:none; color:red; text-align:center; margin-top:20px">
+  لا توجد صور في البكت أو فيه خطأ بالصلاحيات
+</div>
 
+<!-- 1. مكتبة Supabase لازم أول -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-const supabaseUrl = "https://mirrxytqttjglglxrarq.supabase.co"
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
 
-try {
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-  console.log('تم الاتصال')
-  
-  supabase.storage.from('aamal-images').list('images').then(res => {
-    console.log('النتيجة:', res)
-    document.getElementById('grid').innerText = JSON.stringify(res.data)
-  })
-} catch(e) {
-  console.error('خطأ فادح:', e)
-  document.getElementById('grid').innerText = 'خطأ: ' + e.message
+<!-- 2. ملف المفاتيح -->
+<script src="config.js"></script>
+
+<!-- 3. كود الفحص -->
+<script>
+// =================== الاتصال ===================
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+const status = document.getElementById('status')
+const grid = document.getElementById('grid')
+const empty = document.getElementById('empty')
+
+async function testSupabase() {
+  try {
+    status.textContent = 'تم الاتصال بـ Supabase بنجاح ✅'
+    console.log('الاتصال تم')
+    
+    // جلب الملفات من البكت
+    const { data, error } = await supabase.storage
+      .from('aamal-images')
+      .list('', { limit: 100 })
+    
+    if (error) throw error
+    
+    console.log('النتيجة:', data)
+    
+    if (!data || data.length === 0) {
+      grid.style.display = 'none'
+      empty.style.display = 'block'
+      status.textContent = 'البكت فاضي أو ما عنده صلاحية قراءة'
+      return
+    }
+    
+    // عرض الصور
+    grid.innerHTML = ''
+    data.forEach(file => {
+      // تجاهل المجلدات
+      if (file.id === null) return
+      
+      const url = supabase.storage
+        .from('aamal-images')
+        .getPublicUrl(file.name).data.publicUrl
+      
+      grid.innerHTML += `
+        <div class="item">
+          <img src="${url}" alt="${file.name}" onerror="this.src='https://via.placeholder.com/200?text=خطأ'">
+          <p style="font-size:12px; margin-top:5px">${file.name}</p>
+        </div>
+      `
+    })
+    
+    status.textContent += ` | عدد الملفات: ${data.length}`
+    
+  } catch (e) {
+    console.error('خطأ فادح:', e)
+    status.textContent = 'فشل الاتصال ❌'
+    status.style.background = '#ffebee'
+    grid.innerHTML = `<p style="color:red">${e.message}</p>`
+  }
 }
+
+// شغل الفحص
+testSupabase()
 </script>
+
 </body>
 </html>
