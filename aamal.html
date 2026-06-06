@@ -88,8 +88,11 @@ const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
 const SUPABASE_ANON_KEY = "sb_publishable_kuXmAppdiHaZ1OKlWsHbBg_QUebJHdu"
 
 // عرف supabase عشان الكل يشوفه
+alert("1. الصفحة فتحت")
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+alert("2. Supabase اشتغل")
 window.supabase = supabase
+alert("3. حفظته في window")
 
 function smoothScroll(target) {
   document.querySelector(target).scrollIntoView({ behavior: 'smooth' })
