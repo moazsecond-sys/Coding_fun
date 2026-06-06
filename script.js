@@ -19,3 +19,25 @@ async function loadWorks() {
   `).join('')
 }
 loadWorks()
+// كود الفحص - احذفه بعد ما نضبط
+async function debug() {
+  console.log("1. بدأ الفحص...")
+
+  const { data, error } = await supabase.from('works').select('*')
+
+  if (error) {
+    console.error("2. فيه خطأ:", error.message)
+    return
+  }
+
+  console.log("2. البيانات اللي جات من Supabase:", data)
+  console.log("3. عدد الكروت:", data.length)
+
+  if (data.length > 0) {
+    console.log("4. رابط أول صورة:", data[0].image_url)
+  }
+
+  const grid = document.getElementById('works-grid')
+  console.log("5. هل لقينا div#works-grid؟", grid)
+}
+debug()
