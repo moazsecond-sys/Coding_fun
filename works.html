@@ -17,19 +17,17 @@
     <button data-cat="banner">بنرات</button>
   </div>
 
-  <!-- غيرت هنا: id="grid" عشان يتطابق مع script.js -->
   <div class="grid" id="grid">
     <div class="loading">جاري تحميل الأعمال...</div>
   </div>
 
-  <div class="lightbox" id="lightbox">
-    <span class="close">&times;</span>
-    <img src="" alt="">
-  </div>
-
-  <!-- الترتيب مهم: مكتبة → اسرار → كود -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 1. اول شي: مكتبة Supabase لازم فوق الكل -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+  
+  <!-- 2. ثاني شي: الاسرار حقتك -->
   <script src="config.js"></script>
+  
+  <!-- 3. اخر شي: الكود حقنا -->
   <script src="script.js"></script>
 </body>
 </html>
