@@ -1,6 +1,6 @@
 // =================== بيانات Supabase ===================
-const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co" // صحح الـ URL لو فيه gl مكررة
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"
+const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co"
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo" // حط المفتاح حقك هنا
 
 // =================== الاتصال ===================
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -18,9 +18,11 @@ async function loadWorks() {
   
   if (error) {
     grid.innerHTML = `<p style="color:red; text-align:center; padding:40px">خطأ: ${error.message}</p>`
-    console.error(error)
+    console.error('خطأ Supabase:', error)
     return
   }
+  
+  console.log('الملفات اللي لقاها:', data) // للتشخيص، احذفه بعدين
   
   if (!data || data.length === 0) {
     grid.style.display = 'none'
@@ -42,7 +44,12 @@ async function loadWorks() {
   
   // اعرض الكروت
   images.forEach(file => {
-    const imageUrl = `${SUPABASE_URL}/storage/v1/object/public/aamal-images/images/${file.name}`
+    // خلي Supabase يبني الرابط بنفسه + يشفر اسم الملف
+    const { data: urlData } = supabase.storage.from('aamal-images').getPublicUrl(`images/${encodeURIComponent(file.name)}`)
+    const imageUrl = urlData.publicUrl
+    
+    console.log('رابط الصورة:', imageUrl) // للتشخيص
+    
     const category = file.name.toLowerCase().includes('logo') ? 'logo' : 'banner'
     
     grid.innerHTML += `
