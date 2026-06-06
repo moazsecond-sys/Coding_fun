@@ -24,7 +24,10 @@ function getCategory(filename) {
     return 'other';
 }
 
+// عرض الأعمال
 function renderWorks(filter = 'all') {
+    if(!grid) return;
+    
     grid.innerHTML = '';
     
     let filtered = allFiles.filter(file => {
@@ -71,6 +74,8 @@ function renderWorks(filter = 'all') {
 
 // lightbox تكبير الصورة
 function activateLightbox() {
+    if(!grid) return;
+    
     let lightbox = document.getElementById('lightbox');
     
     if(!lightbox) {
@@ -97,7 +102,10 @@ function activateLightbox() {
     });
 }
 
+// تحميل الأعمال
 async function loadWorks() {
+    if(!grid) return;
+    
     grid.innerHTML = '<div class="loading">🍏 جاري تحميل الأعمال...</div>';
     
     try {
@@ -113,8 +121,8 @@ async function loadWorks() {
         allFiles = files;
         renderWorks();
 
-        // اخفي الازرار لو في الرئيسية عشان ما تلخبط
-        if(!isHomePage) {
+        // الفلاتر تشتغل بس في works.html
+        if(!isHomePage && filters.length > 0) {
             filters.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filters.forEach(b => b.classList.remove('active'));
@@ -123,7 +131,7 @@ async function loadWorks() {
                 });
             });
         } else {
-            // في الرئيسية اخفي الفلاتر لو موجودة
+            // في الرئيسية اخفي الفلاتر
             const filterDiv = document.querySelector('.filters');
             if(filterDiv) filterDiv.style.display = 'none';
         }
@@ -134,4 +142,57 @@ async function loadWorks() {
     }
 }
 
-loadWorks();
+// فورم التواصل - ارسال الرسالة لـ Supabase
+function initContactForm() {
+    const contactForm = document.getElementById('contactForm');
+    if(!contactForm) return;
+    
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value.trim();
+        const whatsapp = document.getElementById('whatsapp').value.trim();
+        const message = document.getElementById('message').value.trim();
+        const msgBox = document.getElementById('formMsg');
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        
+        msgBox.style.display = 'block';
+        msgBox.style.color = '#4ade80';
+        msgBox.textContent = 'جاري الارسال...';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'جاري الارسال...';
+        
+        try {
+            const { error } = await supabaseClient.from('messages').insert([{
+                name: name,
+                whatsapp: whatsapp,
+                message: message,
+                created_at: new Date().toISOString()
+            }]);
+            
+            if(error) throw error;
+            
+            msgBox.style.color = '#4ade80';
+            msgBox.textContent = '✅ تم الارسال بنجاح! راح نتواصل معك قريب عبر الواتساب';
+            contactForm.reset();
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إرسال الطلب 🚀';
+            }, 4000);
+            
+        } catch(err) {
+            msgBox.style.color = 'red';
+            msgBox.textContent = '❌ خطأ: ' + err.message;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'إرسال الطلب 🚀';
+        }
+    });
+}
+
+// شغل كل شي عند فتح الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    loadWorks();
+    initContactForm();
+});
