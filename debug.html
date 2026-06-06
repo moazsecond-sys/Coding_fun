@@ -2,8 +2,8 @@
 <html>
 <head><title>فحص المجلدات</title></head>
 <body>
-<h3>بندور على كل المجلدات الموجودة:</h3>
-<div id="result"></div>
+<h3>النتيجة:</h3>
+<div id="result">جاري التحميل...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -12,9 +12,21 @@ const supabase = window.supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 );
 
-supabase.storage.from('aamal-images').list('', { limit: 100 }).then(({data, error}) => {
-  document.getElementById('result').innerHTML = 
-    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+document.getElementById('result').innerHTML += '<br>1. بدأ الاتصال...';
+
+supabase.storage.from('aamal-images').list('', { limit: 100 })
+.then(({data, error}) => {
+  document.getElementById('result').innerHTML += '<br>2. وصل الرد من Supabase';
+  
+  if(error) {
+    document.getElementById('result').innerHTML += '<br>❌ خطأ: ' + error.message;
+    return;
+  }
+  
+  document.getElementById('result').innerHTML += '<br>✅ نجح! النتيجة:<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+})
+.catch(err => {
+  document.getElementById('result').innerHTML += '<br>💥 خطأ فادح: ' + err.message;
 });
 </script>
 </body>
