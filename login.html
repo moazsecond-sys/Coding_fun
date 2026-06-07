@@ -11,7 +11,6 @@ body{background:#0f172a;color:white;display:flex;justify-content:center;align-it
 h2{text-align:center;margin-bottom:20px}
 input{width:100%;padding:10px;margin:8px 0;border:0;border-radius:6px;background:#334155;color:white;box-sizing:border-box}
 button{width:100%;padding:12px;margin-top:12px;background:#3b82f6;color:white;border:0;border-radius:6px;cursor:pointer;font-weight:bold}
-button:hover{background:#2563eb}
 #err{color:#f87171;text-align:center;margin-top:10px;min-height:20px;font-size:14px}
 </style>
 </head>
@@ -26,30 +25,43 @@ button:hover{background:#2563eb}
 
 <script>
 const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"; // <-- غير هذا للمفتاح حقك
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function login(){
+try{
 document.getElementById('err').textContent = 'جاري الدخول...';
 const email = document.getElementById('email').value.trim();
 const pass = document.getElementById('pass').value;
 
+if(!email || !pass){
+document.getElementById('err').textContent = 'اكتب الايميل والباسورد';
+return;
+}
+
 const {data, error} = await supabase.auth.signInWithPassword({email, password: pass});
 
 if(error){
-document.getElementById('err').textContent = error.message;
+document.getElementById('err').textContent = 'خطأ: ' + error.message;
+alert('خطأ تسجيل: ' + error.message);
 return;
 }
 
 const user = data?.user;
 const role = user?.app_metadata?.role;
 
+alert('تم الدخول! الرول حقك: ' + role); // هذا تنبيه مؤقت عشان نتأكد
+
 if(role === 'admin'){
 window.location.href = 'index.html';
 } else {
 await supabase.auth.signOut();
-document.getElementById('err').textContent = 'غير مسموح: هذا الحساب مو ادمن';
+document.getElementById('err').textContent = 'غير مسموح: الرول حقك = ' + role;
+}
+}catch(e){
+document.getElementById('err').textContent = 'خطأ في الكود: ' + e.message;
+alert('خطأ في الكود: ' + e.message);
 }
 </script>
 </body>
