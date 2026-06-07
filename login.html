@@ -1,36 +1,58 @@
 <!doctype html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تسجيل دخول الادمن</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:tahoma; background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0}
+.card{background:#121936; padding:30px; border-radius:16px; width:320px}
+input{width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#eaf2ff}
+button{width:100%; padding:12px; background:#3b82f6; color:white; border:0; border-radius:8px; cursor:pointer; margin-top:10px}
+button:hover{background:#2563eb}
+</style>
 </head>
 <body>
-<input id="e" placeholder="email">
-<input id="p" type="password">
-<button onclick="go()">Login</button>
+<div class="card">
+<h2 style="text-align:center; margin-bottom:20px">دخول الادمن</h2>
+<input id="e" placeholder="الايميل">
+<input id="p" type="password" placeholder="كلمة السر">
+<button onclick="go()">دخول</button>
+</div>
 
 <script>
 const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
 
 async function go(){
-alert('C button clicked');
-const email = document.getElementById('e').value;
-const pass = document.getElementById('p').value;
-
-alert('D trying login for: ' + email);
-
-try {
-const {data, error} = await sb.auth.signInWithPassword({email, password: pass});
-
-if(error){
-alert('E ERROR: ' + error.message);
-return;
-}
-
-alert('F SUCCESS! Role: ' + data.user.app_metadata.role);
-
-} catch(e){
-alert('G CATCH ERROR: ' + e.message);
+  const email = document.getElementById('e').value.trim();
+  const pass = document.getElementById('p').value;
+  
+  if(!email || !pass){
+    alert('اكتب الايميل وكلمة السر');
+    return;
+  }
+  
+  try {
+    const {data, error} = await sb.auth.signInWithPassword({email, password: pass});
+    
+    if(error){
+      alert('خطأ: ' + error.message);
+      return;
+    }
+    
+    if(data.user.app_metadata.role !== 'admin'){
+      await sb.auth.signOut();
+      alert('انت مو ادمن ❌');
+      return;
+    }
+    
+    // نجح - حوله على بوابة الادمن
+    location.href = 'index.html';
+    
+  } catch(e){
+    alert('خطأ: ' + e.message);
+  }
 }
 </script>
 </body>
