@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>التحقق...</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0; text-align:center}</style>
+<style>body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}</style>
 </head>
 <body>
 <div id="msg">جاري التحقق من الصلاحيات...</div>
@@ -13,35 +13,35 @@
 <script>
 const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
 
-sb.auth.getUser().then(function(res){
-  document.getElementById('msg').innerText = 'تم استلام البيانات...';
+let checked = false; // عشان ما يشتغل مرتين
+
+async function check(){
+  if(checked) return; // لو اشتغل مرة لا تعيده
+  checked = true;
   
-  if(res.error){
-    document.getElementById('msg').innerText = 'خطأ: ' + res.error.message;
-    setTimeout(function(){ location.href = 'login.html' }, 2000);
-    return;
-  }
-  
-  var user = res.data.user;
+  const res = await sb.auth.getUser();
+  const user = res.data.user;
   
   if(!user){
     document.getElementById('msg').innerText = 'ما فيه مستخدم';
-    setTimeout(function(){ location.href = 'login.html' }, 1000);
+    location.href = 'login.html';
     return;
   }
   
-  var role = user.app_metadata.role;
-  document.getElementById('msg').innerText = 'الدور حقك: ' + role;
+  const role = user.app_metadata?.role;
+  document.getElementById('msg').innerText = 'الدور: ' + role;
   
-  if(role != 'admin'){
-    sb.auth.signOut();
-    setTimeout(function(){ location.href = 'login.html' }, 1000);
-    return;
+  if(role === 'admin'){
+    // انت ادمن - حول فوراً بدون تأخير
+    location.replace('home.html');
+  } else {
+    await sb.auth.signOut();
+    document.getElementById('msg').innerText = 'مو ادمن';
+    location.href = 'login.html';
   }
-  
-  document.getElementById('msg').innerText = 'تمام انت ادمن، جاري الدخول...';
-  setTimeout(function(){ location.href = 'home.html' }, 500);
-});
+}
+
+check();
 </script>
 </body>
 </html>
