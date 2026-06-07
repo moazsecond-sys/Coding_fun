@@ -2,46 +2,19 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>التحقق...</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}</style>
 </head>
-<body>
-<div id="msg">جاري التحقق من الصلاحيات...</div>
-
+<body style="background:#0b1020;color:white;display:flex;align-items:center;justify-content:center;height:100vh">
 <script>
 const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
 
-let checked = false; // عشان ما يشتغل مرتين
-
-async function check(){
-  if(checked) return; // لو اشتغل مرة لا تعيده
-  checked = true;
-  
-  const res = await sb.auth.getUser();
-  const user = res.data.user;
-  
-  if(!user){
-    document.getElementById('msg').innerText = 'ما فيه مستخدم';
-    location.href = 'login.html';
-    return;
-  }
-  
-  const role = user.app_metadata?.role;
-  document.getElementById('msg').innerText = 'الدور: ' + role;
-  
-  if(role === 'admin'){
-    // انت ادمن - حول فوراً بدون تأخير
-    location.replace('home.html');
+sb.auth.getUser().then(r => {
+  if(r.data.user?.app_metadata?.role === 'admin'){
+    window.location.replace('home.html');
   } else {
-    await sb.auth.signOut();
-    document.getElementById('msg').innerText = 'مو ادمن';
-    location.href = 'login.html';
+    window.location.replace('login.html');
   }
-}
-
-check();
+});
 </script>
 </body>
 </html>
