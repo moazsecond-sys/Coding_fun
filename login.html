@@ -2,57 +2,37 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>دخول</title>
+<title>Test</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{background:#0f172a;color:white;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:tahoma}
-.box{background:#1e293b;padding:30px;border-radius:12px;width:320px}
-input{width:100%;padding:10px;margin:8px 0;border:0;border-radius:6px;background:#334155;color:white}
-button{width:100%;padding:12px;margin-top:12px;background:#3b82f6;color:white;border:0;border-radius:6px;cursor:pointer}
-#err{color:#f87171;text-align:center;margin-top:10px}
-</style>
 </head>
-<body>
-<div class="box">
-<h2>دخول الادمن</h2>
-<input id="email" type="email" placeholder="الايميل">
-<input id="pass" type="password" placeholder="الباسورد">
-<button onclick="doLogin()">دخول</button>
-<p id="err"></p>
-</div>
+<body style="background:#0f172a;color:white;text-align:center;padding:50px">
+<h2>اختبار Supabase</h2>
+<input id="email" placeholder="email"><br><br>
+<input id="pass" type="password" placeholder="password"><br><br>
+<button onclick="doLogin()">Login</button>
+<p id="err" style="color:red"></p>
 
 <script>
+alert('Script started'); // هذا لازم يطلع اول ما تفتح الصفحة
+
 const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co";
-const SUPABASE_KEY = "sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo"; // <-- حط المفتاح هنا بدون مسافات ولا عربي
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+alert('Supabase created'); // لو وصل هنا معناها المفتاح صح
 
 async function doLogin(){
-alert('1- الزر ضغط');
-const email = document.getElementById('email').value.trim();
+alert('Button clicked');
+const email = document.getElementById('email').value;
 const pass = document.getElementById('pass').value;
-
-alert('2- الايميل: ' + email);
 
 const {data, error} = await supabase.auth.signInWithPassword({email, password: pass});
 
 if(error){
-alert('3- خطأ تسجيل: ' + error.message);
-document.getElementById('err').textContent = error.message;
+alert('Error: ' + error.message);
 return;
 }
-
-alert('4- تسجيل ناجح! بنفحص الرول');
-const role = data.user?.app_metadata?.role;
-alert('5- الرول حقك: ' + role);
-
-if(role === 'admin'){
-alert('6- انت ادمن! بنحولك');
-window.location.href = 'index.html';
-} else {
-await supabase.auth.signOut();
-alert('7- مو ادمن. الرول = ' + role);
-document.getElementById('err').textContent = 'مو ادمن';
+alert('Success! Role: ' + data.user.app_metadata.role);
 }
 </script>
 </body>
