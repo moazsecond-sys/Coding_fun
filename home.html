@@ -1,31 +1,40 @@
 <!doctype html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>التحقق...</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}
+.box{text-align:center; padding:30px}
+</style>
 </head>
-<body style="background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma">
-<div id="msg">جاري التحقق من الصلاحيات...</div>
+<body>
+<div class="box" id="msg">جاري التحقق من الصلاحيات...</div>
 
 <script>
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function checkAdmin(){
   const { data: { user } = await sb.auth.getUser();
   
   if(!user){
-    document.getElementById('msg').innerHTML = 'مش مسجل دخول <br><a href="login.html" style="color:#3b82f6">روح سجل دخول</a>';
+    location.href = 'a.html';
     return;
   }
   
   if(user.app_metadata.role !== 'admin'){
     await sb.auth.signOut();
-    document.getElementById('msg').innerHTML = 'انت مو ادمن ❌ <br><a href="login.html" style="color:#3b82f6">ارجع للدخول</a>';
+    alert('انت مو ادمن ❌');
+    location.href = 'a.html';
     return;
   }
   
-  // انت ادمن - حوله على الموقع القديم
+  // انت ادمن - حوله على لوحة التحكم
   location.href = 'home.html';
 }
 
