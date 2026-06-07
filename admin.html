@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة التحكم | GREEN APPLE DESIGN</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"defer></script>
+
+<!-- 1. المفاتيح اول شي -->
+<script src="config.js"></script>
+<!-- 2. مكتبة Supabase ثاني شي -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;padding:20px;min-height:100vh}
@@ -64,7 +69,6 @@ button:hover{background:#22c55e}
 
 <!-- تبويب المقالات -->
 <div id="posts" class="tab-content">
-  <!-- فورم اضافة مقال جديد -->
   <div class="add-form">
     <h3 style="color:#4ade80;margin-bottom:15px">نشر مقال جديد 🚀</h3>
     <input type="text" id="postTitle" placeholder="عنوان المقال">
@@ -94,8 +98,12 @@ button:hover{background:#22c55e}
   </div>
 </div>
 
-<script src="config.js"defer></script>
+<!-- 3. كود الجافاسكربت اخر شي قبل </body> -->
 <script>
+// تأكد ان المفاتيح موجودة
+console.log('URL:', SUPABASE_URL);
+console.log('KEY:', SUPABASE_ANON_KEY);
+
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // التنقل بين التبويبات
