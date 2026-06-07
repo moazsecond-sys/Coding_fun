@@ -1,9 +1,11 @@
 const grid = document.getElementById('grid');
 const filters = document.querySelectorAll('.filters button');
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// استخدم SUPABASE_ANON_KEY من config.js
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // هل احنا في الصفحة الرئيسية؟
-const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '' || window.location.pathname.endsWith('/');
 
 let allFiles = [];
 
@@ -52,20 +54,21 @@ function renderWorks(filter = 'all') {
         const nameClean = cleanName(file.name);
         const category = getCategory(file.name);
         
-        grid.innerHTML += `
-            <div class="card" data-url="${data.publicUrl}">
-                <img src="${data.publicUrl}" alt="${nameClean} - تصميم GREEN APPLE DESIGN" loading="lazy">
-                <div class="info">
-                    <div class="name">${nameClean}</div>
-                    <div class="cat">${category.toUpperCase()}</div>
-                </div>
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.url = data.publicUrl;
+        card.innerHTML = `
+            <img src="${data.publicUrl}" alt="${nameClean} - تصميم GREEN APPLE DESIGN" loading="lazy">
+            <div class="info">
+                <div class="name">${nameClean}</div>
+                <div class="cat">${category.toUpperCase()}</div>
             </div>
         `;
+        grid.appendChild(card);
 
         // انيميشن الظهور
         setTimeout(() => {
-            const cards = grid.querySelectorAll('.card');
-            if(cards[index]) cards[index].classList.add('show');
+            card.classList.add('show');
         }, index * 80);
     });
 
@@ -109,7 +112,7 @@ async function loadWorks() {
     grid.innerHTML = '<div class="loading">🍏 جاري تحميل الأعمال...</div>';
     
     try {
-        const { data: files, error } = await supabaseClient.storage.from(BUCKET).list();
+        const { data: files, error } = await supabaseClient.storage.from(BUCKET).list('', {limit: 100, sortBy: {column: 'created_at', order: 'desc'}});
         
         if(error) throw error;
         
