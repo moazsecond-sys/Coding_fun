@@ -7,11 +7,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}
-.box{text-align:center; padding:30px}
 </style>
 </head>
 <body>
-<div class="box" id="msg">جاري التحقق من الصلاحيات...</div>
+<div>جاري التحقق من الصلاحيات...</div>
 
 <script>
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
@@ -19,26 +18,35 @@ const SUPABASE_KEY = 'sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function checkAdmin(){
-  const { data: { user } = await sb.auth.getUser();
-  
-  if(!user){
+async function check(){
+  try {
+    const { data: { user } = await sb.auth.getUser();
+    
+    if(!user){
+      location.href = 'login.html';
+      return;
+    }
+    
+    const role = user.app_metadata?.role;
+    
+    if(role !== 'admin'){
+      await sb.auth.signOut();
+      alert('حسابك مو ادمن ❌');
+      location.href = 'login.html';
+      return;
+    }
+    
+    // كل شي تمام - ادخل اللوحة
+    location.href = 'home.html';
+    
+  } catch(e){
+    console.error(e);
+    alert('خطأ: ' + e.message);
     location.href = 'login.html';
-    return;
   }
-  
-  if(user.app_metadata.role !== 'admin'){
-    await sb.auth.signOut();
-    alert('انت مو ادمن ❌');
-    location.href = 'login.html';
-    return;
-  }
-  
-  // انت ادمن - حوله على لوحة التحكم
-  location.href = 'home.html';
 }
 
-checkAdmin();
+check();
 </script>
 </body>
 </html>
