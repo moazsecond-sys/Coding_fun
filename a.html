@@ -10,18 +10,27 @@
 <button onclick="go()">Login</button>
 
 <script>
-alert('A script started');
-
-let sb;
-try {
-sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
-alert('B supabase created');
-} catch(e){
-alert('Error creating supabase: ' + e.message);
-}
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
 
 async function go(){
 alert('C button clicked');
+const email = document.getElementById('e').value;
+const pass = document.getElementById('p').value;
+
+alert('D trying login for: ' + email);
+
+try {
+const {data, error} = await sb.auth.signInWithPassword({email, password: pass});
+
+if(error){
+alert('E ERROR: ' + error.message);
+return;
+}
+
+alert('F SUCCESS! Role: ' + data.user.app_metadata.role);
+
+} catch(e){
+alert('G CATCH ERROR: ' + e.message);
 }
 </script>
 </body>
