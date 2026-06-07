@@ -6,30 +6,33 @@
 <title>دخول الادمن</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
-body{background:#0f172a;color:#fff;font-family:Tahoma;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
-.box{background:#1e293b;padding:30px;border-radius:15px;width:90%;max-width:350px}
-h2{color:#38bdf8;text-align:center;margin-bottom:20px}
-input{width:100%;padding:14px;margin:8px 0;border-radius:8px;border:0;background:#334155;color:#fff;font-size:16px;box-sizing:border-box}
-button{width:100%;padding:14px;background:#0ea5e9;color:#fff;border:0;border-radius:8px;font-size:18px;margin-top:15px}
-#error{color:#f87171;text-align:center;margin-top:10px;display:none}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f172a;color:#fff;font-family:'Tahoma';display:flex;justify-content:center;align-items:center;min-height:100vh}
+.box{background:#1e293b;padding:35px 25px;border-radius:15px;width:90%;max-width:380px;box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+h2{color:#38bdf8;text-align:center;margin-bottom:25px;font-size:24px}
+input{width:100%;padding:14px;margin:10px 0;border-radius:8px;border:2px solid #334155;background:#334155;color:#fff;font-size:16px}
+input:focus{border-color:#0ea5e9;outline:none}
+button{width:100%;padding:15px;background:#0ea5e9;color:#fff;border:0;border-radius:8px;font-size:18px;font-weight:bold;margin-top:15px;cursor:pointer}
+button:active{background:#0284c7}
+#error{color:#f87171;text-align:center;margin-top:15px;font-size:14px;display:none}
 </style>
 </head>
 <body>
 <div class="box">
-<h2>تسجيل دخول الادمن</h2>
-<input id="email" type="email" value="moazsecond@gmail.com">
-<input id="password" type="password" placeholder="كلمة السر">
+<h2>🔐 دخول لوحة التحكم</h2>
+<input id="email" type="email" value="moazsecond@gmail.com" readonly>
+<input id="password" type="password" placeholder="اكتب كلمة السر">
 <button type="button" onclick="doLogin()">دخول</button>
 <p id="error"></p>
 </div>
 
 <script>
-// ====== غير هذي بس ======
-const URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-// =======================
+// ====== عدل هذي السطرين بس ======
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+// =================================
 
-const supabase = window.supabase.createClient(URL, KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function doLogin() {
   const err = document.getElementById('error');
@@ -39,34 +42,36 @@ async function doLogin() {
   const pass = document.getElementById('password').value;
   
   if(!pass) {
-    err.innerText = 'اكتب كلمة السر';
+    err.innerText = '123456';
     err.style.display = 'block';
     return;
   }
   
+  err.innerText = 'جاري التحقق...';
+  err.style.display = 'block';
+  err.style.color = '#38bdf8';
+  
   try {
-    // سجل دخول
     const { data, error } = await supabase.auth.signInWithPassword({email, password: pass});
     
     if(error) {
-      err.innerText = 'الايميل او كلمة السر غلط';
-      err.style.display = 'block';
+      err.innerText = 'كلمة السر غلط';
+      err.style.color = '#f87171';
       return;
     }
     
-    // فحص الادمن
     if(data.user_metadata?.role === 'admin') {
       localStorage.setItem('role', 'authenticated');
       window.location.href = 'home.html';
     } else {
       err.innerText = 'انت مو ادمن';
-      err.style.display = 'block';
+      err.style.color = '#f87171';
       await supabase.auth.signOut();
     }
     
   } catch(e) {
     err.innerText = 'خطأ: ' + e.message;
-    err.style.display = 'block';
+    err.style.color = '#f87171';
   }
 }
 </script>
