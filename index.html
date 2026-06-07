@@ -2,43 +2,105 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>دخول</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل دخول</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{
+background:#0f172a;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+font-family:tahoma;
+}
+.box{
+background:#1e293b;
+padding:30px;
+border-radius:12px;
+width:320px;
+box-shadow:0 0 20px rgba(0,0,0,0.3);
+}
+h2{text-align:center;margin-bottom:20px}
+input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:0;
+border-radius:6px;
+background:#334155;
+color:white;
+box-sizing:border-box;
+}
+button{
+width:100%;
+padding:12px;
+margin-top:12px;
+background:#3b82f6;
+color:white;
+border:0;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+button:hover{background:#2563eb}
+#err{
+color:#f87171;
+text-align:center;
+margin-top:10px;
+font-size:14px;
+min-height:20px;
+}
+</style>
 </head>
-<body style="background:#0f172a;color:white;display:flex;justify-content:center;align-items:center;height:100vh;font-family:tahoma">
-<div style="background:#1e293b;padding:30px;border-radius:12px;width:300px">
-<h2 style="text-align:center">تسجيل دخول</h2>
-<input id="email" type="email" placeholder="الايميل" style="width:100%;padding:8px;margin:5px 0">
-<input id="pass" type="password" placeholder="كلمة السر" style="width:100%;padding:8px;margin:5px 0">
-<button onclick="login()" style="width:100%;padding:10px;margin-top:10px;background:#3b82f6;color:white;border:0;border-radius:6px;cursor:pointer">دخول</button>
-<p id="err" style="color:#f87171;text-align:center;margin-top:10px"></p>
+<body>
+<div class="box">
+<h2>تسجيل دخول</h2>
+<input id="email" type="email" placeholder="الايميل" autocomplete="email">
+<input id="pass" type="password" placeholder="كلمة السر" autocomplete="current-password">
+<button onclick="login()">دخول</button>
+<p id="err"></p>
 </div>
 
 <script>
-const SUPABASE_URL = 'https://mirrxytqttjglxrarq.supabase.co';
+// 1. حط بيانات مشروعك هنا
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 
+// 2. انشاء الاتصال
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// 3. دالة الدخول
 async function login(){
 document.getElementById('err').textContent = 'جاري الدخول...';
 const email = document.getElementById('email').value.trim();
 const pass = document.getElementById('pass').value;
 
-const {data, error} = await supabase.auth.signInWithPassword({email, password: pass});
-
-if(error){
-document.getElementById('err').textContent = error.message;
-alert('السبب: ' + error.message);
+if(!email || !pass){
+document.getElementById('err').textContent = 'اكتب الايميل وكلمة السر';
 return;
 }
 
+const {data, error} = await supabase.auth.signInWithPassword({
+email: email, 
+password: pass
+});
+
+if(error){
+document.getElementById('err').textContent = error.message;
+alert('Supabase يقول: ' + error.message);
+return;
+}
+
+// 4. نجيب الرول ونحول
 const role = data.user.app_metadata.role;
+
 if(role === 'admin'){
 window.location.href = 'admin.html';
 } else {
 window.location.href = 'user.html';
-}
 }
 </script>
 </body>
