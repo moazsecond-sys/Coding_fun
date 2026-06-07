@@ -2,50 +2,47 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>فحص سريع</title>
+<title>فحص الدخول</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
-body{font-family:Tahoma;padding:20px;background:#0f172a;color:#fff;text-align:center}
-#msg{font-size:20px;margin-top:50px}
+body{font-family:Tahoma;padding:30px;background:#0f172a;color:#fff;text-align:center;font-size:18px;line-height:2}
+.ok{color:#4ade80}.no{color:#f87171}
 </style>
 </head>
 <body>
 <div id="msg">جاري الفحص...</div>
 
 <script>
-const URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const PASSWORD = '123456';
 
-document.getElementById('msg').innerText = '1. الكود بدأ...';
+const msg = document.getElementById('msg');
 
 try {
-  const supabase = window.supabase.createClient(URL, KEY);
-  document.getElementById('msg').innerText += '\n2. اتصال Supabase نجح';
+  msg.innerHTML += '<br>1. تحميل Supabase ✓';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   
-  supabase.auth.getSession().then(res => {
-    document.getElementById('msg').innerText += '\n3. جاري تسجيل الدخول...';
-    
-    supabase.auth.signInWithPassword({
-      email: 'moazsecond@gmail.com',
-      password: '123456'
-    }).then(({data, error}) => {
-      if(error) {
-        document.getElementById('msg').innerText += '\n❌ خطأ: ' + error.message;
-        document.getElementById('msg').style.color = '#f87171';
-      } else if(data.user_metadata?.role === 'admin') {
-        document.getElementById('msg').innerText += '\n✅ انت ادمن رسمي!';
-        document.getElementById('msg').style.color = '#4ade80';
-        localStorage.setItem('role', 'authenticated');
-        setTimeout(()=>location.href='home.html', 2000);
-      } else {
-        document.getElementById('msg').innerText += '\n❌ مو ادمن. Role = ' + data.user_metadata?.role;
-      }
-    });
+  msg.innerHTML += '<br>2. الاتصال بالمشروع ✓';
+  
+  supabase.auth.signInWithPassword({
+    email: 'moazsecond@gmail.com',
+    password: PASSWORD
+  }).then(({data, error}) => {
+    if(error) {
+      msg.innerHTML += `<br><span class="no">3. فشل: ${error.message}</span>`;
+    } else if(data.user_metadata?.role === 'admin') {
+      msg.innerHTML += `<br><span class="ok">3. نجحت! انت ادمن ✅</span>`;
+      msg.innerHTML += '<br>جاري التحويل لhome.html...';
+      localStorage.setItem('role', 'authenticated');
+      setTimeout(()=>location.href='home.html', 2000);
+    } else {
+      msg.innerHTML += `<br><span class="no">3. مو ادمن. Role = ${data.user_metadata?.role}</span>`;
+    }
   });
   
 } catch(e) {
-  document.getElementById('msg').innerText = '❌ خطأ فادح: ' + e.message;
-  document.getElementById('msg').style.color = '#f87171';
+  msg.innerHTML = `<span class="no">خطأ فادح: ${e.message}</span>`;
 }
 </script>
 </body>
