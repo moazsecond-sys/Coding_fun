@@ -1,48 +1,30 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>فحص الدخول</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
-<style>
-body{font-family:Tahoma;padding:30px;background:#0f172a;color:#fff;text-align:center;font-size:18px;line-height:2}
-.ok{color:#4ade80}.no{color:#f87171}
-</style>
+<title>اختبار Supabase</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3"></script>
 </head>
-<body>
-<div id="msg">جاري الفحص...</div>
-
+<body style="background:#000;color:#0f0;font-family:tahoma;padding:50px">
+<h2>اختبار الاتصال</h2>
+<div id="result">جاري الاختبار...</div>
 <script>
-const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-const PASSWORD = '123456';
+const url = 'https://mirrxytqttjglglxrarq.supabase.co';
+const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 
-const msg = document.getElementById('msg');
+document.getElementById('result').innerText = 'الرابط: ' + url + '\nالمفتاح اول 20 حرف: ' + key.substring(0,20) + '...';
 
 try {
-  msg.innerHTML += '<br>1. تحميل Supabase ✓';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabase = window.supabase.createClient(url, key);
+  document.getElementById('result').innerText += '\n✅ المكتبة اشتغلت';
   
-  msg.innerHTML += '<br>2. الاتصال بالمشروع ✓';
-  
-  supabase.auth.signInWithPassword({
-    email: 'moazsecond@gmail.com',
-    password: PASSWORD
-  }).then(({data, error}) => {
-    if(error) {
-      msg.innerHTML += `<br><span class="no">3. فشل: ${error.message}</span>`;
-    } else if(data.user_metadata?.role === 'admin') {
-      msg.innerHTML += `<br><span class="ok">3. نجحت! انت ادمن ✅</span>`;
-      msg.innerHTML += '<br>جاري التحويل لhome.html...';
-      localStorage.setItem('role', 'authenticated');
-      setTimeout(()=>location.href='home.html', 2000);
-    } else {
-      msg.innerHTML += `<br><span class="no">3. مو ادمن. Role = ${data.user_metadata?.role}</span>`;
-    }
+  supabase.auth.getUser().then(r => {
+    document.getElementById('result').innerText += '\n✅ الاتصال مع Supabase نجح';
+  }).catch(e => {
+    document.getElementById('result').innerText += '\n❌ خطأ اتصال: ' + e.message;
   });
   
 } catch(e) {
-  msg.innerHTML = `<span class="no">خطأ فادح: ${e.message}</span>`;
+  document.getElementById('result').innerText += '\n❌ خطأ فادح: ' + e.message;
 }
 </script>
 </body>
