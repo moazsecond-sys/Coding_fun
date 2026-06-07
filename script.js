@@ -1,37 +1,57 @@
-// ===== ملف الواجهة والعرض =====
+// ===== ملف الواجهة والعرض - GREEN APPLE DESIGN =====
+console.log('script.js loaded ✅');
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM ready, starting app...');
+  setupLoader();
+  loadImages('all');
+  loadPosts();
+  setupContactForm();
+  setupFilters();
+});
 
 // عرض الصور
 async function loadImages(category = 'all') {
   const grid = document.getElementById('grid');
-  if (!grid) return;
-  
-  grid.innerHTML = '<div class="loading">جاري تحميل الأعمال...</div>';
-  
-  const images = await getImages(category);
-  
-  if (images.length === 0) {
-    grid.innerHTML = '<p class="no-posts">لا توجد أعمال بعد</p>';
+  if (!grid) {
+    console.warn('grid element not found');
     return;
   }
   
-  // في الصفحة الرئيسية 6 بس
-  const isHome = window.location.pathname.includes('index.html') || window.location.pathname === '/';
-  const displayImages = isHome ? images.slice(0, 6) : images;
+  console.log(`Loading images for category: ${category}`);
+  grid.innerHTML = '<div class="loading">جاري تحميل الأعمال...</div>';
   
-  let html = '';
-  displayImages.forEach((file, index) => {
-    const { data: urlData } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
+  try {
+    const images = await getImages(category);
+    console.log(`Found ${images.length} images`);
     
-    setTimeout(() => {
-      const card = document.createElement('div');
-      card.className = 'card show';
-      card.innerHTML = `<img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy">`;
-      card.onclick = () => openLightbox(urlData.publicUrl);
-      grid.appendChild(card);
-    }, index * 100); // تأثير ظهور تدريجي
-  });
-  
-  grid.innerHTML = '';
+    if (images.length === 0) {
+      grid.innerHTML = '<p class="no-posts">لا توجد أعمال بعد</p>';
+      return;
+    }
+    
+    // الصفحة الرئيسية 6 بس، صفحة الأعمال الكل
+    const isHome = window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+    const displayImages = isHome ? images.slice(0, 6) : images;
+    
+    grid.innerHTML = ''; // امسح اللودر بس، مو الكروت
+    
+    displayImages.forEach((file, index) => {
+      const { data: urlData } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
+      
+      setTimeout(() => {
+        const card = document.createElement('div');
+        card.className = 'card show';
+        card.innerHTML = `<img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy" onerror="this.style.display='none'">`;
+        card.onclick = () => openLightbox(urlData.publicUrl);
+        grid.appendChild(card);
+      }, index * 80); // تأثير ظهور تدريجي اسرع
+    });
+    
+  } catch (err) {
+    console.error('Error in loadImages:', err);
+    grid.innerHTML = '<p class="no-posts">خطأ في تحميل الأعمال</p>';
+  }
 }
 
 // عرض المقالات
@@ -71,7 +91,7 @@ function openLightbox(src) {
     lightbox.className = 'lightbox';
     lightbox.innerHTML = `
       <span class="close">&times;</span>
-      <img src="${src}">
+      <img src="${src}" alt="صورة مكبرة">
     `;
     document.body.appendChild(lightbox);
     lightbox.querySelector('.close').onclick = () => lightbox.style.display = 'none';
@@ -95,9 +115,9 @@ function setupContactForm() {
     btn.textContent = 'جاري الإرسال...';
     
     const result = await sendMessage(
-      document.getElementById('name').value,
-      document.getElementById('whatsapp').value,
-      document.getElementById('message').value
+      document.getElementById('name').value.trim(),
+      document.getElementById('whatsapp').value.trim(),
+      document.getElementById('message').value.trim()
     );
     
     if (result.success) {
@@ -108,7 +128,7 @@ function setupContactForm() {
     } else {
       msg.style.display = 'block';
       msg.style.color = 'red';
-      msg.textContent = 'خطأ: ' + result.error.message;
+      msg.textContent = 'خطأ: ' + (result.error?.message || 'حاول مرة ثانية');
     }
     
     btn.disabled = false;
@@ -119,9 +139,12 @@ function setupContactForm() {
 
 // الفلاتر
 function setupFilters() {
-  document.querySelectorAll('.filters button').forEach(btn => {
+  const buttons = document.querySelectorAll('.filters button');
+  if (!buttons.length) return;
+  
+  buttons.forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+      buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       loadImages(btn.dataset.cat);
     });
@@ -139,18 +162,9 @@ function setupLoader() {
       setTimeout(() => {
         loader.style.opacity = '0';
         setTimeout(() => loader.style.display = 'none', 500);
-      }, 1500);
+      }, 1200);
     });
   } else {
     loader.style.display = 'none';
   }
 }
-
-// التشغيل
-document.addEventListener('DOMContentLoaded', () => {
-  setupLoader();
-  loadImages('all');
-  loadPosts();
-  setupContactForm();
-  setupFilters();
-});
