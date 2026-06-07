@@ -1,201 +1,167 @@
-const grid = document.getElementById('grid');
-const filters = document.querySelectorAll('.filters button');
-
-// استخدم SUPABASE_ANON_KEY من config.js
+// ربط Supabase مرة وحدة
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// هل احنا في الصفحة الرئيسية؟
-const isHomePage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '' || window.location.pathname.endsWith('/');
-
-let allFiles = [];
-
-// تنظيف اسم الملف
-function cleanName(filename) {
-    return filename
-        .replace(/\.[^/.]+$/, "")
-        .replace(/[-_]/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
-}
-
-// تحديد التصنيف
-function getCategory(filename) {
-    const name = filename.toLowerCase();
-    if(name.includes('logo')) return 'logo';
-    if(name.includes('banner')) return 'banner';
-    if(name.includes('poster') || name.includes('تصميم')) return 'poster';
-    return 'other';
-}
-
-// عرض الأعمال
-function renderWorks(filter = 'all') {
-    if(!grid) return;
-    
-    grid.innerHTML = '';
-    
-    let filtered = allFiles.filter(file => {
-        if (filter === 'all') return true;
-        return getCategory(file.name) === filter;
+// دالة جلب وعرض الصور
+async function loadImages(category = 'all') {
+  const grid = document.getElementById('grid');
+  if (!grid) return;
+  
+  grid.innerHTML = '<div class="loading">جاري تحميل الأعمال...</div>';
+  
+  try {
+    const { data, error } = await supabaseClient.storage.from(BUCKET).list('', {
+      limit: 100,
+      offset: 0
     });
-
-    // في الرئيسية نعرض 6 بس
-    if(isHomePage) {
-        filtered = filtered.slice(0, 6);
+    
+    if (error) throw error;
+    
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<p class="no-posts">لا توجد صور في البكت</p>';
+      return;
     }
-
-    if(filtered.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#aaa; padding:40px">لا توجد أعمال في هذا القسم بعد</p>';
-        return;
+    
+    let images = data.filter(file => file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i));
+    
+    // فلترة حسب التصنيف
+    if (category !== 'all') {
+      images = images.filter(file => file.name.toLowerCase().includes(category.toLowerCase()));
     }
-
-    filtered.forEach((file, index) => {
-        if(!file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) return;
-        
-        const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
-        const nameClean = cleanName(file.name);
-        const category = getCategory(file.name);
-        
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.url = data.publicUrl;
-        card.innerHTML = `
-            <img src="${data.publicUrl}" alt="${nameClean} - تصميم GREEN APPLE DESIGN" loading="lazy">
-            <div class="info">
-                <div class="name">${nameClean}</div>
-                <div class="cat">${category.toUpperCase()}</div>
-            </div>
-        `;
-        grid.appendChild(card);
-
-        // انيميشن الظهور
-        setTimeout(() => {
-            card.classList.add('show');
-        }, index * 80);
+    
+    // في الصفحة الرئيسية نعرض 6 بس
+    const isHome = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
+    if (isHome) images = images.slice(0, 6);
+    
+    if (images.length === 0) {
+      grid.innerHTML = '<p class="no-posts">لا توجد أعمال في هذا التصنيف</p>';
+      return;
+    }
+    
+    let html = '';
+    images.forEach(file => {
+      const { data: urlData } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
+      html += `
+        <div class="card" data-cat="${file.name.toLowerCase()}">
+          <img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy">
+        </div>
+      `;
     });
-
-    activateLightbox();
+    
+    grid.innerHTML = html;
+  } catch (err) {
+    grid.innerHTML = '<p class="no-posts" style="color:red">خطأ في تحميل الصور</p>';
+    console.error(err);
+  }
 }
 
-// lightbox تكبير الصورة
-function activateLightbox() {
-    if(!grid) return;
+// دالة جلب المقالات - للصفحة الرئيسية فقط
+async function loadPosts() {
+  const postsGrid = document.getElementById('postsGrid');
+  if (!postsGrid) return;
+  
+  try {
+    const { data, error } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false }).limit(6);
+    if (error) throw error;
     
-    let lightbox = document.getElementById('lightbox');
-    
-    if(!lightbox) {
-        lightbox = document.createElement('div');
-        lightbox.id = 'lightbox';
-        lightbox.className = 'lightbox';
-        lightbox.innerHTML = '<span class="close">&times;</span><img src="" alt="">';
-        document.body.appendChild(lightbox);
-        
-        lightbox.querySelector('.close').onclick = () => lightbox.style.display = 'none';
-        lightbox.onclick = (e) => { if(e.target === lightbox) lightbox.style.display = 'none'; }
-        
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'Escape') lightbox.style.display = 'none';
-        });
+    if (!data || data.length === 0) {
+      postsGrid.innerHTML = '<p class="no-posts">لا توجد مقالات بعد. تابعنا قريباً 🔥</p>';
+      return;
     }
-
-    document.querySelectorAll('.card').forEach(card => {
-        card.onclick = () => {
-            const url = card.dataset.url;
-            lightbox.querySelector('img').src = url;
-            lightbox.style.display = 'flex';
-        };
+    
+    let html = '';
+    data.forEach(p => {
+      const date = new Date(p.created_at).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+      html += `
+        <div class="post-card">
+          <h3>${p.title}</h3>
+          <p>${p.content.substring(0, 150)}${p.content.length > 150 ? '...' : ''}</p>
+          <div class="post-date">📅 ${date}</div>
+        </div>
+      `;
     });
+    postsGrid.innerHTML = html;
+  } catch (err) {
+    postsGrid.innerHTML = '<p class="no-posts" style="color:red">خطأ في تحميل المقالات</p>';
+    console.error(err);
+  }
 }
 
-// تحميل الأعمال
-async function loadWorks() {
-    if(!grid) return;
+// ارسال رسالة التواصل
+function setupContactForm() {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById('formMsg');
+    const btn = e.target.querySelector('button');
     
-    grid.innerHTML = '<div class="loading">🍏 جاري تحميل الأعمال...</div>';
+    btn.disabled = true;
+    btn.textContent = 'جاري الإرسال...';
     
-    try {
-        const { data: files, error } = await supabaseClient.storage.from(BUCKET).list('', {limit: 100, sortBy: {column: 'created_at', order: 'desc'}});
-        
-        if(error) throw error;
-        
-        if(!files || files.length === 0) {
-            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#aaa; padding:40px">البكت فاضي، ارفع صورك في Supabase</p>';
-            return;
-        }
-
-        allFiles = files;
-        renderWorks();
-
-        // الفلاتر تشتغل بس في works.html
-        if(!isHomePage && filters.length > 0) {
-            filters.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filters.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    renderWorks(btn.dataset.cat);
-                });
-            });
-        } else {
-            // في الرئيسية اخفي الفلاتر
-            const filterDiv = document.querySelector('.filters');
-            if(filterDiv) filterDiv.style.display = 'none';
-        }
-
-    } catch(err) {
-        grid.innerHTML = `<p style="color:red; text-align:center; padding:60px">❌ خطأ: ${err.message}</p>`;
-        console.error(err);
+    const { error } = await supabaseClient.from('messages').insert([{
+      name: document.getElementById('name').value,
+      whatsapp: document.getElementById('whatsapp').value,
+      message: document.getElementById('message').value
+    }]);
+    
+    if (error) {
+      msg.style.display = 'block';
+      msg.style.color = 'red';
+      msg.textContent = 'خطأ في الإرسال: ' + error.message;
+    } else {
+      msg.style.display = 'block';
+      msg.style.color = '#4ade80';
+      msg.textContent = 'تم إرسال طلبك بنجاح! راح نتواصل معك قريباً ✅';
+      form.reset();
     }
-}
-
-// فورم التواصل - ارسال الرسالة لـ Supabase
-function initContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    if(!contactForm) return;
     
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const name = document.getElementById('name').value.trim();
-        const whatsapp = document.getElementById('whatsapp').value.trim();
-        const message = document.getElementById('message').value.trim();
-        const msgBox = document.getElementById('formMsg');
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        
-        msgBox.style.display = 'block';
-        msgBox.style.color = '#4ade80';
-        msgBox.textContent = 'جاري الارسال...';
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'جاري الارسال...';
-        
-        try {
-            const { error } = await supabaseClient.from('messages').insert([{
-                name: name,
-                whatsapp: whatsapp,
-                message: message,
-                created_at: new Date().toISOString()
-            }]);
-            
-            if(error) throw error;
-            
-            msgBox.style.color = '#4ade80';
-            msgBox.textContent = '✅ تم الارسال بنجاح! راح نتواصل معك قريب عبر الواتساب';
-            contactForm.reset();
-            
-            setTimeout(() => {
-                msgBox.style.display = 'none';
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'إرسال الطلب 🚀';
-            }, 4000);
-            
-        } catch(err) {
-            msgBox.style.color = 'red';
-            msgBox.textContent = '❌ خطأ: ' + err.message;
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'إرسال الطلب 🚀';
-        }
-    });
+    btn.disabled = false;
+    btn.textContent = 'إرسال الطلب 🚀';
+    setTimeout(() => msg.style.display = 'none', 5000);
+  });
 }
 
-// شغل كل شي عند فتح الصفحة
+// ازرار الفلترة
+function setupFilters() {
+  const filterBtns = document.querySelectorAll('.filters button');
+  if (filterBtns.length === 0) return;
+  
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadImages(btn.dataset.cat);
+    });
+  });
+}
+
+// شاشة التحميل
+function setupLoader() {
+  const loader = document.getElementById('loader');
+  if (!loader) return;
+  
+  if (sessionStorage.getItem('visited') !== 'yes') {
+    sessionStorage.setItem('visited', 'yes');
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        loader.style.opacity = '0';
+        setTimeout(function () { loader.style.display = 'none' }, 500);
+      }, 1500);
+    });
+  } else {
+    loader.style.display = 'none';
+  }
+}
+
+// تشغيل الكل عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-    loadWorks();
-    initContactForm();
+  setupLoader();
+  loadImages('all');
+  loadPosts();
+  setupContactForm();
+  setupFilters();
+  
+  // تحديث لحظي للمقالات
+  supabaseClient.channel('posts-public').on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, loadPosts).subscribe();
 });
