@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة الادمن</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{background:#0f172a;color:white;padding:20px;font-family:tahoma}
-button{background:#ef4444;color:white;border:0;padding:10px 20px;border-radius:6px;cursor:pointer}
-</style>
+<style>body{background:#0f172a;color:white;padding:20px;font-family:tahoma}button{background:#ef4444;color:white;border:0;padding:10px 20px;border-radius:6px;cursor:pointer}</style>
 </head>
 <body>
 
@@ -16,17 +13,22 @@ button{background:#ef4444;color:white;border:0;padding:10px 20px;border-radius:6
 <p>هذي لوحة التحكم حقتك</p>
 <button onclick="logout()">تسجيل خروج</button>
 
-<!-- حط محتوى لوحتك هنا تحت -->
-
 <script>
-const SUPABASE_URL = "https://mirrxytqttjglxrarq.supabase.co";
+const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// فحص اول ما تفتح الصفحة
 supabase.auth.getUser().then(({data: { user }}) => {
-  const role = user?.app_metadata?.role;
-  if(!user || role !== 'admin'){
+  if(!user || user.app_metadata?.role !== 'admin'){
+    window.location.href = 'login.html';
+  }
+});
+
+// فحص لو سويت خروج من تبويب ثاني
+supabase.auth.onAuthStateChange((event, session) => {
+  if(event === 'SIGNED_OUT' || !session){
     window.location.href = 'login.html';
   }
 });
