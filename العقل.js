@@ -1,5 +1,5 @@
-// ===== ملف الواجهة والعرض - GREEN APPLE DESIGN =====
-console.log('script.js loaded ✅');
+// ===== ملف العقل - GREEN APPLE DESIGN =====
+console.log('العقل.js loaded ✅');
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM ready, starting app...');
@@ -13,10 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // عرض الصور
 async function loadImages(category = 'all') {
   const grid = document.getElementById('grid');
-  if (!grid) {
-    console.warn('grid element not found');
-    return;
-  }
+  if (!grid) return;
   
   console.log(`Loading images for category: ${category}`);
   grid.innerHTML = '<div class="loading">جاري تحميل الأعمال...</div>';
@@ -31,23 +28,23 @@ async function loadImages(category = 'all') {
     }
     
     // الصفحة الرئيسية 6 بس، صفحة الأعمال الكل
-    const isHome = window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '';
+    const isHome = window.location.pathname.includes('الواجهة.html') || window.location.pathname === '/' || window.location.pathname === '';
     const displayImages = isHome ? images.slice(0, 6) : images;
     
-    grid.innerHTML = ''; // امسح اللودر بس، مو الكروت
+    grid.innerHTML = '';
     
     displayImages.forEach((file, index) => {
       const { data: urlData } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name, {
-  transform: { width: 800, quality: 80 }
-});
+        transform: { width: 600, quality: 75 } // اخف واسرع للجوال
+      });
       
       setTimeout(() => {
         const card = document.createElement('div');
         card.className = 'card show';
-        card.innerHTML = `<img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy" onerror="this.style.display='none'">`;
+        card.innerHTML = `<img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy">`;
         card.onclick = () => openLightbox(urlData.publicUrl);
         grid.appendChild(card);
-      }, index * 80); // تأثير ظهور تدريجي اسرع
+      }, index * 80);
     });
     
   } catch (err) {
@@ -68,20 +65,18 @@ async function loadPosts() {
     return;
   }
   
-  let html = '';
-  posts.forEach(p => {
+  postsGrid.innerHTML = posts.map(p => {
     const date = new Date(p.created_at).toLocaleDateString('ar-EG', { 
       year: 'numeric', month: 'long', day: 'numeric' 
     });
-    html += `
+    return `
       <div class="post-card">
         <h3>${p.title}</h3>
         <p>${p.content.substring(0, 150)}${p.content.length > 150 ? '...' : ''}</p>
         <div class="post-date">📅 ${date}</div>
       </div>
     `;
-  });
-  postsGrid.innerHTML = html;
+  }).join('');
 }
 
 // لايت بوكس
@@ -122,17 +117,11 @@ function setupContactForm() {
       document.getElementById('message').value.trim()
     );
     
-    if (result.success) {
-      msg.style.display = 'block';
-      msg.style.color = '#4ade80';
-      msg.textContent = 'تم إرسال طلبك بنجاح! ✅';
-      form.reset();
-    } else {
-      msg.style.display = 'block';
-      msg.style.color = 'red';
-      msg.textContent = 'خطأ: ' + (result.error?.message || 'حاول مرة ثانية');
-    }
+    msg.style.display = 'block';
+    msg.style.color = result.success ? '#4ade80' : 'red';
+    msg.textContent = result.success ? 'تم إرسال طلبك بنجاح! ✅' : 'خطأ: ' + (result.error?.message || 'حاول مرة ثانية');
     
+    if (result.success) form.reset();
     btn.disabled = false;
     btn.textContent = 'إرسال الطلب 🚀';
     setTimeout(() => msg.style.display = 'none', 5000);
