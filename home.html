@@ -2,63 +2,52 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الادمن</title>
+<title>لوحة التحكم</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{background:#0f172a;color:white;padding:20px;font-family:tahoma;margin:0}
-.loading{height:100vh;display:flex;align-items:center;justify-content:center}
-#content{display:none}
-button{background:#ef4444;color:white;border:0;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:bold}
-button:hover{background:#dc2626}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+body{background:#0f172a;color:white;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:tahoma}
+#content{display:none;text-align:center}
+button{background:red;color:white;border:0;padding:10px 20px;border-radius:5px;margin-top:20px;cursor:pointer}
 </style>
 </head>
 <body>
 
-<div id="loading" class="loading">جاري التحقق...</div>
+<div id="loading">جاري التحقق من صلاحياتك...</div>
 
 <div id="content">
-  <div class="topbar">
-    <h1>مرحبا يا ادمن</h1>
-    <button onclick="logout()">تسجيل خروج</button>
-  </div>
-  
-  <p>هذي لوحة التحكم حقتك</p>
-  
-  <!-- حط محتوى لوحتك هنا -->
+  <h1>مرحبا ادمن ✅</h1>
+  <p id="email"></p>
+  <button onclick="logout()">خروج</button>
 </div>
 
 <script>
-const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co";
-const SUPABASE_KEY = "sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ";
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-async function init(){
-  const { data: { user } = await supabase.auth.getUser();
+// استخدم getSession بدل getUser عشان ما يعلق
+sb.auth.getSession().then(({data:{session}}) => {
+  const user = session?.user;
   
-  if(!user || user.app_metadata?.role !== 'admin'){
-    window.location.replace('login.html');
+  if(!user){
+    location.replace('login.html');
     return;
   }
   
+  const role = user.user_metadata?.role || user.app_metadata?.role;
+  
+  if(role !== 'admin'){
+    sb.auth.signOut();
+    location.replace('login.html');
+    return;
+  }
+  
+  // تمام انت ادمن
   document.getElementById('loading').style.display = 'none';
   document.getElementById('content').style.display = 'block';
-}
+  document.getElementById('email').innerText = user.email;
+});
 
-init();
-
-async function logout(){
-  try {
-    await supabase.auth.signOut();
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.replace('login.html');
-  } catch(e){
-    alert('خطأ في الخروج: ' + e.message);
-    window.location.replace('login.html');
-  }
+function logout(){
+  sb.auth.signOut().then(() => location.replace('login.html'));
 }
 </script>
 </body>
