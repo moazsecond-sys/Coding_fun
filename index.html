@@ -21,16 +21,23 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function login(){
+alert('الزر اشتغل! الحين بجرب ادخل'); // سطر تجربة
+
 document.getElementById('err').textContent = 'جاري الدخول...';
 const email = document.getElementById('email').value;
 const pass = document.getElementById('pass').value;
 
+alert('الايميل: ' + email); // سطر تجربة ثاني
+
 const {data, error} = await supabase.auth.signInWithPassword({email:email,password:pass});
 
 if(error){
+alert('الخطأ: ' + error.message); // بيطلع الخطأ في نافذة
 document.getElementById('err').textContent = 'خطأ: ' + error.message;
 return;
 }
+
+alert('تم الدخول بنجاح!'); // لو وصل هنا معناه تمام
 
 if(data.user.app_metadata.role==='admin'){
 window.location.href='dashboard.html';
