@@ -24,34 +24,40 @@ h2{text-align:center;margin-bottom:20px;color:#38bdf8}
 </div>
 
 <script>
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
-
-// ==========================================
-// كود مسح التوكن القديم - انسخه الحين بس
-// بعد ما تسجل دخول مرة وحدة وتضبط، احذف السطرين هذي
-// ==========================================
-sb.auth.signOut();
-localStorage.clear();
-sessionStorage.clear();
-// ==========================================
-// انتهى كود المسح
-// ==========================================
+// ===== حط بياناتك هنا =====
+const SUPABASE_URL = 'https://mirrxytqttjglxrarq.supabase.co';
+const SUPABASE_KEY = 'انسخ_المفتاح_anon_الكامل_هنا';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// =========================
 
 async function login(){
-  const email = document.getElementById('email').value;
-  const pass = document.getElementById('pass').value;
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('pass').value.trim();
   const msg = document.getElementById('msg');
   
-  const {data, error} = await sb.auth.signInWithPassword({email, pass});
+  if(!email || !pass){
+    msg.innerText = 'اكتب الايميل والباسوورد';
+    return;
+  }
+  
+  msg.innerText = 'جاري التحقق...';
+  
+  // الغلطة كانت هنا: لازم password مو pass
+  const {data, error} = await sb.auth.signInWithPassword({
+    email: email, 
+    password: pass
+  });
   
   if(error){
     msg.innerText = 'خطأ: ' + error.message;
+    console.log('تفاصيل الخطأ:', error);
     return;
   }
   
   const role = data.user.app_metadata?.role;
   
   if(role === 'admin'){
+    msg.innerText = 'تم الدخول! جاري التحويل...';
     window.location.replace('home.html');
   } else {
     msg.innerText = 'انت مو ادمن';
