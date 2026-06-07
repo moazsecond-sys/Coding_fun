@@ -1,76 +1,37 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم - Admin</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Tahoma', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-    .container { background: white; padding: 40px; border-radius: 15px; max-width: 800px; margin: 50px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }
-    h1 { color: #2c3e50; margin-bottom: 20px; }
-    #user-info { font-size: 18px; color: #27ae60; margin: 20px 0; font-weight: bold; }
-    button { background: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 20px; }
-    button:hover { background: #c0392b; }
-    .admin-content { margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 2px solid #27ae60; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>👑 لوحة التحكم</h1>
-    <p id="user-info">جاري التحقق من الصلاحيات...</p>
-    
-    <div class="admin-content" id="admin-panel" style="display:none;">
-      <h2>مرحباً ادمن 🎉</h2>
-      <p>مبروك! انت دخلت بنجاح للوحة التحكم</p>
-      <p>هنا تقدر تضيف محتوى الادمن حقك: ادارة منتجات، طلبات، مستخدمين... الخ</p>
-    </div>
-    
-    <button onclick="logout()">تسجيل خروج</button>
-  </div>
+<script>
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  <script>
-    // ====== غير هذي البيانات حقتك ======
-    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-    // ===================================
+async function checkAuth() {
+  // 1. نجدد التوكن غصب عشان يجيب البيانات الجديدة
+  await supabase.auth.refreshSession();
+  
+  // 2. نجيب اليوزر بعد التجديد
+  const { data: { user } = await supabase.auth.getUser();
+  
+  if (!user) {
+    alert('سجل دخول اول');
+    window.location.href = 'login.html';
+    return;
+  }
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  console.log('بياناتك كاملة:', user.user_metadata); // شوف ايش يطلع هنا
+  document.getElementById('user-info').innerText = 'مرحباً: ' + user.email;
 
-    // فحص الدخول + فحص الادمن من Supabase مباشرة
-    async function checkAuth() {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      
-      if (error || !user) {
-        alert('لازم تسجل دخول اول');
-        window.location.href = 'login.html';
-        return;
-      }
+  if (user.user_metadata?.role === 'admin') {
+    document.getElementById('admin-panel').style.display = 'block';
+    console.log('✅ انت ادمن رسمي');
+  } else {
+    alert('لسا مو ادمن. Role = ' + user.user_metadata?.role);
+    // سوي خروج عشان تجرب مرة ثانية
+    await supabase.auth.signOut();
+  }
+}
+checkAuth();
 
-      document.getElementById('user-info').innerText = 'مرحباً: ' + user.email;
-
-      // ====== هذا الفحص الصح من الداتا بيز ======
-      const userRole = user.user_metadata?.role;
-      console.log('Role حقك:', userRole);
-
-      if (userRole === 'admin') {
-        console.log('✅ مرحباً ادمن مواز - دخول ناجح');
-        document.getElementById('admin-panel').style.display = 'block';
-      } else {
-        alert('صلاحياتك مو ادمن ❌\nRole الحالي: ' + userRole + '\nسوي تسجيل خروج وسجل دخول مرة ثانية');
-        await supabase.auth.signOut();
-        window.location.href = 'login.html';
-      }
-    }
-
-    checkAuth();
-
-    // زر تسجيل الخروج
-    async function logout() {
-      await supabase.auth.signOut();
-      window.location.href = 'login.html';
-    }
-  </script>
-</body>
-</html>
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+}
+</script>
