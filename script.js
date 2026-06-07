@@ -37,7 +37,9 @@ async function loadImages(category = 'all') {
     grid.innerHTML = ''; // امسح اللودر بس، مو الكروت
     
     displayImages.forEach((file, index) => {
-      const { data: urlData } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name);
+      const { data: urlData } = supabaseClient.storage.from(BUCKET).getPublicUrl(file.name, {
+  transform: { width: 800, quality: 80 }
+});
       
       setTimeout(() => {
         const card = document.createElement('div');
