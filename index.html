@@ -8,22 +8,47 @@
 <style>body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}</style>
 </head>
 <body>
-<div>جاري التحقق من الصلاحيات...</div>
+<div id="msg">جاري التحقق من الصلاحيات...</div>
 
 <script>
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ';
 
-(async function check(){
-  const { data: { user } = await sb.auth.getUser();
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function check(){
+  document.getElementById('msg').innerText = 'جاري التحقق...';
   
-  if(!user) return location.href = 'login.html';
-  if(user.app_metadata?.role !== 'admin'){
-    await sb.auth.signOut();
-    return location.href = 'login.html';
+  const res = await sb.auth.getUser();
+  const user = res.data.user;
+  const error = res.error;
+  
+  if(error){
+    document.getElementById('msg').innerText = 'خطأ: ' + error.message;
+    setTimeout(() => location.href = 'login.html', 2000);
+    return;
   }
   
-  location.href = 'home.html';
-})();
+  if(!user){
+    document.getElementById('msg').innerText = 'ما فيه مستخدم';
+    setTimeout(() => location.href = 'login.html', 1000);
+    return;
+  }
+  
+  const role = user.app_metadata ? user.app_metadata.role : null;
+  document.getElementById('msg').innerText = 'الدور: ' + role;
+  
+  if(role !== 'admin'){
+    await sb.auth.signOut();
+    setTimeout(() => location.href = 'login.html', 1000);
+    return;
+  }
+  
+  document.getElementById('msg').innerText = 'تمام، جاري الدخول...';
+  setTimeout(() => location.href = 'home.html', 500);
+}
+
+check();
 </script>
 </body>
 </html>
