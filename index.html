@@ -25,14 +25,26 @@ alert('2- المفتاح انقرأ'); // لو وقف هنا معناه المف
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function login(){
-alert('3- الزر اشتغل');
 document.getElementById('err').textContent = 'جاري الدخول...';
 const email = document.getElementById('email').value;
 const pass = document.getElementById('pass').value;
+
 const {data, error} = await supabase.auth.signInWithPassword({email:email,password:pass});
-if(error){document.getElementById('err').textContent = error.message; return;}
-if(data.user.app_metadata.role==='admin'){window.location.href='dashboard.html';}
-else {document.getElementById('err').textContent = 'مو ادمن'; supabase.auth.signOut();}
+
+if(error){
+alert('الخطأ من Supabase: ' + error.message); // هذا بيطلع السبب
+document.getElementById('err').textContent = error.message;
+return;
+}
+
+alert('دخلنا! نوع المستخدم: ' + data.user.app_metadata.role); // بيعرض نوعك
+
+if(data.user.app_metadata.role==='admin'){
+window.location.href='dashboard.html';
+}else{
+document.getElementById('err').textContent = 'انت مو ادمن. دورك: ' + data.user.app_metadata.role;
+supabase.auth.signOut();
+}
 }
 </script>
 </body>
