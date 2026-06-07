@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>التحقق...</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}
-</style>
+<style>body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}</style>
 </head>
 <body>
 <div>جاري التحقق من الصلاحيات...</div>
@@ -18,35 +16,19 @@ const SUPABASE_KEY = 'sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ';
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function check(){
-  try {
-    const { data: { user } = await sb.auth.getUser();
-    
-    if(!user){
-      location.href = 'login.html';
-      return;
-    }
-    
-    const role = user.app_metadata?.role;
-    
-    if(role !== 'admin'){
-      await sb.auth.signOut();
-      alert('حسابك مو ادمن ❌');
-      location.href = 'login.html';
-      return;
-    }
-    
-    // كل شي تمام - ادخل اللوحة
-    location.href = 'home.html';
-    
-  } catch(e){
-    console.error(e);
-    alert('خطأ: ' + e.message);
-    location.href = 'login.html';
+(async function check(){
+  const { data: { user } = await sb.auth.getUser();
+  
+  if(!user) return location.href = 'login.html';
+  
+  if(user.app_metadata?.role !== 'admin'){
+    await sb.auth.signOut();
+    alert('حسابك مو ادمن ❌');
+    return location.href = 'login.html';
   }
-}
-
-check();
+  
+  location.href = 'home.html';
+})();
 </script>
 </body>
 </html>
