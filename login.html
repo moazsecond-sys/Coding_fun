@@ -8,15 +8,15 @@
 <style>
 body{font-family:tahoma; background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0}
 .card{background:#121936; padding:30px; border-radius:16px; width:320px}
-input{width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#eaf2ff}
-button{width:100%; padding:12px; background:#3b82f6; color:white; border:0; border-radius:8px; cursor:pointer; margin-top:10px}
+input{width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#eaf2ff; box-sizing:border-box}
+button{width:100%; padding:12px; background:#3b82f6; color:white; border:0; border-radius:8px; cursor:pointer; margin-top:10px; font-weight:bold}
 button:hover{background:#2563eb}
 </style>
 </head>
 <body>
 <div class="card">
 <h2 style="text-align:center; margin-bottom:20px">دخول الادمن</h2>
-<input id="e" placeholder="الايميل">
+<input id="e" type="email" placeholder="الايميل">
 <input id="p" type="password" placeholder="كلمة السر">
 <button onclick="go()">دخول</button>
 </div>
@@ -28,31 +28,18 @@ async function go(){
   const email = document.getElementById('e').value.trim();
   const pass = document.getElementById('p').value;
   
-  if(!email || !pass){
-    alert('اكتب الايميل وكلمة السر');
-    return;
+  if(!email || !pass) return alert('اكتب الايميل وكلمة السر');
+  
+  const {data, error} = await sb.auth.signInWithPassword({email, password: pass});
+  
+  if(error) return alert('خطأ: ' + error.message);
+  
+  if(data.user.app_metadata?.role !== 'admin'){
+    await sb.auth.signOut();
+    return alert('انت مو ادمن ❌');
   }
   
-  try {
-    const {data, error} = await sb.auth.signInWithPassword({email, password: pass});
-    
-    if(error){
-      alert('خطأ: ' + error.message);
-      return;
-    }
-    
-    if(data.user.app_metadata.role !== 'admin'){
-      await sb.auth.signOut();
-      alert('انت مو ادمن ❌');
-      return;
-    }
-    
-    // نجح - حوله على بوابة الادمن
-    location.href = 'index.html';
-    
-  } catch(e){
-    alert('خطأ: ' + e.message);
-  }
+  location.href = 'index.html';
 }
 </script>
 </body>
