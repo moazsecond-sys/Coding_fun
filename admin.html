@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة التحكم | GREEN APPLE DESIGN</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;padding:20px;min-height:100vh}
@@ -22,51 +22,26 @@ h2{color:#4ade80;font-size:1.8rem}
 .card:hover{border-color:#fff;transform:translateX(-5px)}
 .delete-x{position:absolute;top:15px;left:15px;background:#ef4444;color:#fff;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:18px}
 .delete-x:hover{background:#dc2626}
-textarea{width:100%;padding:12px;background:#0a0a0a;border:2px solid #333;color:#fff;border-radius:8px;font-family:'Tajawal';resize:vertical}
+textarea,input{width:100%;padding:12px;background:#0a0a0a;border:2px solid #333;color:#fff;border-radius:8px;font-family:'Tajawal';resize:vertical;margin-bottom:10px}
+input{margin-bottom:10px}
 button{background:#4ade80;color:#000;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-family:'Tajawal';transition:0.3s;margin-top:10px}
 button:hover{background:#22c55e}
 .loading{text-align:center;padding:60px;color:#4ade80;font-size:1.2rem}
 .date{color:#666;font-size:0.85rem}
+.add-form{background:#111;padding:20px;border-radius:12px;border:2px dashed #4ade80;margin-bottom:30px}
 
 /* ستايل مواقيت الصلاة */
-.prayer-times{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:15px;
-  margin-top:30px
-}
-.prayer-card{
-  background:#1a1a1a;
-  padding:20px;
-  border-radius:12px;
-  text-align:center;
-  border:2px solid #222;
-  transition:0.3s
-}
+.prayer-times{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-top:30px}
+.prayer-card{background:#1a1a1a;padding:20px;border-radius:12px;text-align:center;border:2px solid #222;transition:0.3s}
 .prayer-card:hover{border-color:#4ade80;transform:translateY(-5px)}
 .prayer-card.jumuah{border-color:#fbbf24;background:#1a1a1a}
 .prayer-card .name{color:#4ade80;font-weight:700;margin-bottom:8px;font-size:1.1rem}
 .prayer-card .time{font-size:1.5rem;color:#fff;font-weight:900}
 .prayer-card.jumuah .time{color:#fbbf24}
-.date-display{
-  text-align:center;
-  margin-bottom:30px;
-  padding:20px;
-  background:#1a1a1a;
-  border-radius:12px;
-  border:2px solid #333
-}
+.date-display{text-align:center;margin-bottom:30px;padding:20px;background:#1a1a1a;border-radius:12px;border:2px solid #333}
 .date-display .hijri{color:#4ade80;font-size:1.3rem;font-weight:700;margin-bottom:5px}
 .date-display .gregorian{color:#aaa}
-.location-select{
-  padding:10px 15px;
-  background:#1a1a1a;
-  border:2px solid #333;
-  color:#fff;
-  border-radius:8px;
-  font-family:'Tajawal';
-  margin-bottom:20px
-}
+.location-select{padding:10px 15px;background:#1a1a1a;border:2px solid #333;color:#fff;border-radius:8px;font-family:'Tajawal';margin-bottom:20px;width:100%;max-width:300px}
 </style>
 </head>
 <body>
@@ -77,9 +52,9 @@ button:hover{background:#22c55e}
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="showTab('messages')">📩 الرسائل</button>
-  <button class="tab" onclick="showTab('posts')">📝 المقالات</button>
-  <button class="tab" onclick="showTab('prayers')">🕌 مواقيت الصلاة</button>
+  <button class="tab active" onclick="showTab(event, 'messages')">📩 الرسائل</button>
+  <button class="tab" onclick="showTab(event, 'posts')">📝 المقالات</button>
+  <button class="tab" onclick="showTab(event, 'prayers')">🕌 مواقيت الصلاة</button>
 </div>
 
 <!-- تبويب الرسائل -->
@@ -89,6 +64,13 @@ button:hover{background:#22c55e}
 
 <!-- تبويب المقالات -->
 <div id="posts" class="tab-content">
+  <!-- فورم اضافة مقال جديد -->
+  <div class="add-form">
+    <h3 style="color:#4ade80;margin-bottom:15px">نشر مقال جديد 🚀</h3>
+    <input type="text" id="postTitle" placeholder="عنوان المقال">
+    <textarea id="postContent" placeholder="محتوى المقال" rows="6"></textarea>
+    <button onclick="addPost()">نشر المقال</button>
+  </div>
   <div id="postsList" class="loading">جاري تحميل المقالات...</div>
 </div>
 
@@ -114,14 +96,14 @@ button:hover{background:#22c55e}
 
 <script src="config.js"></script>
 <script>
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // التنقل بين التبويبات
-function showTab(tabName) {
+function showTab(e, tabName) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   
-  event.target.classList.add('active');
+  e.target.classList.add('active');
   document.getElementById(tabName).classList.add('active');
   
   if(tabName === 'posts') loadPosts();
@@ -137,7 +119,6 @@ async function loadDate() {
   document.getElementById('gregDate').textContent = today.toLocaleDateString('ar-EG', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
   
   try {
-    // API التاريخ الهجري
     const res = await fetch(`https://api.aladhan.com/v1/gToH?date=${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}`);
     const data = await res.json();
     const hijri = data.data.hijri;
@@ -161,47 +142,16 @@ async function loadPrayers() {
     const data = await res.json();
     const timings = data.data.timings;
     
-    const isJumuah = today.getDay() === 5; // الجمعة = 5
+    const isJumuah = today.getDay() === 5;
     
     prayerDiv.innerHTML = `
-      <div class="prayer-card">
-        <div class="name">الفجر</div>
-        <div class="time">${timings.Fajr}</div>
-      </div>
-      <div class="prayer-card">
-        <div class="name">الشروق</div>
-        <div class="time">${timings.Sunrise}</div>
-      </div>
-      <div class="prayer-card ${isJumuah ? 'jumuah' : ''}">
-        <div class="name">${isJumuah ? 'صلاة الجمعة' : 'الظهر'}</div>
-        <div class="time">${isJumuah ? timings.Dhuhr : timings.Dhuhr}</div>
-      </div>
-      <div class="prayer-card">
-        <div class="name">العصر</div>
-        <div class="time">${timings.Asr}</div>
-      </div>
-      <div class="prayer-card">
-        <div class="name">المغرب</div>
-        <div class="time">${timings.Maghrib}</div>
-      </div>
-      <div class="prayer-card">
-        <div class="name">العشاء</div>
-        <div class="time">${timings.Isha}</div>
-      </div>
+      <div class="prayer-card"><div class="name">الفجر</div><div class="time">${timings.Fajr}</div></div>
+      <div class="prayer-card"><div class="name">الشروق</div><div class="time">${timings.Sunrise}</div></div>
+      <div class="prayer-card ${isJumuah ? 'jumuah' : ''}"><div class="name">${isJumuah ? 'صلاة الجمعة' : 'الظهر'}</div><div class="time">${timings.Dhuhr}</div></div>
+      <div class="prayer-card"><div class="name">العصر</div><div class="time">${timings.Asr}</div></div>
+      <div class="prayer-card"><div class="name">المغرب</div><div class="time">${timings.Maghrib}</div></div>
+      <div class="prayer-card"><div class="name">العشاء</div><div class="time">${timings.Isha}</div></div>
     `;
-    
-    // تنبيه اذان الجمعة
-    if(isJumuah) {
-      const jumuahTime = timings.Dhuhr;
-      const now = new Date();
-      const [h, m] = jumuahTime.split(':');
-      const jumuahDate = new Date();
-      jumuahDate.setHours(parseInt(h), parseInt(m), 0);
-      
-      if(Math.abs(now - jumuahDate) < 60000) { // دقيقة واحدة
-        alert('🕌 حان وقت صلاة الجمعة - جمعة مباركة');
-      }
-    }
     
   } catch(e) {
     prayerDiv.innerHTML = '<p style="color:red;text-align:center">خطأ في تحميل المواقيت</p>';
@@ -212,7 +162,6 @@ async function loadPrayers() {
 async function loadMessages(){
   try {
     const {data, error} = await supabaseClient.from('messages').select('*').order('created_at',{ascending:false});
-    
     if(error) throw error;
     
     if(!data || data.length === 0) {
@@ -255,11 +204,29 @@ async function deleteMessage(id){
   loadMessages();
 }
 
-// ========== ادارة المقالات ==========
+// ========== ادارة المقالات - جديد + مربوط =
+async function addPost(){
+  const title = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  
+  if(!title || !content) return alert('اكتب العنوان والمحتوى اول');
+  
+  const {error} = await supabaseClient.from('posts').insert([{title, content}]);
+  
+  if(error) {
+    alert('خطأ: ' + error.message);
+    return;
+  }
+  
+  document.getElementById('postTitle').value = '';
+  document.getElementById('postContent').value = '';
+  alert('تم نشر المقال بنجاح ✅');
+  loadPosts();
+}
+
 async function loadPosts(){
   try {
     const {data, error} = await supabaseClient.from('posts').select('*').order('created_at',{ascending:false});
-    
     if(error) throw error;
     
     if(!data || data.length === 0) {
