@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>التحقق...</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>body{background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; font-family:tahoma; margin:0}</style>
+</head>
+<body>
+<div id="msg">جاري التحقق من الصلاحيات...</div>
+
+<script>
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function check(){
+  try{
+    const result = await sb.auth.getUser();
+    const user = result.data.user;
+    
+    if(!user){
+      document.getElementById('msg').innerText = 'ما فيه مستخدم، برجعك للدخول...';
+      setTimeout(() => location.href = 'login.html', 1000);
+      return;
+    }
+    
+    const role = user.app_metadata?.role;
+    document.getElementById('msg').innerText = 'الدور: ' + role + '، جاري الدخول...';
+    
+    if(role !== 'admin'){
+      await sb.auth.signOut();
+      setTimeout(() => location.href = 'login.html', 1000);
+      return;
+    }
+    
+    setTimeout(() => location.href = 'home.html', 500);
+    
+  }catch(e){
+    document.getElementById('msg').innerText = 'خطأ: ' + e.message;
+    setTimeout(() => location.href = 'login.html', 2000);
+  }
+}
+
+check();
+</script>
+</body>
+</html>
