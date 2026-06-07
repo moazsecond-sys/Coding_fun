@@ -2,296 +2,44 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم | GREEN APPLE DESIGN</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-
-<script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
-
+<title>دخول الادمن - Green Apple</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Tajawal',sans-serif;background:#0a0a0a;color:#fff;padding:20px;min-height:100vh}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;border-bottom:2px solid #222;padding-bottom:15px;flex-wrap:wrap;gap:15px}
-.header a{color:#4ade80;text-decoration:none;font-weight:700}
-h2{color:#4ade80;font-size:1.8rem}
-.tabs{display:flex;gap:10px;margin-bottom:30px;border-bottom:2px solid #222;padding-bottom:15px;overflow-x:auto}
-.tab{padding:12px 25px;background:#1a1a1a;border:none;color:#aaa;border-radius:8px;cursor:pointer;font-family:'Tajawal';font-weight:700;transition:0.3s;white-space:nowrap}
-.tab.active{background:#4ade80;color:#000}
-.tab:hover{color:#4ade80}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.card{background:#1a1a1a;padding:20px;margin:15px 0;border-radius:12px;border-left:4px solid #4ade80;transition:0.3s;position:relative}
-.card:hover{border-color:#fff;transform:translateX(-5px)}
-.delete-x{position:absolute;top:15px;left:15px;background:#ef4444;color:#fff;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:18px}
-.delete-x:hover{background:#dc2626}
-textarea,input{width:100%;padding:12px;background:#0a0a0a;border:2px solid #333;color:#fff;border-radius:8px;font-family:'Tajawal';resize:vertical;margin-bottom:10px}
-input{margin-bottom:10px}
-button{background:#4ade80;color:#000;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-family:'Tajawal';transition:0.3s;margin-top:10px}
-button:hover{background:#22c55e}
-.loading{text-align:center;padding:60px;color:#4ade80;font-size:1.2rem}
-.date{color:#666;font-size:0.85rem}
-.add-form{background:#111;padding:20px;border-radius:12px;border:2px dashed #4ade80;margin-bottom:30px}
-
-/* ستايل مواقيت الصلاة */
-.prayer-times{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-top:30px}
-.prayer-card{background:#1a1a1a;padding:20px;border-radius:12px;text-align:center;border:2px solid #222;transition:0.3s}
-.prayer-card:hover{border-color:#4ade80;transform:translateY(-5px)}
-.prayer-card.jumuah{border-color:#fbbf24;background:#1a1a1a}
-.prayer-card .name{color:#4ade80;font-weight:700;margin-bottom:8px;font-size:1.1rem}
-.prayer-card .time{font-size:1.5rem;color:#fff;font-weight:900}
-.prayer-card.jumuah .time{color:#fbbf24}
-.date-display{text-align:center;margin-bottom:30px;padding:20px;background:#1a1a1a;border-radius:12px;border:2px solid #333}
-.date-display .hijri{color:#4ade80;font-size:1.3rem;font-weight:700;margin-bottom:5px}
-.date-display .gregorian{color:#aaa}
-.location-select{padding:10px 15px;background:#1a1a1a;border:2px solid #333;color:#fff;border-radius:8px;font-family:'Tajawal';margin-bottom:20px;width:100%;max-width:300px}
-
-/* زر الدخول الجديد */
-.login-box{text-align:center;padding:100px 20px}
-.login-btn{background:#4285F4;color:#fff;padding:15px 30px;font-size:1.1rem;border-radius:10px;border:none;cursor:pointer}
-.login-btn:hover{background:#357ae8}
-.user-info{color:#4ade80;font-size:0.9rem}
+body{font-family:Tahoma;background:#0f172a;color:white;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+.box{background:#1e293b;padding:30px;border-radius:12px;width:320px}
+input{width:100%;padding:12px;margin:8px 0;border:1px solid #334155;border-radius:8px;background:#0f172a;color:white}
+button{width:100%;padding:12px;background:#2ecc71;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px;margin-top:10px}
+#error{color:#ff6b6b;margin-top:10px;display:none}
 </style>
 </head>
 <body>
-
-<div id="app">
-  <!-- شاشة الدخول -->
-  <div id="loginScreen" class="login-box">
-    <h2 style="margin-bottom:30px">🔐 دخول لوحة التحكم</h2>
-    <button class="login-btn" onclick="loginWithGoogle()">دخول بجوجل</button>
-  </div>
-
-  <!-- لوحة التحكم - مخفية لين تسجل دخول -->
-  <div id="adminPanel" style="display:none">
-    <div class="header">
-      <h2>⚡ لوحة التحكم GREEN APPLE</h2>
-      <div>
-        <span class="user-info" id="userEmail"></span>
-        <a href="index.html" style="margin-right:15px">← الرجوع للموقع</a>
-        <button onclick="logout()" style="background:#ef4444;color:#fff">خروج</button>
-      </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="showTab(event, 'messages')">📩 الرسائل</button>
-      <button class="tab" onclick="showTab(event, 'posts')">📝 المقالات</button>
-      <button class="tab" onclick="showTab(event, 'prayers')">🕌 مواقيت الصلاة</button>
-    </div>
-
-    <div id="messages" class="tab-content active">
-      <div id="messagesList" class="loading">جاري تحميل الرسائل...</div>
-    </div>
-
-    <div id="posts" class="tab-content">
-      <div class="add-form">
-        <h3 style="color:#4ade80;margin-bottom:15px">نشر مقال جديد 🚀</h3>
-        <input type="text" id="postTitle" placeholder="عنوان المقال">
-        <textarea id="postContent" placeholder="محتوى المقال" rows="6"></textarea>
-        <button onclick="addPost()">نشر المقال</button>
-      </div>
-      <div id="postsList" class="loading">جاري تحميل المقالات...</div>
-    </div>
-
-    <div id="prayers" class="tab-content">
-      <div class="date-display">
-        <div class="hijri" id="hijriDate">جاري تحميل التاريخ الهجري...</div>
-        <div class="gregorian" id="gregDate"></div>
-      </div>
-      <select class="location-select" id="citySelect" onchange="loadPrayers()">
-        <option value="Casablanca">الدار البيضاء</option>
-        <option value="Rabat">الرباط</option>
-        <option value="Marrakech">مراكش</option>
-        <option value="Fes">فاس</option>
-        <option value="Tangier">طنجة</option>
-      </select>
-      <div class="prayer-times" id="prayerTimes">
-        <div class="loading">جاري تحميل المواقيت...</div>
-      </div>
-    </div>
-  </div>
+<div class="box">
+  <h2 style="text-align:center">دخول الادمن</h2>
+  <input type="email" id="email" placeholder="الايميل">
+  <input type="password" id="password" placeholder="كلمة السر">
+  <button onclick="login()">دخول</button>
+  <p id="error"></p>
 </div>
 
 <script>
-const supabaseClient = window.supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
-let isAdmin = false;
-let currentUserId = null;
+const supabaseClient = window.supabase.createClient(
+  'https://mirrxytqttjglxrarq.supabase.co',
+  'حط_المفتاح_الجديد_anon_هنا'
+);
 
-// ========== نظام الدخول ==========
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if(session) {
-    checkAdmin(session.user);
-  } else {
-    document.getElementById('loginScreen').style.display = 'block';
-    document.getElementById('adminPanel').style.display = 'none';
-  }
-});
-
-async function loginWithGoogle() {
-  await supabaseClient.auth.signInWithOAuth({ provider: 'google' })
-}
-
-async function logout() {
-  await supabaseClient.auth.signOut();
-}
-
-async function checkAdmin(user) {
-  currentUserId = user.id;
-  document.getElementById('userEmail').textContent = user.email;
+async function login() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const { data, error } = await supabaseClient.auth.signInWithPassword({email, password});
   
-  // تحقق اذا هو ادمن
-  isAdmin = user.user_metadata?.role === 'admin';
-  
-  if(isAdmin) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    loadMessages();
+  if(error) {
+    document.getElementById('error').style.display = 'block';
+    document.getElementById('error').textContent = error.message;
   } else {
-    document.getElementById('loginScreen').innerHTML = `
-      <h2 style="color:#ef4444;margin-bottom:20px">⛔ غير مصرح لك</h2>
-      <p style="margin-bottom:20px">حسابك: ${user.email}</p>
-      <p style="margin-bottom:30px;color:#aaa">تواصل مع الادمن عشان يعطيك صلاحية</p>
-      <button onclick="logout()" style="background:#ef4444">تسجيل خروج</button>
-    `;
+    alert('تم الدخول بنجاح ✅');
+    window.location.href = 'dashboard.html'; // غيرها لصفحة لوحتك
   }
 }
-
-// ========== باقي الكود حقك بدون تغيير ==========
-function showTab(e, tabName) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  e.target.classList.add('active');
-  document.getElementById(tabName).classList.add('active');
-  if(tabName === 'posts') loadPosts();
-  if(tabName === 'prayers') { loadDate(); loadPrayers(); }
-}
-
-async function loadDate() {
-  const today = new Date();
-  document.getElementById('gregDate').textContent = today.toLocaleDateString('ar-EG', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-  try {
-    const res = await fetch(`https://api.aladhan.com/v1/gToH?date=${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}`);
-    const data = await res.json();
-    const hijri = data.data.hijri;
-    document.getElementById('hijriDate').textContent = `${hijri.weekday.ar} ${hijri.day} ${hijri.month.ar} ${hijri.year} هـ`;
-  } catch(e) {
-    document.getElementById('hijriDate').textContent = 'خطأ في تحميل التاريخ';
-  }
-}
-
-async function loadPrayers() {
-  const city = document.getElementById('citySelect').value;
-  const prayerDiv = document.getElementById('prayerTimes');
-  prayerDiv.innerHTML = '<div class="loading">جاري تحميل المواقيت...</div>';
-  try {
-    const today = new Date();
-    const dateStr = `${today.getDate()}-${today.getMonth()+1}-${today.getFullYear()}`;
-    const res = await fetch(`https://api.aladhan.com/v1/timingsByCity/${dateStr}?city=${city}&country=Morocco&method=2`);
-    const data = await res.json();
-    const timings = data.data.timings;
-    const isJumuah = today.getDay() === 5;
-    prayerDiv.innerHTML = `
-      <div class="prayer-card"><div class="name">الفجر</div><div class="time">${timings.Fajr}</div></div>
-      <div class="prayer-card"><div class="name">الشروق</div><div class="time">${timings.Sunrise}</div></div>
-      <div class="prayer-card ${isJumuah ? 'jumuah' : ''}"><div class="name">${isJumuah ? 'صلاة الجمعة' : 'الظهر'}</div><div class="time">${timings.Dhuhr}</div></div>
-      <div class="prayer-card"><div class="name">العصر</div><div class="time">${timings.Asr}</div></div>
-      <div class="prayer-card"><div class="name">المغرب</div><div class="time">${timings.Maghrib}</div></div>
-      <div class="prayer-card"><div class="name">العشاء</div><div class="time">${timings.Isha}</div></div>
-    `;
-  } catch(e) {
-    prayerDiv.innerHTML = '<p style="color:red;text-align:center">خطأ في تحميل المواقيت</p>';
-  }
-}
-
-async function loadMessages(){
-  try {
-    const {data, error} = await supabaseClient.from('messages').select('*').order('created_at',{ascending:false});
-    if(error) throw error;
-    if(!data || data.length === 0) {
-      document.getElementById('messagesList').innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد رسائل بعد</p>';
-      return;
-    }
-    let html = '';
-    data.forEach(m=>{
-      const date = new Date(m.created_at).toLocaleString('ar-EG');
-      html += `<div class="card">
-        ${isAdmin ? `<button class="delete-x" onclick="deleteMessage('${m.id}')">×</button>` : ''}
-        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-          <b>${m.name || 'بدون اسم'}</b>
-          <span class="date">${date}</span>
-        </div>
-        <p style="color:#4ade80">${m.whatsapp || 'لا يوجد واتساب'}</p>
-        <p>${m.message}</p>
-        ${m.reply?'<p style="color:#4ade80;margin-top:10px"><b>ردك:</b> '+m.reply+'</p>':''}
-        ${isAdmin ? `<textarea id="r${m.id}" placeholder="اكتب ردك هنا...">${m.reply || ''}</textarea><button onclick="reply('${m.id}')">إرسال/تحديث الرد</button>` : ''}
-      </div>`;
-    });
-    document.getElementById('messagesList').innerHTML = html;
-  } catch(err) {
-    document.getElementById('messagesList').innerHTML = `<p style="color:red;text-align:center">خطأ: ${err.message}</p>`;
-  }
-}
-
-async function reply(id){
-  const replyText = document.getElementById('r'+id).value.trim();
-  if(!replyText) return alert('اكتب الرد اول');
-  await supabaseClient.from('messages').update({reply: replyText}).eq('id',id);
-  loadMessages();
-}
-
-async function deleteMessage(id){
-  if(!confirm('تحذف الرسالة؟')) return;
-  await supabaseClient.from('messages').delete().eq('id',id);
-  loadMessages();
-}
-
-async function addPost(){
-  const title = document.getElementById('postTitle').value.trim();
-  const content = document.getElementById('postContent').value.trim();
-  if(!title || !content) return alert('اكتب العنوان والمحتوى اول');
-  const {error} = await supabaseClient.from('posts').insert([{title, content, user_id: currentUserId}]);
-  if(error) { alert('خطأ: ' + error.message); return; }
-  document.getElementById('postTitle').value = '';
-  document.getElementById('postContent').value = '';
-  alert('تم نشر المقال بنجاح ✅');
-  loadPosts();
-}
-
-async function loadPosts(){
-  try {
-    const {data, error} = await supabaseClient.from('posts').select('*').order('created_at',{ascending:false});
-    if(error) throw error;
-    if(!data || data.length === 0) {
-      document.getElementById('postsList').innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد مقالات بعد</p>';
-      return;
-    }
-    let html = '';
-    data.forEach(p=>{
-      const date = new Date(p.created_at).toLocaleDateString('ar-EG');
-      const canDelete = isAdmin || p.user_id === currentUserId;
-      html += `<div class="card">
-        ${canDelete ? `<button class="delete-x" onclick="deletePost('${p.id}')">×</button>` : ''}
-        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-          <b>${p.title}</b>
-          <span class="date">${date}</span>
-        </div>
-        <p>${p.content}</p>
-      </div>`;
-    });
-    document.getElementById('postsList').innerHTML = html;
-  } catch(err) {
-    document.getElementById('postsList').innerHTML = `<p style="color:red;text-align:center">خطأ: ${err.message}</p>`;
-  }
-}
-
-async function deletePost(id){
-  if(!confirm('تحذف المقال؟')) return;
-  await supabaseClient.from('posts').delete().eq('id',id);
-  loadPosts();
-}
-
-supabaseClient.channel('admin-channel').on('postgres_changes',{event:'*',schema:'public',table:'messages'},loadMessages).subscribe();
-supabaseClient.channel('admin-posts').on('postgres_changes',{event:'*',schema:'public',table:'posts'},loadPosts).subscribe();
 </script>
 </body>
 </html>
