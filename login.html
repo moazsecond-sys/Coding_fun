@@ -1,45 +1,75 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تسجيل دخول الادمن</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{font-family:tahoma; background:#0b1020; color:#eaf2ff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0}
-.card{background:#121936; padding:30px; border-radius:16px; width:320px}
-input{width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #334155; background:#0f172a; color:#eaf2ff; box-sizing:border-box}
-button{width:100%; padding:12px; background:#3b82f6; color:white; border:0; border-radius:8px; cursor:pointer; margin-top:10px; font-weight:bold}
-button:hover{background:#2563eb}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f172a;color:#e2e8f0;font-family:tahoma}
+.loading{height:100vh;display:flex;align-items:center;justify-content:center;font-size:18px}
+.container{display:none;padding:30px;max-width:1000px;margin:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;padding-bottom:15px;border-bottom:1px solid #334155}
+h1{color:#38bdf8}
+button{background:#ef4444;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold}
+button:hover{background:#dc2626}
+.card{background:#1e293b;padding:20px;border-radius:12px;margin-top:20px}
 </style>
 </head>
 <body>
-<div class="card">
-<h2 style="text-align:center; margin-bottom:20px">دخول الادمن</h2>
-<input id="e" type="email" placeholder="الايميل">
-<input id="p" type="password" placeholder="كلمة السر">
-<button onclick="go()">دخول</button>
+
+<div id="loading" class="loading">جاري التحقق من صلاحياتك...</div>
+
+<div id="content" class="container">
+  <div class="topbar">
+    <h1>لوحة الادمن</h1>
+    <button onclick="logout()">تسجيل خروج</button>
+  </div>
+  
+  <div class="card">
+    <h3>مرحبا <span id="email"></span></h3>
+    <p>انت داخل كـ <b>ادمن</b> ✅</p>
+  </div>
+  
+  <!-- حط محتوى لوحتك هنا تحت -->
+  <div class="card">
+    <p>هنا تضيف جداولك وأزرارك</p>
+  </div>
 </div>
 
 <script>
 const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','sb_publishable_FXUmqRa_eAjdgWdZpFl-tA_YQM4FSnQ');
 
-async function go(){
-  const email = document.getElementById('e').value.trim();
-  const pass = document.getElementById('p').value;
+// نشيك مرة وحدة بس
+sb.auth.getUser().then(res => {
+  const user = res.data.user;
   
-  if(!email || !pass) return alert('اكتب الايميل وكلمة السر');
-  
-  const {data, error} = await sb.auth.signInWithPassword({email, password: pass});
-  
-  if(error) return alert('خطأ: ' + error.message);
-  
-  if(data.user.app_metadata?.role !== 'admin'){
-    await sb.auth.signOut();
-    return alert('انت مو ادمن ❌');
+  // لو ما فيه يوزر او مو ادمن → برا فوراً
+  if(!user || user.app_metadata?.role !== 'admin'){
+    sb.auth.signOut();
+    window.location.replace('login.html');
+    return;
   }
   
-  location.href = 'index.html';
+  // انت ادمن - ور المحتوى
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+  document.getElementById('email').innerText = user.email;
+});
+
+// لو سجل خروج من تبويب ثاني
+sb.auth.onAuthStateChange((event) => {
+  if(event === 'SIGNED_OUT'){
+    window.location.replace('login.html');
+  }
+});
+
+// زر الخروج
+async function logout(){
+  await sb.auth.signOut();
+  localStorage.clear();
+  window.location.replace('login.html');
 }
 </script>
 </body>
