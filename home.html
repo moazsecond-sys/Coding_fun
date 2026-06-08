@@ -2,57 +2,44 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة الادمن 👑</title>
+<title>تشخيص اللوحة</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-family:tahoma;display:flex;justify-content:center;align-items:center;height:100vh}
-.box{background:white;padding:40px;border-radius:20px;text-align:center;box-shadow:0 15px 50px rgba(0,0,0,0.3)}
-h1{color:#333} p{font-size:18px;font-weight:bold}
-</style>
+<style>body{padding:20px;font-family:tahoma;background:#222;color:#0f0} pre{background:#000;padding:15px;border-radius:10px;overflow:auto}</style>
 </head>
 <body>
-<div class="box">
-<h1>لوحة الادمن 👑</h1>
-<p id="status" style="color:#ff9800">جاري التحقق...</p>
-<button onclick="logout()" style="background:red;color:white;border:0;padding:12px 30px;border-radius:10px;cursor:pointer;margin-top:20px">تسجيل خروج</button>
-</div>
+<h2>تشخيص الجلسة 🔍</h2>
+<pre id="log">جاري الفحص...</pre>
 
 <script>
 const supabase = window.supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 
-const status = document.getElementById('status');
+const log = document.getElementById('log');
+let text = '';
 
-// ننتظر Supabase يقول "فيه مستخدم مسجل دخول"
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth event:', event, session?.user?.email);
+function add(t){ text += t + '\n'; log.innerText = text; }
+
+// 1. نشوف localStorage فيه ايه
+add('1. localStorage Keys:');
+add(Object.keys(localStorage).filter(k => k.includes('supabase')).join('\n') || 'مافي شي!');
+
+// 2. ننتظر 3 ثواني ونفحص الجلسة
+setTimeout(async () => {
+  add('\n2. فحص الجلسة بعد 3 ثواني:');
+  const {data, error} = await supabase.auth.getSession();
   
-  if (!session) {
-    status.innerText = 'مافي جلسة، برجعك للدخول...';
-    status.style.color = 'red';
-    setTimeout(() => window.location.href = 'login.html?v=9999', 2000);
-    return;
+  if(error) add('خطأ: ' + error.message);
+  else if(!data.session) add('مافي session = لازم تسجل دخول من جديد');
+  else {
+    add('Email: ' + data.session.user.email);
+    add('Role: ' + JSON.stringify(data.session.user.app_metadata));
+    add('\n3. لو انت ادمن المفروض تدخل الحين ✅');
   }
-  
-  const email = session.user.email;
-  const role = session.user_metadata?.role || session.user.app_metadata?.role;
-  
-  if (email === 'moazsecond@gmail.com' && role === 'admin') {
-    status.innerText = 'مرحبا يا معاذ! دخلت اللوحة بنجاح 🎉';
-    status.style.color = '#28a745';
-  } else {
-    status.innerText = 'ممنوع! ايميلك: ' + email + ' - الدور: ' + role;
-    status.style.color = 'red';
-    setTimeout(logout, 3000);
-  }
+}, 3000);
+
+// 3. نسمع اي تغيير
+supabase.auth.onAuthStateChange((e,s) => {
+  add('\n4. Auth Event: ' + e + ' | Email: ' + s?.user?.email);
 });
-
-// فحص اولي سريع
-supabase.auth.getSession();
-
-async function logout() {
-  await supabase.auth.signOut();
-  window.location.href = 'login.html?v=9999';
-}
 </script>
 </body>
 </html>
