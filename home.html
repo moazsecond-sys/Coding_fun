@@ -1,71 +1,59 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body { font-family: Tahoma; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-    .container { background: white; padding: 40px; border-radius: 15px; max-width: 600px; margin: 50px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    h1 { color: #2c3e50; }
-    #msg { font-size: 18px; margin: 20px 0; color: #27ae60; font-weight: bold; }
-    button { background: #e74c3c; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 20px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الادمن 👑</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-family:tahoma;display:flex;justify-content:center;align-items:center;height:100vh}
+.box{background:white;padding:40px;border-radius:20px;text-align:center;box-shadow:0 15px 50px rgba(0,0,0,0.3);max-width:400px}
+h1{color:#333;margin-bottom:20px}
+p{color:#28a745;font-size:18px;font-weight:bold}
+button{background:#dc3545;color:white;border:0;padding:12px 30px;border-radius:10px;cursor:pointer;margin-top:20px;font-size:16px}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>👑 لوحة الادمن</h1>
-    <p id="msg">جاري التحقق...</p>
-    <button onclick="logout()">تسجيل خروج</button>
-  </div>
+<div class="box">
+<h1>لوحة الادمن 👑</h1>
+<p id="status">جاري التحقق...</p>
+<button onclick="logout()">تسجيل خروج</button>
+</div>
 
-  <script>
-    const SUPABASE_URL = "https://mirrxytqttjglglxrarq.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<script>
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ====== الكود السحري للجوال ======
-    async function check() {
-      await supabase.auth.refreshSession();
-      const { data: { user } = await supabase.auth.getUser();
-      
-      if (!user) {
-        document.getElementById('msg').innerText = 'سجل دخول اول';
-        setTimeout(() => window.location.href = 'login.html', 2000);
-        return;
-      }
+async function checkUser() {
+  const { data: { session } = await supabase.auth.getSession();
+  const status = document.getElementById('status');
+  
+  if (!session) {
+    status.innerText = 'مافي جلسة! رجوع للدخول...';
+    setTimeout(() => window.location.href = 'login.html?v=5000', 2000);
+    return;
+  }
+  
+  const email = session.user.email;
+  const role = session.user_metadata?.role || session.user.app_metadata?.role;
+  
+  if (email === 'moazsecond@gmail.com' && role === 'admin') {
+    status.innerText = 'مرحبا يا معاذ! دخلت بنجاح 🎉';
+    status.style.color = '#28a745';
+  } else {
+    status.innerText = 'ممنوع الدخول! ايميلك: ' + email;
+    status.style.color = 'red';
+    setTimeout(() => logout(), 3000);
+  }
+}
 
-      // لو ايميلك انت = حط ادمن غصب في localStorage
-      if(user.email === 'moazsecond@gmail.com') {
-        localStorage.setItem('role', 'authenticated');
-        localStorage.setItem('user_email', user.email);
-      }
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html?v=5000';
+}
 
-      // نجيب الـ role من localStorage عشان الصفحة القديمة تفهمه
-      const role = localStorage.getItem('role');
-      const userRole = user.user_metadata?.role;
-
-      document.getElementById('msg').innerText = 
-        'مرحباً: ' + user.email + '\nRole DB: ' + userRole + '\nRole Local: ' + role;
-
-      // لو واحد منهم admin = انت ادمن
-      if(userRole === 'admin' || role === 'authenticated') {
-        document.getElementById('msg').innerText += '\n\n✅ انت ادمن رسمي - اللوحة مفتوحة';
-        document.getElementById('msg').style.color = '#27ae60';
-        // هنا تقدر تضيف محتوى الادمن
-      } else {
-        document.getElementById('msg').innerText += '\n\n❌ مو ادمن';
-        await supabase.auth.signOut();
-      }
-    }
-    check();
-
-    async function logout() {
-      localStorage.clear();
-      await supabase.auth.signOut();
-      window.location.href = 'login.html';
-    }
-  </script>
+checkUser();
+</script>
 </body>
 </html>
