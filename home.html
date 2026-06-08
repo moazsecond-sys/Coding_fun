@@ -10,7 +10,6 @@ body{margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-fa
 h1{color:#333;font-size:36px;margin-bottom:20px}
 p{color:#28a745;font-size:22px;font-weight:bold;margin:20px 0}
 button{background:#dc3545;color:white;border:0;padding:15px 40px;border-radius:12px;cursor:pointer;font-size:18px;font-weight:bold;margin-top:20px}
-button:hover{background:#c82333}
 </style>
 </head>
 <body>
@@ -18,16 +17,15 @@ button:hover{background:#c82333}
 <h1>👑 لوحة الادمن</h1>
 <p>مرحبا يا معاذ! دخلت بنجاح 🎉</p>
 <p style="color:#666;font-size:16px">لو شفت هذي الصفحة معناها انت ادمن رسمي</p>
-<button onclick="logout()">تسجيل خروج</button>
+<button id="logoutBtn">تسجيل خروج</button>
 </div>
 
 <script>
-function logout() {
-  // نطلع ونمسح الجلسة
+document.getElementById('logoutBtn').addEventListener('click', function() {
   localStorage.clear();
   sessionStorage.clear();
   window.location.href = 'login.html?logout=1';
-}
+});
 </script>
 </body>
 </html>
