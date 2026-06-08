@@ -2,19 +2,31 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة الادمن</title>
+<title>اللوحة</title>
 <style>
 body{margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;justify-content:center;align-items:center;height:100vh;font-family:tahoma}
 .box{background:white;padding:50px;border-radius:25px;text-align:center}
-h1{color:#28a745;font-size:32px}
-a{background:red;color:white;text-decoration:none;padding:15px 40px;border-radius:12px;display:inline-block;margin-top:20px}
+button{background:red;color:white;border:0;padding:15px 40px;border-radius:12px;cursor:pointer;font-size:18px;margin-top:20px}
 </style>
 </head>
 <body>
-<div class="box">
-<h1>👑 مرحبا يا معاذ!</h1>
-<p>دخلت اللوحة بنجاح 🎉</p>
-<a href="login.html" onclick="localStorage.removeItem('admin')">خروج</a>
+<div class="box" id="content" style="display:none">
+<h1>👑 مرحبا يا معاذ</h1>
+<p>هذي لوحتك الخاصة</p>
+<button onclick="logout()">خروج</button>
 </div>
+
+<script>
+if (localStorage.getItem('logged') !== 'true') {
+  window.location.href = 'login.html';
+} else {
+  document.getElementById('content').style.display = 'block';
+}
+
+function logout() {
+  localStorage.removeItem('logged');
+  window.location.href = 'login.html';
+}
+</script>
 </body>
 </html>
