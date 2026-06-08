@@ -10,7 +10,6 @@ body{margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-fa
 .box{background:white;padding:40px;border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,0.3);width:90%;max-width:400px}
 input{width:100%;padding:12px;margin:10px 0;border:2px solid #ddd;border-radius:8px;font-size:16px;box-sizing:border-box}
 button{width:100%;background:#667eea;color:white;border:0;padding:14px;border-radius:8px;cursor:pointer;font-size:18px;font-weight:bold;margin-top:10px}
-button:hover{background:#5568d3}
 h2{text-align:center;color:#333}
 </style>
 </head>
@@ -19,22 +18,21 @@ h2{text-align:center;color:#333}
 <h2>تسجيل دخول الادمن 👑</h2>
 <input type="email" id="email" placeholder="الايميل" value="moazsecond@gmail.com">
 <input type="password" id="password" placeholder="كلمة السر">
-<button onclick="login()">دخول</button>
+<button id="loginBtn">دخول</button>
 </div>
 
 <script>
 const supabase = window.supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 
-// لو ضغط خروج من home.html
 if (window.location.search.includes('logout=1')) {
   supabase.auth.signOut();
 }
 
-async function login() {
+document.getElementById('loginBtn').addEventListener('click', async function() {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
+  const btn = this;
   
-  const btn = event.target;
   btn.innerText = 'جاري الدخول...';
   btn.disabled = true;
   
@@ -48,17 +46,14 @@ async function login() {
     return;
   }
   
-  // السر هنا: نفحص الايميل ونحول غصب
   if (data.user.email === 'moazsecond@gmail.com') {
     alert('تم! مرحبا يا معاذ ✅');
-    setTimeout(() => {
-      window.location.replace('home.html?v=' + Date.now());
-    }, 500);
+    window.location.href = 'home.html?v=' + Date.now();
   } else {
     alert('ممنوع! هذا اللوحة للادمن فقط');
     await supabase.auth.signOut();
   }
-}
+});
 </script>
 </body>
 </html>
