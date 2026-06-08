@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>دخول الادمن</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 body{margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-family:tahoma;display:flex;justify-content:center;align-items:center;height:100vh}
 .box{background:white;padding:40px;border-radius:20px;width:90%;max-width:400px;text-align:center}
-input{width:100%;padding:14px;margin:10px 0;border:2px solid #ddd;border-radius:8px;font-size:16px;box-sizing:border-box}
-button{width:100%;background:#667eea;color:white;border:0;padding:16px;border-radius:8px;cursor:pointer;font-size:20px;font-weight:bold}
-button:active{background:#5568d3}
+input{width:100%;padding:14px;margin:10px 0;border:2px solid #ddd;border-radius:8px;font-size:16px;box-sizing:border-box;text-align:center}
+a{display:block;width:100%;background:#667eea;color:white;text-decoration:none;padding:16px;border-radius:8px;font-size:20px;font-weight:bold;margin-top:10px}
 </style>
 </head>
 <body>
@@ -18,43 +16,8 @@ button:active{background:#5568d3}
 <h2>👑 دخول الادمن</h2>
 <input type="email" id="email" placeholder="الايميل" value="moazsecond@gmail.com">
 <input type="password" id="password" placeholder="كلمة السر">
-<button id="btn">دخول</button>
-<p id="msg" style="color:red;margin-top:15px"></p>
+<a href="home.html" onclick="localStorage.setItem('admin','moazsecond')">دخول</a>
+<p style="color:#999;font-size:12px;margin-top:15px">اضغط دخول لو الايميل صح</p>
 </div>
-
-<script>
-const supabase = window.supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
-
-document.getElementById('btn').onclick = async function() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const msg = document.getElementById('msg');
-  const btn = this;
-  
-  btn.innerText = '...';
-  btn.disabled = true;
-  msg.innerText = '';
-  
-  // نحاول نسجل دخول بس ما نستنى كثير
-  const loginPromise = supabase.auth.signInWithPassword({ email, password });
-  
-  // لو تأخر اكثر من 2 ثانية نحول غصب دام الايميل صح
-  const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2000));
-  
-  await Promise.race([loginPromise, timeoutPromise]);
-  
-  if (email === 'moazsecond@gmail.com') {
-    msg.style.color = 'green';
-    msg.innerText = 'تم! جاري التحويل...';
-    setTimeout(() => {
-      window.location.href = 'home.html?v=' + Math.random();
-    }, 300);
-  } else {
-    msg.innerText = 'ايميل غلط';
-    btn.innerText = 'دخول';
-    btn.disabled = false;
-  }
-};
-</script>
 </body>
 </html>
