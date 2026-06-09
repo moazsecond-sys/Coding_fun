@@ -1,6 +1,7 @@
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+const sb = supabase.createClient('', '.');
 let currentUser = null;
 let currentCategory = 'all';
+let allProjects = []; // ← مهم للبحث والفلترة
 
 sb.auth.getUser().then(({data:{user}})=>{
   if(!user) return location.href='login.html';
@@ -15,7 +16,7 @@ document.querySelectorAll('.cat-btn').forEach(btn=>{
     document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     currentCategory = btn.dataset.cat;
-    loadProjects(currentCategory);
+    searchProjects(); // ← غيرنا من loadProjects لـ searchProjects عشان الفلترة محلية
   }
 });
 
@@ -27,12 +28,19 @@ async function loadProjects(category){
   }
   
   const {data} = await query;
-
-  allProjects = data;
+  allProjects = data || []; // خزن كل شي
   
-  if(!data.length) return projects.innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد مشاريع في هذا القسم بعد</p>';
+  searchProjects(); // اعرض بعد التخزين
+}
 
-  projects.innerHTML = data.map(p=>`
+// دالة العرض - صارت لحالها
+function displayProjects(list){
+  if(!list.length) {
+    projects.innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد مشاريع في هذا القسم بعد</p>';
+    return;
+  }
+
+  projects.innerHTML = list.map(p=>`
   <div class="card">
     <span class="badge ${p.category || 'عام'}">${p.category || 'عام'}</span>
     <h3>${p.title}</h3>
@@ -46,23 +54,35 @@ async function loadProjects(category){
       ` : ''}
     </div>
   </div>
-`).join('');
+  `).join('');
 }
 
 async function deleteProject(id){
   if(!confirm('متأكد؟')) return;
   await sb.from('projects').delete().eq('id',id);
-  loadProjects(currentCategory);
+  loadProjects(currentCategory); // نرجع نجيب البيانات من جديد
 }
 
 async function editProject(id){
   alert('التعديل بيكون من الصفحة الرئيسية home.html');
 }
+
 function searchProjects(){
   const term = document.getElementById('search').value.toLowerCase();
-  const filtered = allProjects.filter(p => 
-    p.title.toLowerCase().includes(term) || 
-    p.description?.toLowerCase().includes(term)
-  );
+  
+  // فلتر أول شي حسب القسم المختار
+  let filtered = allProjects;
+  if(currentCategory !== 'all') {
+    filtered = allProjects.filter(p => p.category === currentCategory);
+  }
+  
+  // بعدين فلتر حسب البحث
+  if(term) {
+    filtered = filtered.filter(p => 
+      p.title.toLowerCase().includes(term) || 
+      (p.description && p.description.toLowerCase().includes(term))
+    );
+  }
+  
   displayProjects(filtered);
 }
