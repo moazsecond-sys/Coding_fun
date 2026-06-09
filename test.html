@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>تجربة الأقسام</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:tahoma;padding:20px;background:#f5f5f5}
+.cat-btn{padding:10px 20px;margin:5px;border:none;border-radius:8px;cursor:pointer;background:#ddd}
+.cat-btn.active{background:#007bff;color:#fff}
+.card{background:#fff;padding:15px;margin:10px 0;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+.badge{padding:4px 8px;border-radius:4px;font-size:12px;background:#eee}
+</style>
+</head>
+<body>
+
+<h2>اختبار الفلترة</h2>
+<input id="search" placeholder="ابحث..." oninput="searchProjects()" style="width:100%;padding:8px;margin:10px 0">
+
+<div>
+  <button class="cat-btn active" data-cat="all">الكل</button>
+  <button class="cat-btn" data-cat="articles">📝 مقالات</button>
+  <button class="cat-btn" data-cat="design">🎨 تصميم</button>
+  <button class="cat-btn" data-cat="programming">💻 برمجة</button>
+  <button class="cat-btn" data-cat="general">🌍 عام</button>
+</div>
+
+<div id="projects"></div>
+
+<script>
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+let currentCategory = 'all';
+let allProjects = [];
+
+const catNames = {
+  'articles': 'مقالات',
+  'design': 'تصميم', 
+  'programming': 'برمجة',
+  'general': 'عام'
+};
+
+loadProjects();
+
+// أزرار الأقسام
+document.querySelectorAll('.cat-btn').forEach(btn=>{
+  btn.onclick = () => {
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCategory = btn.dataset.cat;
+    searchProjects();
+  }
+});
+
+async function loadProjects(){
+  const {data, error} = await sb.from('projects').select('*').order('id',{ascending:false});
+  
+  if(error){
+    document.getElementById('projects').innerHTML = 'خطأ: ' + error.message;
+    return;
+  }
+  
+  allProjects = data || [];
+  console.log('البيانات:', allProjects); // عشان نشوف اسم العمود
+  searchProjects();
+}
+
+function searchProjects(){
+  const term = document.getElementById('search').value.toLowerCase();
+  
+  let filtered = allProjects;
+  if(currentCategory !== 'all') {
+    filtered = allProjects.filter(p => p.categories === currentCategory);
+  }
+  
+  if(term) {
+    filtered = filtered.filter(p => 
+      p.title.toLowerCase().includes(term) || 
+      p.description.toLowerCase().includes(term)
+    );
+  }
+  
+  displayProjects(filtered);
+}
+
+function displayProjects(list){
+  const container = document.getElementById('projects');
+  
+  if(!list.length) {
+    container.innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد مشاريع</p>';
+    return;
+  }
+
+  container.innerHTML = list.map(p=>`
+  <div class="card">
+    <span class="badge">${catNames[p.categories] || p.categories}</span>
+    <h3>${p.title}</h3>
+    <p>${p.description || 'بدون وصف'}</p>
+  </div>
+  `).join('');
+}
+</script>
+</body>
+</html>
