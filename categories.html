@@ -10,17 +10,17 @@
   <div class="container">
     <div class="header">
       <h1>تصفح الأقسام 📁</h1>
-      <a href="index.html" class="btn btn-primary">الصفحة الرئيسية</a>
+      <a href="home.html" class="btn btn-primary">الصفحة الرئيسية</a>
       <p class="user-email" id="userEmail"></p>
     </div>
 
     <div class="filters">
-      <button class="btn active" onclick="filterProjects('all')">الكل</button>
-      <button class="btn" onclick="filterProjects('برمجة')">برمجة 💻</button>
-      <button class="btn" onclick="filterProjects('تصميم')">تصميم 🎨</button>
-      <button class="btn" onclick="filterProjects('مقالات')">مقالات 📝</button>
-      <button class="btn" onclick="filterProjects('عام')">عام 🌍</button>
-<input type="text" id="search" placeholder="🔍 ابحث عن مشروع..." onkeyup="searchProjects()" style="margin-top:15px">
+      <button class="cat-btn active" data-cat="all">الكل</button>
+      <button class="cat-btn" data-cat="programming">برمجة 💻</button>
+      <button class="cat-btn" data-cat="design">تصميم 🎨</button>
+      <button class="cat-btn" data-cat="articles">مقالات 📝</button>
+      <button class="cat-btn" data-cat="general">عام 🌍</button>
+      <input type="text" id="search" placeholder="🔍 ابحث عن مشروع..." style="margin-top:15px">
     </div>
 
     <div id="projects"></div>
