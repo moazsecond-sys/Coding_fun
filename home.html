@@ -5,29 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>موقعي - الصفحة الرئيسية</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{font-family:'Tajawal',sans-serif;background:#f5f5f5;margin:0;padding:20px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
-.btn{background:#4CAF50;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer}
-.btn-danger{background:#f44336}
-.btn-edit{background:#2196F3}
-.btn-small{padding:5px 10px;font-size:13px}
-.card{background:#fff;padding:20px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 5px rgba(0,0,0,0.1);position:relative}
-.actions{position:absolute;top:15px;left:15px;display:flex;gap:5px}
-.card img{width:100%;max-height:300px;object-fit:cover;border-radius:8px;margin:10px 0}
-.date{color:#888;font-size:13px;margin-top:10px}
-input,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:8px;font-family:inherit}
-.stats{display:flex;gap:20px;margin:20px 0}
-.stat-box{background:#fff;padding:15px;border-radius:10px;flex:1;text-align:center}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="header">
-  <h1>موقعي</h1>
+  <h1>🍏 موقعي</h1>
   <div>
     <span id="userEmail"></span>
-    <button class="btn-danger" onclick="logout()">خروج</button>
+    <button class="btn-danger btn-small" onclick="logout()">خروج</button>
   </div>
 </div>
 
@@ -41,13 +27,13 @@ input,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border
   <h3>نشر مشروع جديد</h3>
   <input id="title" placeholder="عنوان المشروع">
   <textarea id="desc" placeholder="الوصف"></textarea>
-  <input id="img" placeholder="رابط الصورة">
+  <input id="img" placeholder="رابط الصورة https://...">
   <button class="btn" onclick="addProject()">نشر</button>
 </div>
 
 <div id="projects"></div>
 
-<h2>اسألني أي شيء</h2>
+<h2 style="margin-top:40px;color:#4ade80">اسألني أي شيء</h2>
 <div class="card">
   <input id="qName" placeholder="اسمك">
   <textarea id="qText" placeholder="سؤالك"></textarea>
@@ -75,7 +61,7 @@ function logout(){
 async function loadProjects(){
   const {data} = await sb.from('projects').select('*').order('id',{ascending:false});
   document.getElementById('count').textContent = data.length;
-  if(!data.length) return projects.innerHTML = '<p>لا توجد مشاريع بعد</p>';
+  if(!data.length) return projects.innerHTML = '<p style="text-align:center;color:#666">لا توجد مشاريع بعد</p>';
 
   projects.innerHTML = data.map(p=>`
     <div class="card">
@@ -90,8 +76,7 @@ async function loadProjects(){
       ${p.image_url? `<img src="${p.image_url}">` : ''}
       <div class="date">${formatDate(p.created_at)}</div>
 
-      <!-- التعليقات للمسجلين فقط -->
-      <div style="margin-top:15px;border-top:1px solid #eee;padding-top:15px">
+      <div class="comments-section">
         <h4>💬 التعليقات</h4>
         <div id="comments-${p.id}"></div>
         <input id="comment-${p.id}" placeholder="اكتب تعليقك...">
@@ -103,15 +88,21 @@ async function loadProjects(){
   data.forEach(p=>loadComments(p.id));
 }
 
-function formatDate(d){return new Date(d).toLocaleDateString('ar-EG')}
+function formatDate(d){
+  return new Date(d).toLocaleDateString('ar-EG',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
 
 async function addProject(){
-  const title = document.getElementById('title').value;
-  const desc = document.getElementById('desc').value;
-  const img = document.getElementById('img').value;
-  if(!title) return alert('اكتب العنوان');
+  const title = document.getElementById('title').value.trim();
+  const desc = document.getElementById('desc').value.trim();
+  const img = document.getElementById('img').value.trim();
+  if(!title) return alert('اكتب عنوان المشروع');
 
-  await sb.from('projects').insert({title,description:desc,image_url:img,user_id:currentUser.id});
+  const {error} = await sb.from('projects').insert({
+    title,description:desc,image_url:img,user_id:currentUser.id
+  });
+  if(error) return alert('خطأ: '+error.message);
+
   document.getElementById('title').value = '';
   document.getElementById('desc').value = '';
   document.getElementById('img').value = '';
@@ -131,9 +122,7 @@ async function editProject(id,title,desc,img){
   const newImg = prompt('رابط الصورة الجديد:',img);
 
   await sb.from('projects').update({
-    title:newTitle,
-    description:newDesc,
-    image_url:newImg
+    title:newTitle,description:newDesc,image_url:newImg
   }).eq('id',id);
   loadProjects();
 }
@@ -141,16 +130,14 @@ async function editProject(id,title,desc,img){
 async function loadComments(project_id){
   const {data} = await sb.from('comments').select('*').eq('project_id',project_id).order('id',{ascending:true});
   document.getElementById(`comments-${project_id}`).innerHTML =
-    data.map(c=>`<p><b>${c.user_name}:</b> ${c.comment}</p>`).join('') || '<p style="color:#999">لا توجد تعليقات</p>';
+    data.map(c=>`<p style="margin:5px 0"><b style="color:#4ade80">${c.user_name}:</b> ${c.comment}</p>`).join('') || '<p style="color:#666;font-size:13px">لا توجد تعليقات</p>';
 }
 
 async function addComment(project_id){
   const input = document.getElementById(`comment-${project_id}`);
-  if(!input.value) return;
+  if(!input.value.trim()) return;
   await sb.from('comments').insert({
-    project_id,
-    user_name:currentUser.email.split('@')[0],
-    comment:input.value
+    project_id,user_name:currentUser.email.split('@')[0],comment:input.value.trim()
   });
   input.value = '';
   loadComments(project_id);
@@ -161,15 +148,15 @@ async function loadQuestions(){
   document.getElementById('qCount').textContent = data.length;
   questions.innerHTML = data.map(q=>`
     <div class="card">
-      <b>${q.user_name}:</b> ${q.question}
-      ${q.answer? `<p style="margin-top:10px;color:#4CAF50"><b>الرد:</b> ${q.answer}</p>` : ''}
+      <b style="color:#4ade80">${q.user_name}:</b> ${q.question}
+      ${q.answer? `<p style="margin-top:10px;color:#22c55e"><b>الرد:</b> ${q.answer}</p>` : ''}
     </div>
-  `).join('') || '<p>لا توجد أسئلة بعد</p>';
+  `).join('') || '<p style="color:#666">لا توجد أسئلة بعد</p>';
 }
 
 async function askQuestion(){
-  const name = document.getElementById('qName').value || 'زائر';
-  const question = document.getElementById('qText').value;
+  const name = document.getElementById('qName').value.trim() || 'زائر';
+  const question = document.getElementById('qText').value.trim();
   if(!question) return alert('اكتب سؤالك');
 
   await sb.from('questions').insert({user_name:name,question});
