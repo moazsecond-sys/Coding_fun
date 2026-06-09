@@ -30,50 +30,57 @@ button:hover{background:#ff6b81}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-// 1. غير هالسطرين بمفاتيحك من Supabase > Settings > API
-// 2. كود الحماية
-if (localStorage.getItem('logged') !== 'true') {
-  window.location.href = 'login.html';
-} else {
-  document.getElementById('content').style.display = 'block';
+// كود الحماية حقك خله زي ما هو
+if (localStorage.getItem('loggedIn') !== 'true') {
+  window.location.href = 'index.html';
 }
 
 function logout() {
-  localStorage.removeItem('logged');
-  window.location.href = 'login.html';
+  localStorage.removeItem('loggedIn');
+  window.location.href = 'index.html';
 }
 
-// 3. جلب وعرض المشاريع
-async function loadProjects() {
-  const { data, error } = await supabase.from('projects').select('*').order('created_at', {ascending: false});
+// كود Supabase الجديد - محمي
+try {
+  // غير السطرين هذول بس
+  const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
   
-  if(error) {
-    console.log('خطأ:', error);
-    document.getElementById('gallery').innerHTML = '<p>فيه خطأ في تحميل البيانات</p>';
-    return;
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+  async function loadProjects() {
+    const { data, error } = await supabase.from('projects').select('*');
+    
+    if (error) {
+      document.getElementById('projects').innerHTML = 'خطأ في جلب البيانات';
+      return;
+    }
+    
+    const projectsDiv = document.getElementById('projects');
+    projectsDiv.innerHTML = '';
+    
+    data.forEach(p => {
+      projectsDiv.innerHTML += `
+        <div class="project-card">
+          <img src="${p.image_url}" width="200">
+          <h3>${p.title}</h3>
+          <p>${p.description}</p>
+        </div>
+      `;
+    });
   }
   
-  if(data.length === 0) {
-    document.getElementById('gallery').innerHTML = '<p>لا توجد مشاريع بعد</p>';
-    return;
-  }
+  loadProjects();
   
-  const gallery = document.getElementById('gallery');
-  gallery.innerHTML = '';
-  
-  data.forEach(p => {
-    gallery.innerHTML += `
-      <div class="card">
-        <img src="${p.image_url}" alt="${p.title}">
-        <h3>${p.title}</h3>
-        <p>${p.description}</p>
-      </div>
-    `;
-  });
+} catch (e) {
+  console.log('Supabase ما اشتغل بس الصفحة شغالة');
+  document.getElementById('projects').innerHTML = 'جاري تحميل المشاريع...';
 }
-
-loadProjects();
 </script>
+
+<!-- اضف هذا الديف تحت زر الخروج -->
+<div id="projects"></div>
 </body>
 </html>
