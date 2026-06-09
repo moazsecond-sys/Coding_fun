@@ -10,29 +10,40 @@ const catNames = {
   'general': 'عام'
 };
 
-// أول ما الصفحة تفتح
+console.log('categories.js اشتغل ✅'); // عشان نتأكد الملف يتحمل
+
 sb.auth.getUser().then(({data:{user}})=>{
-  if(!user) return location.href='login.html';
+  if(!user) {
+    console.log('مافي يوزر، بيرجع للوجن');
+    return location.href='login.html';
+  }
   document.getElementById('userEmail').textContent = user.email;
   loadProjects();
 });
 
-// كود الأزرار
 document.querySelectorAll('.cat-btn').forEach(btn=>{
   btn.onclick = () => {
     document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     currentCategory = btn.dataset.cat;
+    console.log('القسم المختار:', currentCategory);
     searchProjects();
   }
 });
 
-// البحث
 document.getElementById('search').addEventListener('keyup', searchProjects);
 
 async function loadProjects(){
+  console.log('جاري تحميل المشاريع...');
   const {data, error} = await sb.from('projects').select('*').order('id',{ascending:false});
-  if(error) return console.error(error);
+  
+  if(error) {
+    console.error('خطأ Supabase:', error);
+    document.getElementById('projects').innerHTML = `<p style="color:red">خطأ: ${error.message}</p>`;
+    return;
+  }
+  
+  console.log('المشاريع اللي جت:', data);
   allProjects = data || [];
   searchProjects();
 }
@@ -41,12 +52,11 @@ function searchProjects(){
   const term = document.getElementById('search').value.toLowerCase();
   let filtered = allProjects;
   
-  // الفلترة بالقسم
   if(currentCategory !== 'all') {
-    filtered = allProjects.filter(p => p.categories === currentCategory); // categories جمع
+    filtered = allProjects.filter(p => p.categories === currentCategory);
+    console.log(`فلترة على ${currentCategory}، النتيجة:`, filtered.length);
   }
   
-  // البحث بالعنوان
   if(term) {
     filtered = filtered.filter(p => p.title.toLowerCase().includes(term));
   }
@@ -56,7 +66,10 @@ function searchProjects(){
 
 function displayProjects(list){
   const container = document.getElementById('projects');
-  if(!list.length) return container.innerHTML = '<p style="text-align:center;color:#666;margin-top:40px">لا توجد مشاريع في هذا القسم</p>';
+  if(!list.length) {
+    container.innerHTML = '<p style="text-align:center;color:#666;margin-top:40px">لا توجد مشاريع في هذا القسم</p>';
+    return;
+  }
   
   container.innerHTML = list.map(p=>`
     <div class="card">
