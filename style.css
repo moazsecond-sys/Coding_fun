@@ -2,70 +2,94 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Tahoma', sans-serif;
 }
 
 body {
-  font-family: 'Tajawal', 'Cairo', sans-serif;
-  background: #0f0f1a;
-  color: #e0e0e0;
-  margin: 0;
+  background: #0f0f1e;
+  color: #fff;
   padding: 20px;
-  min-height: 100vh;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 20px;
   background: #1a1a2e;
+  padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .header h1 {
   color: #4ade80;
-  font-size: 28px;
+  margin-bottom: 10px;
 }
 
-#userEmail {
-  color: #94a3b8;
-  margin-left: 15px;
-}
-
-.stats {
-  display: flex;
-  gap: 15px;
-  margin: 25px 0;
-  flex-wrap: wrap;
-}
-
-.stat-box {
-  background: #1a1a2e;
-  padding: 20px;
-  border-radius: 12px;
-  flex: 1;
-  min-width: 120px;
-  text-align: center;
-  border: 1px solid #2a2a3e;
-}
-
-.stat-box h3 {
-  color: #4ade80;
-  font-size: 32px;
-  margin-bottom: 5px;
-}
-
-.stat-box p {
-  color: #94a3b8;
+.user-email {
+  color: #aaa;
+  margin-top: 10px;
   font-size: 14px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.btn {
+  background: #2a2a3e;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #3a3a4e;
+}
+
+.btn.active {
+  background: #4ade80;
+  color: #0f0f1e;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background: #4ade80;
+  color: #0f0f1e;
+  text-decoration: none;
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.btn-edit {
+  background: #3b82f6;
+}
+
+.btn-danger {
+  background: #ef4444;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+  margin-left: 5px;
 }
 
 .card {
   background: #1a1a2e;
   padding: 20px;
-  padding-top: 50px; /* هذا الجديد عشان البادج */
+  padding-top: 55px; /* مساحة للبادج */
   border-radius: 12px;
   margin-bottom: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -74,162 +98,47 @@ body {
 }
 
 .card h3 {
-  color: #fff;
   margin-bottom: 10px;
-  font-size: 20px;
+  color: #fff;
 }
 
 .card p {
-  color: #cbd5e1;
+  color: #ccc;
+  margin-bottom: 10px;
   line-height: 1.6;
-  margin: 10px 0;
 }
 
 .card img {
-  width: 100%;
-  max-height: 350px;
-  object-fit: cover;
+  max-width: 100%;
   border-radius: 8px;
-  margin: 15px 0;
+  margin: 10px 0;
 }
 
 .date {
-  color: #64748b;
-  font-size: 13px;
+  color: #777;
+  font-size: 12px;
   margin-top: 10px;
 }
 
-/* الأزرار */
-.actions {
+.badge {
   position: absolute;
   top: 15px;
-  left: 15px;
-  display: flex;
-  gap: 8px;
-  z-index: 10;
-}
-
-.btn {
-  background: #4ade80;
-  color: #0f0f1a;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-.btn:hover {
-  background: #22c55e;
-  transform: translateY(-2px);
-}
-
-.btn-small {
-  padding: 6px 12px;
-  font-size: 13px;
-}
-
-.btn-edit {
-  background: #3b82f6;
-  color: #fff;
-}
-
-.btn-edit:hover {
-  background: #2563eb;
-}
-
-.btn-danger {
-  background: #ef4444;
-  color: #fff;
-}
-
-.btn-danger:hover {
-  background: #dc2626;
-}
-
-/* الفورم */
-input, textarea {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  background: #0f0f1a;
-  color: #e0e0e0;
-  border: 1px solid #2a2a3e;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 15px;
-}
-
-input:focus, textarea:focus {
-  outline: none;
-  border-color: #4ade80;
-}
-
-textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-
-/* التعليقات */
-.comments-section {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #2a2a3e;
-}
-
-.comments-section h4 {
-  color: #4ade80;
-  margin-bottom: 10px;
-}
-
-/* موبايل */
-@media (max-width: 768px) {
-  .stats {
-    flex-direction: column;
-  }
-  .header {
-    flex-direction: column;
-    gap: 10px;
-  }
-.actions { 
-  position: relative; 
-  z-index: 2; 
-  margin-top: 10px; 
-}
-}
-.categories-nav {
-  display: flex;
-  gap: 10px;
-  margin: 20px 0;
-  flex-wrap: wrap;
-}
-
-.cat-btn {
-  background: #1a1a2e;
-  color: #94a3b8;
-  border: 1px solid #2a2a3e;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-}
-
-.cat-btn:hover, .cat-btn.active {
-  background: #4ade80;
-  color: #0f0f1a;
-  border-color: #4ade80;
-}
-
-.badge {
-  background: #3b82f6;
+  right: 15px;
   color: #fff;
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 12px;
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  z-index: 1; /* ضفناه عشان يكون تحت الأزرار */
+  z-index: 1;
 }
+
+/* ألوان البادج حسب القسم */
+.badge.برمجة { background: #3b82f6; }
+.badge.تصميم { background: #a855f7; }
+.badge.مقالات { background: #f97316; }
+.badge.عام { background: #64748b; }
+
+.actions {
+  position: relative;
+  z-index: 2;
+  margin-top: 10px;
+              }
