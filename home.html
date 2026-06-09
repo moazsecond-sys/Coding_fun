@@ -40,14 +40,17 @@ h2,h3{margin-top:0}
 <div id="projects" class="grid">جاري التحميل...</div>
 
 <script>
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+<script>
+const sb = supabase.createClient('رابطك','مفتاحك');
 
-// 1. شيك الجلسة + جيب الايميل
-sb.auth.getSession().then(async ({data:{session}})=>{
-  if(!session) return location.replace('login.html');
-  userEmail.textContent = session.user.email;
-  loadProjects();
+sb.auth.getSession().then(({data:{session}})=>{
+  if(!session) location.replace('login.html');
+  else {
+    userEmail.textContent = session.user.email; // الترحيب
+    alert('ايميلك: '+session.user.email); // لو طلع الايميل معناها الجلسة شغالة
+  }
 });
+</script>
 
 // 2. عرض المشاريع
 async function loadProjects(){
