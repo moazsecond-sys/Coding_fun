@@ -115,12 +115,13 @@ async function loadProjects(){
   if(!data.length) return projects.innerHTML = '<div class="card">مافي مشاريع لسه 👆</div>';
   
   projects.innerHTML = data.map(p=>`
-    <div class="card">
-      <div class="actions">
-        ${p.user_id == currentUser.id ? `
-        <button class="btn btn-edit btn-small" onclick='editProject(${p.id},"${p.title}","${p.description||''}","${p.image_url||''}")'>تعديل</button>
-        <button class="btn-danger btn-small" onclick="deleteProject(${p.id})">حذف</button>` : ''}
-      </div>
+  <div class="card">
+    <div class="actions">
+      ${p.user_id == currentUser.id ? `
+      <button class="btn btn-edit btn-small" onclick='editProject(${p.id},"${p.title.replace(/"/g, '&quot;')}","${(p.description||'').replace(/"/g, '&quot;')}","${p.image_url||''}")'>تعديل</button>
+      <button class="btn-danger btn-small" onclick="deleteProject(${p.id})">حذف</button>
+      ` : ''}
+    </div>
       <h3>${p.title}</h3>
       <p>${p.description || 'بدون وصف'}</p>
       ${p.image_url ? `<img src="${p.image_url}">` : ''}
