@@ -4,9 +4,20 @@
 <meta charset="UTF-8">
 <title>اللوحة</title>
 <style>
-body{margin:0;background:#1a1a2e;display:flex;justify-content:center;align-items:center;height:100vh;font-family:tahoma}
-.box{background:#16213e;padding:40px;border-radius:20px;text-align:center;color:white;width:90%;max-width:500px}
-button{background:#e94560;color:white;border:0;padding:14px 40px;border-radius:8px;cursor:pointer;font-size:18px;font-weight:bold}
+body{margin:0;background:#1a1a2e;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:tahoma;color:white}
+.box{background:#16213e;padding:40px;border-radius:15px;text-align:center;box-shadow:0 0 20px rgba(0,0,0,0.5)}
+h1{color:#e94560}
+button{background:#e94560;color:white;border:0;padding:10px 25px;border-radius:8px;cursor:pointer;margin-top:15px;font-size:16px}
+button:hover{background:#ff6b81}
+
+#gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:30px;max-width:800px}
+.card{background:#0f3460;padding:15px;border-radius:12px;transition:0.3s}
+.card:hover{transform:translateY(-5px)}
+.card img{width:100%;border-radius:8px;height:180px;object-fit:cover}
+.card h3{margin:10px 0 5px;color:#e94560}
+.card p{font-size:14px;color:#ccc;margin:0}
+
+@media(max-width:600px){#gallery{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -14,9 +25,18 @@ button{background:#e94560;color:white;border:0;padding:14px 40px;border-radius:8
 <h1>👑 مرحبا يا معاذ</h1>
 <p>هذي لوحتك الخاصة</p>
 <button onclick="logout()">خروج</button>
+
+<div id="gallery"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// 1. غير هالسطرين بمفاتيحك من Supabase > Settings > API
+const SUPABASE_URL = 'حط_الرابط_هنا';
+const SUPABASE_KEY = 'حط_المفتاح_هنا';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 2. كود الحماية
 if (localStorage.getItem('logged') !== 'true') {
   window.location.href = 'login.html';
 } else {
@@ -27,6 +47,37 @@ function logout() {
   localStorage.removeItem('logged');
   window.location.href = 'login.html';
 }
+
+// 3. جلب وعرض المشاريع
+async function loadProjects() {
+  const { data, error } = await supabase.from('projects').select('*').order('created_at', {ascending: false});
+  
+  if(error) {
+    console.log('خطأ:', error);
+    document.getElementById('gallery').innerHTML = '<p>فيه خطأ في تحميل البيانات</p>';
+    return;
+  }
+  
+  if(data.length === 0) {
+    document.getElementById('gallery').innerHTML = '<p>لا توجد مشاريع بعد</p>';
+    return;
+  }
+  
+  const gallery = document.getElementById('gallery');
+  gallery.innerHTML = '';
+  
+  data.forEach(p => {
+    gallery.innerHTML += `
+      <div class="card">
+        <img src="${p.image_url}" alt="${p.title}">
+        <h3>${p.title}</h3>
+        <p>${p.description}</p>
+      </div>
+    `;
+  });
+}
+
+loadProjects();
 </script>
 </body>
 </html>
