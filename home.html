@@ -8,16 +8,23 @@
 <style>
 body{background:#0b1020;color:white;font-family:tahoma;margin:0;padding:20px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px}
-.card{background:#1a1f36;padding:20px;margin:15px 0;border-radius:16px;border:1px solid #2a3050}
-.btn{padding:12px 24px;border-radius:10px;border:0;background:#3b82f6;color:white;font-weight:bold;cursor:pointer}
+.card{background:#1a1f36;padding:20px;margin:15px 0;border-radius:16px;border:1px solid #2a3050;position:relative}
+.btn{padding:10px 18px;border-radius:8px;border:0;background:#3b82f6;color:white;font-weight:bold;cursor:pointer;margin:5px}
 .btn:hover{background:#2563eb}
 .btn-danger{background:#ef4444}
 .btn-danger:hover{background:#dc2626}
+.btn-edit{background:#f59e0b}
+.btn-edit:hover{background:#d97706}
+.btn-small{padding:6px 12px;font-size:13px}
 input,textarea{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #333;background:#0b1020;color:white;box-sizing:border-box}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
 h2,h3{margin:0 0 10px 0}
 .welcome{font-size:16px;color:#93c5fd}
 img{max-width:100%;border-radius:8px;margin-top:10px}
+.actions{position:absolute;top:15px;left:15px;display:flex;gap:5px}
+.date{color:#94a3b8;font-size:12px;margin-top:10px}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center}
+.modal-content{background:#1a1f36;padding:25px;border-radius:16px;width:90%;max-width:400px;border:1px solid #2a3050}
 </style>
 </head>
 <body>
@@ -27,12 +34,15 @@ img{max-width:100%;border-radius:8px;margin-top:10px}
     <h2>مرحباً 🌸</h2>
     <div class="welcome" id="userEmail">جاري التحميل...</div>
   </div>
-  <button class="btn-danger" onclick="logout()">تسجيل خروج</button>
+  <div>
+    <button class="btn btn-edit" onclick="openSettings()">⚙️ الإعدادات</button>
+    <button class="btn-danger" onclick="logout()">تسجيل خروج</button>
+  </div>
 </div>
 
-<!-- فورم النشر التلقائي -->
+<!-- فورم النشر -->
 <div class="card">
-  <h3>نشر مشروع جديد تلقائي</h3>
+  <h3>نشر مشروع جديد</h3>
   <input id="title" placeholder="عنوان المشروع" required>
   <textarea id="desc" rows="3" placeholder="وصف المشروع"></textarea>
   <input id="image" placeholder="رابط الصورة اختياري">
@@ -43,78 +53,99 @@ img{max-width:100%;border-radius:8px;margin-top:10px}
 <h3>مشاريعك الحالية</h3>
 <div id="projects" class="grid">جاري التحميل...</div>
 
-<script>
-// === 1. حط رابط ومفتاح مشروعك هنا ===
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+<!-- مودال التعديل -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <h3>تعديل المشروع</h3>
+    <input id="editTitle" placeholder="العنوان">
+    <textarea id="editDesc" rows="3" placeholder="الوصف"></textarea>
+    <input id="editImage" placeholder="رابط الصورة">
+    <div style="margin-top:15px">
+      <button class="btn" onclick="saveEdit()">حفظ</button>
+      <button class="btn-danger" onclick="closeModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
 
-// === 2. شيك الجلسة اول ما تفتح الصفحة ===
+<script>
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+let editId = null;
+
 sb.auth.getSession().then(async ({data:{session}})=>{
-  if(!session){
-    location.replace('login.html');
-    return;
-  }
+  if(!session) return location.replace('login.html');
   document.getElementById('userEmail').textContent = session.user.email;
   loadProjects();
 });
 
-// === 3. عرض المشاريع من قاعدة البيانات ===
+// تنسيق التاريخ عربي
+function formatDate(dateStr){
+  return new Date(dateStr).toLocaleString('ar-EG',{
+    year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'
+  });
+}
+
 async function loadProjects(){
   const {data,error} = await sb.from('projects').select('*').order('created_at',{ascending:false});
+  if(error) return projects.innerHTML = '<div class="card">خطأ: '+error.message+'</div>';
+  if(!data.length) return projects.innerHTML = '<div class="card">مافي مشاريع لسه 👆</div>';
   
-  if(error){
-    document.getElementById('projects').innerHTML = '<div class="card">خطأ: '+error.message+'</div>';
-    return;
-  }
-  
-  if(!data || data.length === 0){
-    document.getElementById('projects').innerHTML = '<div class="card">مافي مشاريع لسه. انشر اول واحد من الفورم فوق 👆</div>';
-    return;
-  }
-  
-  document.getElementById('projects').innerHTML = data.map(p=>`
+  projects.innerHTML = data.map(p=>`
     <div class="card">
+      <div class="actions">
+        <button class="btn btn-edit btn-small" onclick='editProject(${p.id},"${p.title}","${p.description||''}","${p.image_url||''}")'>تعديل</button>
+        <button class="btn-danger btn-small" onclick="deleteProject(${p.id})">حذف</button>
+      </div>
       <h3>${p.title}</h3>
       <p>${p.description || 'بدون وصف'}</p>
       ${p.image_url ? `<img src="${p.image_url}" alt="${p.title}">` : ''}
-      <small style="color:#94a3b8">${new Date(p.created_at).toLocaleString('ar-EG')}</small>
+      <div class="date">${formatDate(p.created_at)}</div>
     </div>
   `).join('');
 }
 
-// === 4. النشر التلقائي ===
 async function addProject(){
-  const title = document.getElementById('title').value.trim();
-  const desc = document.getElementById('desc').value.trim();
-  const image = document.getElementById('image').value.trim();
-  
-  if(!title){
-    alert('اكتب عنوان المشروع');
-    return;
-  }
-  
-  const {error} = await sb.from('projects').insert([{
-    title: title,
-    description: desc || null,
-    image_url: image || null
-  }]);
-  
-  if(error){
-    alert('خطأ في النشر: '+error.message);
-    return;
-  }
-  
-  alert('تم النشر بنجاح 🌸');
-  document.getElementById('title').value = '';
-  document.getElementById('desc').value = '';
-  document.getElementById('image').value = '';
-  loadProjects(); // تحديث تلقائي
+  const title = title.value.trim();
+  if(!title){ alert('اكتب العنوان'); return; }
+  const {error} = await sb.from('projects').insert([{title, description:desc.value, image_url:image.value}]);
+  if(error){ alert('خطأ: '+error.message); return; }
+  alert('تم النشر 🌸');
+  title.value = desc.value = image.value = '';
+  loadProjects();
 }
 
-// === 5. تسجيل الخروج ===
-async function logout(){
-  await sb.auth.signOut();
-  location.replace('login.html');
+function editProject(id,t,d,i){
+  editId = id;
+  editTitle.value = t;
+  editDesc.value = d;
+  editImage.value = i;
+  editModal.style.display = 'flex';
 }
+
+async function saveEdit(){
+  const {error} = await sb.from('projects').update({
+    title: editTitle.value,
+    description: editDesc.value,
+    image_url: editImage.value
+  }).eq('id', editId);
+  
+  if(error){ alert('خطأ: '+error.message); return; }
+  closeModal();
+  loadProjects();
+}
+
+async function deleteProject(id){
+  if(!confirm('متأكد تبغى تحذف المشروع؟')) return;
+  const {error} = await sb.from('projects').delete().eq('id', id);
+  if(error){ alert('خطأ: '+error.message); return; }
+  loadProjects();
+}
+
+function closeModal(){ editModal.style.display = 'none'; }
+function openSettings(){ alert('صفحة الإعدادات الجاية 🌸 تحب تغير ايش فيها؟'); }
+async function logout(){ await sb.auth.signOut(); location.replace('login.html'); }
+
+// اقفل المودال لو ضغط برا
+window.onclick = e => { if(e.target == editModal) closeModal() }
 </script>
 
 </body>
