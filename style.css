@@ -196,3 +196,37 @@ textarea {
     margin-bottom: 10px;
   }
 }
+.categories-nav {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.cat-btn {
+  background: #1a1a2e;
+  color: #94a3b8;
+  border: 1px solid #2a2a3e;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.cat-btn:hover, .cat-btn.active {
+  background: #4ade80;
+  color: #0f0f1a;
+  border-color: #4ade80;
+}
+
+.badge {
+  background: #3b82f6;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
