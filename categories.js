@@ -31,20 +31,20 @@ async function loadProjects(category){
   if(!data.length) return projects.innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد مشاريع في هذا القسم بعد</p>';
 
   projects.innerHTML = data.map(p=>`
-    <div class="card">
-      <span class="badge">${p.category || 'عام'}</span>
-      <div class="actions">
-        ${p.user_id == currentUser.id? `
-        <button class="btn btn-edit btn-small" onclick='editProject(${p.id})'>تعديل</button>
-        <button class="btn-danger btn-small" onclick="deleteProject(${p.id})">حذف</button>
-        ` : ''}
-      </div>
-      <h3>${p.title}</h3>
-      <p>${p.description || 'بدون وصف'}</p>
-      ${p.image_url? `<img src="${p.image_url}">` : ''}
-      <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
+  <div class="card">
+    <span class="badge">${p.category || 'عام'}</span>
+    <h3>${p.title}</h3>
+    <p>${p.description || 'بدون وصف'}</p>
+    ${p.image_url? `<img src="${p.image_url}">` : ''}
+    <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
+    <div class="actions">
+      ${p.user_id == currentUser.id? `
+        <button class="btn btn-edit btn-small" onClick="editProject(${p.id})">تعديل</button>
+        <button class="btn btn-danger btn-small" onClick="deleteProject(${p.id})">حذف</button>
+      ` : ''}
     </div>
-  `).join('');
+  </div>
+`).join('');
 }
 
 async function deleteProject(id){
