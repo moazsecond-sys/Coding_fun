@@ -56,3 +56,11 @@ async function deleteProject(id){
 async function editProject(id){
   alert('التعديل بيكون من الصفحة الرئيسية home.html');
 }
+function searchProjects(){
+  const term = document.getElementById('search').value.toLowerCase();
+  const filtered = allProjects.filter(p => 
+    p.title.toLowerCase().includes(term) || 
+    p.description?.toLowerCase().includes(term)
+  );
+  displayProjects(filtered);
+}
