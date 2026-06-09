@@ -31,17 +31,17 @@
   <textarea id="description" placeholder="الوصف" rows="4"></textarea>
   <input id="image_url" placeholder="رابط الصورة">
   
-  <!-- ضيف هذا هنا -->
   <select id="categories" required>
-  <option value="">اختر القسم</option>
-  <option value="programming">💻 برمجة</option>
-  <option value="design">🎨 تصميم</option>
-  <option value="articles">📝 مقالات</option>
-  <option value="general">🌍 عام</option>
-</select>
+    <option value="">اختر القسم</option>
+    <option value="programming">💻 برمجة</option>
+    <option value="design">🎨 تصميم</option>
+    <option value="articles">📝 مقالات</option>
+    <option value="general">🌍 عام</option>
+  </select>
   
   <button class="btn" type="submit">نشر</button>
 </form>
+</div>
 
 <div id="projects"></div>
 
@@ -54,8 +54,15 @@
 <div id="questions"></div>
 
 <script>
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 let currentUser = null;
+
+const catNames = {
+  'articles': 'مقالات',
+  'design': 'تصميم', 
+  'programming': 'برمجة',
+  'general': 'عام'
+};
 
 sb.auth.getUser().then(({data:{user}})=>{
   if(!user) return location.href='login.html';
@@ -70,12 +77,32 @@ function logout(){
   location.href='login.html';
 }
 
+// كود النشر - هذا بديل addProject القديم
+document.getElementById('postForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  
+  const {error} = await sb.from('projects').insert({
+    title: document.getElementById('title').value,
+    description: document.getElementById('description').value,
+    image_url: document.getElementById('image_url').value,
+    categories: document.getElementById('categories').value, // ← categories جمع
+    user_id: currentUser.id
+  });
+  
+  if(error) return alert('خطأ: '+error.message);
+  
+  e.target.reset();
+  loadProjects();
+});
+
 async function loadProjects(){
   const {data} = await sb.from('projects').select('*').order('id',{ascending:false});
   document.getElementById('count').textContent = data.length;
-  if(!data.length) return projects.innerHTML = '<p style="text-align:center;color:#666">لا توجد مشاريع بعد</p>';
+  const projectsDiv = document.getElementById('projects');
+  
+  if(!data.length) return projectsDiv.innerHTML = '<p style="text-align:center;color:#666">لا توجد مشاريع بعد</p>';
 
-  projects.innerHTML = data.map(p=>`
+  projectsDiv.innerHTML = data.map(p=>`
     <div class="card">
       <div class="actions">
         ${p.user_id == currentUser.id? `
@@ -83,9 +110,10 @@ async function loadProjects(){
         <button class="btn-danger btn-small" onclick="deleteProject(${p.id})">حذف</button>
         ` : ''}
       </div>
+      <span class="badge" style="background:#4ade80;color:#000;padding:4px 8px;border-radius:6px;font-size:12px">${catNames[p.categories] || p.categories}</span>
       <h3>${p.title}</h3>
       <p>${p.description || 'بدون وصف'}</p>
-      ${p.image_url? `<img src="${p.image_url}">` : ''}
+      ${p.image_url? `<img src="${p.image_url}" style="max-width:100%;border-radius:8px;margin-top:10px">` : ''}
       <div class="date">${formatDate(p.created_at)}</div>
 
       <div class="comments-section">
@@ -102,35 +130,6 @@ async function loadProjects(){
 
 function formatDate(d){
   return new Date(d).toLocaleDateString('ar-EG',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-}
-
-async function addProject(){
-  const title = document.getElementById('title').value;
-async function addProject(){
-  const title = document.getElementById('title').value;
-  const desc = document.getElementById('desc').value;
-  const img = document.getElementById('img').value;
-  if(!title) return alert('اكتب عنوان المشروع');
-
-  const category = document.getElementById('category').value; // ضيف هذا هنا
-  
-  const {error} = await sb.from('projects').insert({
-    title,description:desc,image_url:img,category,user_id:currentUser.id
-  });
-  if(error) return alert('خطأ: '+error.message);
-  
-  document.getElementById('title').value = '';
-  document.getElementById('desc').value = '';
-  document.getElementById('img').value = '';
-  document.getElementById('category').value = ''; // فضي القسم بعد النشر
-  loadProjects();
-}
-  if(error) return alert('خطأ: '+error.message);
-
-  document.getElementById('title').value = '';
-  document.getElementById('desc').value = '';
-  document.getElementById('img').value = '';
-  loadProjects();
 }
 
 async function deleteProject(id){
@@ -170,7 +169,7 @@ async function addComment(project_id){
 async function loadQuestions(){
   const {data} = await sb.from('questions').select('*').order('id',{ascending:false});
   document.getElementById('qCount').textContent = data.length;
-  questions.innerHTML = data.map(q=>`
+  document.getElementById('questions').innerHTML = data.map(q=>`
     <div class="card">
       <b style="color:#4ade80">${q.user_name}:</b> ${q.question}
       ${q.answer? `<p style="margin-top:10px;color:#22c55e"><b>الرد:</b> ${q.answer}</p>` : ''}
