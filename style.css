@@ -192,10 +192,11 @@ textarea {
     flex-direction: column;
     gap: 10px;
   }
-  .actions {
-    position: static;
-    margin-bottom: 10px;
-  }
+.actions { 
+  position: relative; 
+  z-index: 2; 
+  margin-top: 10px; 
+}
 }
 .categories-nav {
   display: flex;
