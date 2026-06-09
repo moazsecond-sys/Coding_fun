@@ -1,33 +1,89 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة التحكم</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>body{background:#0b1020;color:white;font-family:tahoma;padding:20px}
-.btn{background:#ef4444;border:0;padding:10px 20px;border-radius:8px;color:white;cursor:pointer;float:left}</style>
+<style>
+body{background:#0b1020;color:white;font-family:tahoma;margin:0;padding:20px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+.card{background:#1a1f36;padding:20px;margin:15px 0;border-radius:16px;border:1px solid #2a3050}
+.btn{padding:12px 24px;border-radius:10px;border:0;background:#3b82f6;color:white;font-weight:bold;cursor:pointer}
+.btn-danger{background:#ef4444}
+input,textarea{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #333;background:#0b1020;color:white;box-sizing:border-box}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
+h2,h3{margin-top:0}
+.welcome{font-size:18px;color:#93c5fd}
+</style>
 </head>
 <body>
-<button class="btn" onclick="logout()">تسجيل خروج</button>
-<h2>لوحة التحكم</h2>
-<div id="projects">جاري التحميل...</div>
+
+<div class="top">
+  <div>
+    <h2>مرحباً 🌸</h2>
+    <div class="welcome" id="userEmail">جاري التحميل...</div>
+  </div>
+  <button class="btn-danger" onclick="logout()">تسجيل خروج</button>
+</div>
+
+<!-- فورم النشر التلقائي -->
+<div class="card">
+  <h3>نشر مشروع جديد تلقائي</h3>
+  <input id="title" placeholder="عنوان المشروع">
+  <textarea id="desc" rows="3" placeholder="وصف المشروع"></textarea>
+  <input id="image" placeholder="رابط الصورة اختياري">
+  <button class="btn" onclick="addProject()">نشر الآن</button>
+</div>
+
+<!-- عرض المشاريع -->
+<h3>مشاريعك الحالية</h3>
+<div id="projects" class="grid">جاري التحميل...</div>
 
 <script>
 const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 
-// شيك لو مافي جلسة ارميه login.html
-sb.auth.getSession().then(({data:{session}})=>{
-  if(!session) location.replace('login.html');
-  else loadProjects();
+// 1. شيك الجلسة + جيب الايميل
+sb.auth.getSession().then(async ({data:{session}})=>{
+  if(!session) return location.replace('login.html');
+  userEmail.textContent = session.user.email;
+  loadProjects();
 });
 
+// 2. عرض المشاريع
 async function loadProjects(){
-  const {data,error} = await sb.from('projects').select('*');
-  if(error) projects.innerHTML = 'خطأ: '+error.message;
-  else if(!data.length) projects.innerHTML = 'مافي مشاريع';
-  else projects.innerHTML = data.map(p=>`<div style="background:#1a1f36;padding:15px;margin:10px;border-radius:12px"><h3>${p.title}</h3><p>${p.description}</p></div>`).join('');
+  const {data,error} = await sb.from('projects').select('*').order('created_at',{ascending:false});
+  if(error) return projects.innerHTML = 'خطأ: '+error.message;
+  if(!data.length) return projects.innerHTML = '<div class="card">مافي مشاريع لسه. انشر اول واحد 👆</div>';
+  projects.innerHTML = data.map(p=>`
+    <div class="card">
+      <h3>${p.title}</h3>
+      <p>${p.description}</p>
+      ${p.image_url ? `<img src="${p.image_url}" style="width:100%;border-radius:8px;margin-top:10px">` : ''}
+    </div>
+  `).join('');
+}
+
+// 3. النشر التلقائي
+async function addProject(){
+  if(!title.value.trim()) return alert('اكتب عنوان');
+  
+  const {error} = await sb.from('projects').insert([{
+    title: title.value.trim(),
+    description: desc.value.trim(),
+    image_url: image.value.trim() || null
+  }]);
+  
+  if(error) return alert('خطأ: '+error.message);
+  
+  alert('تم النشر بنجاح 🌸');
+  title.value = desc.value = image.value = '';
+  loadProjects(); // يحدث القائمة تلقائي
 }
 
 async function logout(){
   await sb.auth.signOut();
   location.replace('login.html');
 }
-</script></body></html>
+</script>
+</body>
+</html>
