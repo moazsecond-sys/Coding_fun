@@ -1,19 +1,23 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
-<head><meta charset="utf-8">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>لوحة التحكم</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 body{background:#0b1020;color:white;font-family:tahoma;margin:0;padding:20px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px}
 .card{background:#1a1f36;padding:20px;margin:15px 0;border-radius:16px;border:1px solid #2a3050}
 .btn{padding:12px 24px;border-radius:10px;border:0;background:#3b82f6;color:white;font-weight:bold;cursor:pointer}
+.btn:hover{background:#2563eb}
 .btn-danger{background:#ef4444}
+.btn-danger:hover{background:#dc2626}
 input,textarea{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #333;background:#0b1020;color:white;box-sizing:border-box}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
-h2,h3{margin-top:0}
-.welcome{font-size:18px;color:#93c5fd}
+h2,h3{margin:0 0 10px 0}
+.welcome{font-size:16px;color:#93c5fd}
+img{max-width:100%;border-radius:8px;margin-top:10px}
 </style>
 </head>
 <body>
@@ -29,7 +33,7 @@ h2,h3{margin-top:0}
 <!-- فورم النشر التلقائي -->
 <div class="card">
   <h3>نشر مشروع جديد تلقائي</h3>
-  <input id="title" placeholder="عنوان المشروع">
+  <input id="title" placeholder="عنوان المشروع" required>
   <textarea id="desc" rows="3" placeholder="وصف المشروع"></textarea>
   <input id="image" placeholder="رابط الصورة اختياري">
   <button class="btn" onclick="addProject()">نشر الآن</button>
@@ -40,52 +44,78 @@ h2,h3{margin-top:0}
 <div id="projects" class="grid">جاري التحميل...</div>
 
 <script>
+// === 1. حط رابط ومفتاح مشروعك هنا ===
 const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 
-sb.auth.getSession().then(({data:{session}})=>{
-  if(!session) location.replace('login.html');
-  else {
-    userEmail.textContent = session.user.email; // الترحيب
-    alert('ايميلك: '+session.user.email); // لو طلع الايميل معناها الجلسة شغالة
+// === 2. شيك الجلسة اول ما تفتح الصفحة ===
+sb.auth.getSession().then(async ({data:{session}})=>{
+  if(!session){
+    location.replace('login.html');
+    return;
   }
+  document.getElementById('userEmail').textContent = session.user.email;
+  loadProjects();
 });
-</script>
 
-// 2. عرض المشاريع
+// === 3. عرض المشاريع من قاعدة البيانات ===
 async function loadProjects(){
   const {data,error} = await sb.from('projects').select('*').order('created_at',{ascending:false});
-  if(error) return projects.innerHTML = 'خطأ: '+error.message;
-  if(!data.length) return projects.innerHTML = '<div class="card">مافي مشاريع لسه. انشر اول واحد 👆</div>';
-  projects.innerHTML = data.map(p=>`
+  
+  if(error){
+    document.getElementById('projects').innerHTML = '<div class="card">خطأ: '+error.message+'</div>';
+    return;
+  }
+  
+  if(!data || data.length === 0){
+    document.getElementById('projects').innerHTML = '<div class="card">مافي مشاريع لسه. انشر اول واحد من الفورم فوق 👆</div>';
+    return;
+  }
+  
+  document.getElementById('projects').innerHTML = data.map(p=>`
     <div class="card">
       <h3>${p.title}</h3>
-      <p>${p.description}</p>
-      ${p.image_url ? `<img src="${p.image_url}" style="width:100%;border-radius:8px;margin-top:10px">` : ''}
+      <p>${p.description || 'بدون وصف'}</p>
+      ${p.image_url ? `<img src="${p.image_url}" alt="${p.title}">` : ''}
+      <small style="color:#94a3b8">${new Date(p.created_at).toLocaleString('ar-EG')}</small>
     </div>
   `).join('');
 }
 
-// 3. النشر التلقائي
+// === 4. النشر التلقائي ===
 async function addProject(){
-  if(!title.value.trim()) return alert('اكتب عنوان');
+  const title = document.getElementById('title').value.trim();
+  const desc = document.getElementById('desc').value.trim();
+  const image = document.getElementById('image').value.trim();
+  
+  if(!title){
+    alert('اكتب عنوان المشروع');
+    return;
+  }
   
   const {error} = await sb.from('projects').insert([{
-    title: title.value.trim(),
-    description: desc.value.trim(),
-    image_url: image.value.trim() || null
+    title: title,
+    description: desc || null,
+    image_url: image || null
   }]);
   
-  if(error) return alert('خطأ: '+error.message);
+  if(error){
+    alert('خطأ في النشر: '+error.message);
+    return;
+  }
   
   alert('تم النشر بنجاح 🌸');
-  title.value = desc.value = image.value = '';
-  loadProjects(); // يحدث القائمة تلقائي
+  document.getElementById('title').value = '';
+  document.getElementById('desc').value = '';
+  document.getElementById('image').value = '';
+  loadProjects(); // تحديث تلقائي
 }
 
+// === 5. تسجيل الخروج ===
 async function logout(){
   await sb.auth.signOut();
   location.replace('login.html');
 }
 </script>
+
 </body>
 </html>
