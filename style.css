@@ -65,6 +65,7 @@ body {
 .card {
   background: #1a1a2e;
   padding: 20px;
+  padding-top: 50px; /* هذا الجديد عشان البادج */
   border-radius: 12px;
   margin-bottom: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -229,4 +230,5 @@ textarea {
   position: absolute;
   top: 15px;
   right: 15px;
+  z-index: 1; /* ضفناه عشان يكون تحت الأزرار */
 }
