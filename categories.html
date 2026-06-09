@@ -1,33 +1,31 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الأقسام - موقعي</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تصفح الأقسام 📁</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <h1>تصفح الأقسام 📁</h1>
+      <a href="index.html" class="btn btn-primary">الصفحة الرئيسية</a>
+      <p class="user-email" id="userEmail"></p>
+    </div>
 
-<div class="header">
-  <h1>📂 تصفح الأقسام</h1>
-  <div>
-    <a href="home.html" class="btn">الصفحة الرئيسية</a>
-    <span id="userEmail"></span>
+    <div class="filters">
+      <button class="btn active" onclick="filterProjects('all')">الكل</button>
+      <button class="btn" onclick="filterProjects('برمجة')">برمجة 💻</button>
+      <button class="btn" onclick="filterProjects('تصميم')">تصميم 🎨</button>
+      <button class="btn" onclick="filterProjects('مقالات')">مقالات 📝</button>
+      <button class="btn" onclick="filterProjects('عام')">عام 🌍</button>
+    </div>
+
+    <div id="projects"></div>
   </div>
-</div>
 
-<!-- أزرار الأقسام -->
-<div class="categories-nav">
-  <button class="cat-btn active" data-cat="all">الكل</button>
-  <button class="cat-btn" data-cat="برمجة">💻 برمجة</button>
-  <button class="cat-btn" data-cat="تصميم">🎨 تصميم</button>
-  <button class="cat-btn" data-cat="مقالات">📝 مقالات</button>
-  <button class="cat-btn" data-cat="عام">🌍 عام</button>
-</div>
-
-<div id="projects"></div>
-
-<script src="categories.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="categories.js"></script>
 </body>
 </html>
