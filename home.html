@@ -24,12 +24,23 @@
 </div>
 
 <div class="card">
+<form id="postForm" class="card">
   <h3>نشر مشروع جديد</h3>
-  <input id="title" placeholder="عنوان المشروع">
-  <textarea id="desc" placeholder="الوصف"></textarea>
-  <input id="img" placeholder="رابط الصورة https://...">
-  <button class="btn" onclick="addProject()">نشر</button>
-</div>
+  <input id="title" placeholder="عنوان المشروع" required>
+  <textarea id="description" placeholder="الوصف" rows="4"></textarea>
+  <input id="image_url" placeholder="رابط الصورة">
+  
+  <!-- ضيف هذا هنا -->
+  <select id="category" required>
+    <option value="">اختر القسم</option>
+    <option value="برمجة">💻 برمجة</option>
+    <option value="تصميم">🎨 تصميم</option>
+    <option value="مقالات">📝 مقالات</option>
+    <option value="عام">🌍 عام</option>
+  </select>
+  
+  <button class="btn" type="submit">نشر</button>
+</form>
 
 <div id="projects"></div>
 
@@ -93,14 +104,26 @@ function formatDate(d){
 }
 
 async function addProject(){
-  const title = document.getElementById('title').value.trim();
-  const desc = document.getElementById('desc').value.trim();
-  const img = document.getElementById('img').value.trim();
+  const title = document.getElementById('title').value;
+async function addProject(){
+  const title = document.getElementById('title').value;
+  const desc = document.getElementById('desc').value;
+  const img = document.getElementById('img').value;
   if(!title) return alert('اكتب عنوان المشروع');
 
+  const category = document.getElementById('category').value; // ضيف هذا هنا
+  
   const {error} = await sb.from('projects').insert({
-    title,description:desc,image_url:img,user_id:currentUser.id
+    title,description:desc,image_url:img,category,user_id:currentUser.id
   });
+  if(error) return alert('خطأ: '+error.message);
+  
+  document.getElementById('title').value = '';
+  document.getElementById('desc').value = '';
+  document.getElementById('img').value = '';
+  document.getElementById('category').value = ''; // فضي القسم بعد النشر
+  loadProjects();
+}
   if(error) return alert('خطأ: '+error.message);
 
   document.getElementById('title').value = '';
