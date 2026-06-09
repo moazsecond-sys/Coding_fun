@@ -27,6 +27,8 @@ async function loadProjects(category){
   }
   
   const {data} = await query;
+
+  allProjects = data;
   
   if(!data.length) return projects.innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد مشاريع في هذا القسم بعد</p>';
 
