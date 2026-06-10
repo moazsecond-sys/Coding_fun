@@ -6,7 +6,6 @@
   <title>موقعي | مشاريع برمجة وتصميم</title>
   <meta name="theme-color" content="#4ade80">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="style.css">
 
   <style>
     :root {
@@ -25,25 +24,26 @@
       --border: #333;
       --accent: #4ade80;
     }
-    body { background: var(--bg-main); color: var(--text-main); transition: 0.3s; scroll-behavior: smooth; }
-   .card,.stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; padding:20px; margin:15px 0; }
-    input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; width:100%; margin:8px 0; box-sizing:border-box; }
+    body { background: var(--bg-main); color: var(--text-main); transition: 0.3s; scroll-behavior: smooth; font-family: 'Cairo', sans-serif; margin: 0; }
+  .card,.stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; padding:20px; margin:15px; }
+    input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; width:100%; margin:8px 0; box-sizing:border-box; font-family: inherit; }
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-   .btn-publish {
+  .btn-publish {
       background: linear-gradient(135deg, var(--accent), #22c55e);
       color: #000; font-weight: bold; font-size: 16px; padding: 14px; border: none;
       border-radius: 10px; cursor: pointer; transition: 0.3s; width:100%; margin-top:10px;
       box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
     }
-   .btn-publish:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
-   .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
-   .file-input-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-   .file-input-btn {
+  .btn-publish:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
+  .btn-publish:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+  .file-input-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .file-input-btn {
       display: block; padding: 12px; background: var(--bg-card); border: 2px dashed var(--accent);
       border-radius: 10px; text-align: center; color: var(--accent); font-weight: bold; cursor: pointer; transition: 0.3s;
     }
-   .file-input-btn:hover { background: rgba(74, 222, 128, 0.1); border-style: solid; }
+  .file-input-btn:hover { background: rgba(74, 222, 128, 0.1); border-style: solid; }
     #backToTop {
       position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
       background: var(--accent); color: #000; border: none; font-size: 24px; cursor: pointer;
@@ -59,32 +59,41 @@
     #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast.success { border-left-color: #22c55e; }
     #toast.error { border-left-color: #ef4444; }
-   .typing { overflow: hidden; border-left: 3px solid var(--accent); white-space: nowrap; animation: typing 2s steps(20), blink 0.7s step-end infinite; }
+  .typing { overflow: hidden; border-left: 3px solid var(--accent); white-space: nowrap; animation: typing 2s steps(20), blink 0.7s step-end infinite; width: fit-content; }
     @keyframes typing { from { width: 0 } to { width: 100% } }
     @keyframes blink { 50% { border-left-color: transparent } }
-   .project-actions { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
-   .like-btn,.fav-btn {
+  .project-actions { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
+  .like-btn,.fav-btn {
       display: flex; align-items: center; gap: 5px; padding: 8px 15px; border: 2px solid var(--border);
       background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-size: 14px;
     }
-   .like-btn.liked { background: #ef4444; border-color: #ef4444; color: white; }
-   .fav-btn.favorited { background: #fbbf24; border-color: #fbbf24; color: #000; }
-   .like-btn:hover,.fav-btn:hover { transform: scale(1.05); }
+  .like-btn.liked { background: #ef4444; border-color: #ef4444; color: white; }
+  .fav-btn.favorited { background: #fbbf24; border-color: #fbbf24; color: #000; }
+  .like-btn:hover,.fav-btn:hover { transform: scale(1.05); }
     @keyframes heartBeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-   .heart-animation { animation: heartBeat 0.5s ease; }
-   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 25px 0; }
-   .stat-box { text-align: center; padding: 20px; transition: 0.3s; }
-   .stat-box:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2); border-color: var(--accent); }
-   .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
-   .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 0; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
-   .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-   .filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: scale(1.05); }
-   .header { display:flex; justify-content:space-between; align-items:center; padding:15px; background:var(--bg-card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:999; }
-   .btn { padding:8px 16px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
-   .btn-small { padding:6px 12px; font-size:13px; }
-   .btn-danger { background:#ef4444; color:white; }
-   .btn-edit { background:#3b82f6; color:white; }
-   .char-count { text-align:left; font-size:12px; color:var(--text-muted); margin-top:-5px; }
+  .heart-animation { animation: heartBeat 0.5s ease; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 25px 15px; }
+  .stat-box { text-align: center; padding: 20px; transition: 0.3s; }
+  .stat-box:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2); border-color: var(--accent); }
+  .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
+  .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 15px; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
+  .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+  .filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: scale(1.05); }
+  .header { display:flex; justify-content:space-between; align-items:center; padding:15px; background:var(--bg-card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:999; }
+  .btn { padding:8px 16px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
+  .btn-small { padding:6px 12px; font-size:13px; }
+  .btn-danger { background:#ef4444; color:white; }
+  .btn-edit { background:#3b82f6; color:white; }
+  .char-count { text-align:left; font-size:12px; color:var(--text-muted); margin-top:-5px; }
+  .float-btn{
+      position:fixed; bottom:20px; width:55px; height:55px;
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      font-size:28px; color:#fff; text-decoration:none;
+      box-shadow:0 4px 20px rgba(0,0,0,0.5); transition:0.3s; z-index:999;
+    }
+  .float-btn:hover{ transform:translateY(-8px) scale(1.1); }
+  .whatsapp{ right:20px; background:#25D366; }
+  .telegram{ left:20px; background:#0088cc; }
   </style>
 </head>
 <body>
@@ -139,13 +148,13 @@
         <option value="general">🌐 عام</option>
       </select>
 
-      <button class="btn-publish" type="submit">🚀 نشر المشروع</button>
+      <button class="btn-publish" type="submit" id="publishBtn">🚀 نشر المشروع</button>
     </form>
   </div>
 
   <div id="projects"></div>
 
-  <h2 style="margin-top:40px; color:var(--accent)">اسألني أي شيء</h2>
+  <h2 style="margin:40px 15px 0; color:var(--accent)">اسألني أي شيء</h2>
   <div class="card">
     <input id="qName" placeholder="اسمك">
     <textarea id="qText" placeholder="سؤالك" maxlength="300"></textarea>
@@ -154,6 +163,9 @@
   <div id="questions"></div>
 
   <button id="backToTop" onclick="scrollToTop()">⬆️</button>
+
+  <a href="https://wa.me/رقمك" target="_blank" class="float-btn whatsapp">💬</a>
+  <a href="https://t.me/يوزرك" target="_blank" class="float-btn telegram">✈️</a>
 
   <script>
     // ⚠️ حط مفتاحك هنا
@@ -164,6 +176,7 @@
     let uploadedImageUrl = '';
     let editUploadedImageUrl = '';
     let allProjects = [];
+    let isUploading = false; // متغير جديد عشان نمنع النشر قبل انتهاء الرفع
 
     const catNames = {'articles':'مقالات','design':'تصميم','programming':'برمجة','general':'عام'};
 
@@ -209,10 +222,15 @@
       document.getElementById('charCount').textContent = e.target.value.length;
     });
 
+    // رفع الصورة مع منع النشر قبل الانتهاء
     document.getElementById('imageFile').addEventListener('change', async function(e){
+      isUploading = true;
+      document.getElementById('fileName').textContent = '⏳ جاري الرفع...';
+      document.getElementById('publishBtn').disabled = true;
+
       const file = e.target.files[0];
-      if(!file) return;
-      document.getElementById('fileName').textContent = '✅ ' + file.name;
+      if(!file) { isUploading = false; document.getElementById('publishBtn').disabled = false; return; }
+
       const reader = new FileReader();
       reader.onload = ev => {
         document.getElementById('imagePreview').src = ev.target.result;
@@ -222,14 +240,24 @@
 
       const fileName = `project_${Date.now()}_${file.name}`;
       const {data, error} = await sb.storage.from('AAMAL-IMAGES').upload(fileName, file);
-      if(error) return showToast('خطأ رفع الصورة: ' + error.message, 'error');
+      if(error) {
+        showToast('خطأ رفع الصورة: ' + error.message, 'error');
+        isUploading = false;
+        document.getElementById('publishBtn').disabled = false;
+        return;
+      }
       const {data: urlData} = sb.storage.from('AAMAL-IMAGES').getPublicUrl(fileName);
       uploadedImageUrl = urlData.publicUrl;
+      document.getElementById('fileName').textContent = '✅ تم الرفع';
+      isUploading = false;
+      document.getElementById('publishBtn').disabled = false;
       showToast('تم رفع الصورة بنجاح ✓');
     });
 
     document.getElementById('postForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
+
+      if(isUploading) return showToast('انتظر شوي، الصورة قاعدة تترفع ⏳', 'error');
       if(!uploadedImageUrl) return showToast('ارفع صورة اولاً', 'error');
 
       const {error} = await sb.from('projects').insert({
@@ -282,7 +310,7 @@
           <span class="badge" style="background:linear-gradient(135deg, var(--accent), #22c55e); color:#000; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:bold">${catNames[p.categories] || p.categories}</span>
           <h3 style="margin-top:15px">${p.title}</h3>
           <p style="line-height:1.6">${p.description || 'بدون وصف'}</p>
-          ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px">` : ''}
+          ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px" loading="lazy">` : ''}
           <div class="date" style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${formatDate(p.created_at)}</div>
 
           <div class="project-actions">
@@ -396,20 +424,5 @@
       loadQuestions();
     }
   </script>
-
-  <style>
-   .float-btn{
-      position:fixed; bottom:20px; width:55px; height:55px;
-      border-radius:50%; display:flex; align-items:center; justify-content:center;
-      font-size:28px; color:#fff; text-decoration:none;
-      box-shadow:0 4px 20px rgba(0,0,0,0.5); transition:0.3s; z-index:999;
-    }
-   .float-btn:hover{ transform:translateY(-8px) scale(1.1); }
-   .whatsapp{ right:20px; background:#25D366; }
-   .telegram{ left:20px; background:#0088cc; }
-  </style>
-
-  <a href="https://wa.me/رقمك" target="_blank" class="float-btn whatsapp">💬</a>
-  <a href="https://t.me/يوزرك" target="_blank" class="float-btn telegram">✈️</a>
 </body>
 </html>
