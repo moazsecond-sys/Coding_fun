@@ -1,233 +1,105 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة نشر المحتوى الديني</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body {
-  background: #0a0a0a;
-  color: #eee;
-  font-family: 'Cairo', sans-serif;
-  padding: 20px;
-  margin: 0;
-}
-h1 { color: #4ade80; text-align: center; }
-.container {
-  max-width: 800px;
-  margin: auto;
-  background: #1a1a1a;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #333;
-}
-input, textarea, select {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  background: #2a2a2a;
-  border: 1px solid #444;
-  color: #fff;
-  border-radius: 8px;
-  box-sizing: border-box;
-}
-button {
-  background: #4ade80;
-  color: #000;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  margin: 5px;
-}
-button:hover { background: #22c55e; }
-button.danger { background: #ef4444; color: #fff; }
-button.danger:hover { background: #dc2626; }
-.item {
-  background: #2a2a2a;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #444;
-}
-.msg { padding: 10px; margin: 10px 0; border-radius: 8px; }
-.success { background: #166534; }
-.error { background: #7f1d1d; }
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة النشر</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background: #111; color: white; padding: 20px; }
+    .box { background: #222; padding: 30px; border-radius: 15px; max-width: 600px; margin: auto; }
+    h2 { color: #4ade80; text-align: center; margin-bottom: 20px; }
+    input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #333; border: 1px solid #555; border-radius: 8px; color: white; }
+    button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .btn-green { background: #4ade80; color: black; }
+    .btn-red { background: #ef4444; color: white; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .post { background: #333; padding: 15px; border-radius: 10px; margin: 10px 0; }
+    #postsList { margin-top: 20px; }
+  </style>
 </head>
 <body>
+  <div class="box">
+    <div class="header">
+      <h2>لوحة نشر 📝 المحتوى الديني</h2>
+      <button class="btn-red" id="logoutBtn">تسجيل خروج</button>
+    </div>
 
-<div class="container">
-  <div class="header">
-    <h1>📝 لوحة نشر المحتوى الديني</h1>
-    <button onclick="logout()" class="danger">تسجيل خروج</button>
-  </div>
-  
-  <div id="msg"></div>
-  
-  <h3>إضافة / تعديل محتوى</h3>
-  <form id="publishForm">
-    <input type="hidden" id="editId">
+    <h3>إضافة / تعديل محتوى</h3>
     <input type="text" id="title" placeholder="العنوان" required>
-    <textarea id="content" placeholder="النص" rows="5" required></textarea>
-    <select id="type">
+    <textarea id="content" placeholder="النص" rows="4" required></textarea>
+    <select id="category">
       <option value="آية">آية</option>
       <option value="حديث">حديث</option>
       <option value="دعاء">دعاء</option>
-      <option value="حكمة">حكمة</option>
     </select>
-    <button type="submit" id="submitBtn">نشر</button>
-    <button type="button" onclick="cancelEdit()" style="display:none" id="cancelBtn">إلغاء</button>
-  </form>
-  
-  <hr style="margin: 30px 0; border-color: #444;">
-  
-  <h3>المحتوى المنشور</h3>
-  <div id="contentList">جاري التحميل...</div>
-</div>
+    <button class="btn-green" id="addBtn">نشر</button>
+    <div id="msg"></div>
 
-<script>
-const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    <hr style="margin: 30px 0; border-color: #444;">
+    <h3>المحتوى المنشور</h3>
+    <div id="postsList">جاري التحميل...</div>
+  </div>
 
-// تحقق من تسجيل الدخول اول ما يفتح
-checkAuth();
+  <script>
+    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function checkAuth() {
-  const { data: { session } = await sb.auth.getSession();
-  if (!session) {
-    window.location.href = 'index.html';
-  } else {
-    loadContent();
-  }
-}
+    // 1. تسجيل الخروج
+    document.getElementById('logoutBtn').onclick = async () => {
+      await sb.auth.signOut();
+      window.location.href = 'index.html';
+    };
 
-async function logout() {
-  await sb.auth.signOut();
-  window.location.href = 'index.html';
-}
+    // 2. اضافة منشور
+    document.getElementById('addBtn').onclick = async () => {
+      const title = document.getElementById('title').value;
+      const content = document.getElementById('content').value;
+      const category = document.getElementById('category').value;
+      const msg = document.getElementById('msg');
+      
+      if(!title || !content) {
+        msg.textContent = 'املأ العنوان والنص';
+        msg.style.color = 'red';
+        return;
+      }
 
-function showMsg(text, type) {
-  const msg = document.getElementById('msg');
-  msg.className = 'msg ' + type;
-  msg.textContent = text;
-  setTimeout(() => msg.textContent = '', 3000);
-}
+      const { error } = await sb.from('posts').insert([{ title, content, category }]);
+      
+      if(error) {
+        msg.textContent = 'خطأ: ' + error.message;
+        msg.style.color = 'red';
+      } else {
+        msg.textContent = 'تم النشر بنجاح!';
+        msg.style.color = 'green';
+        document.getElementById('title').value = '';
+        document.getElementById('content').value = '';
+        loadPosts();
+      }
+    };
 
-// تحميل المحتوى
-async function loadContent() {
-  const { data, error } = await sb.from('content').select('*').order('id', { ascending: false });
-  if (error) {
-    document.getElementById('contentList').innerHTML = 'خطأ في التحميل';
-    return;
-  }
-  
-  if (data.length === 0) {
-    document.getElementById('contentList').innerHTML = 'لا يوجد محتوى بعد';
-    return;
-  }
-  
-  document.getElementById('contentList').innerHTML = data.map(item => `
-    <div class="item">
-      <h4>${item.title}</h4>
-      <p>${item.content}</p>
-      <small>النوع: ${item.type}</small>
-      <br><br>
-      <button onclick="editItem(${item.id}, '${item.title.replace(/'/g, "\\'")}', '${item.content.replace(/'/g, "\\'")}', '${item.type}')">✏️ تعديل</button>
-      <button onclick="deleteItem(${item.id})" class="danger">🗑️ حذف</button>
-    </div>
-  `).join('');
-}
+    // 3. تحميل المنشورات
+    async function loadPosts() {
+      const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+      const postsList = document.getElementById('postsList');
+      
+      if(error || !data || data.length === 0) {
+        postsList.textContent = 'لا يوجد محتوى منشور بعد';
+        return;
+      }
+      
+      postsList.innerHTML = data.map(p => `
+        <div class="post">
+          <b>${p.title}</b> - <span style="color:#4ade80">${p.category}</span>
+          <p>${p.content}</p>
+          <small style="color:#888">${new Date(p.created_at).toLocaleDateString('ar-EG')}</small>
+        </div>
+      `).join('');
+    }
 
-// إضافة أو تعديل
-// إضافة أو تعديل
-document.getElementById('publishForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const { data: { session } = await sb.auth.getSession();
-  if (!session) {
-    showMsg('سجل دخول اول', 'error');
-    return;
-  }
-
-  const id = document.getElementById('editId').value;
-  const title = document.getElementById('title').value;
-  const content = document.getElementById('content').value;
-  const type = document.getElementById('type').value;
-  let error;
-  
-  if (id) {
-    // تعديل
-    const result = await sb.from('content').update({ title, content, type }).eq('id', id);
-    error = result.error;
-  } else {
-    // إضافة جديدة
-    const result = await sb.from('content').insert([{ title, content, type }]);
-    error = result.error;
-  }
-  
-  if (error) {
-    console.error(error);
-    showMsg('خطأ: ' + error.message, 'error');
-    return;
-  }
-  
-  showMsg(id ? 'تم التعديل بنجاح ✅' : 'تم النشر بنجاح ✅', 'success');
-  cancelEdit();
-  loadContent();
-};
-
-// تعبئة النموذج للتعديل
-function editItem(id, title, content, type) {
-  document.getElementById('editId').value = id;
-  document.getElementById('title').value = title;
-  document.getElementById('content').value = content;
-  document.getElementById('type').value = type;
-  document.getElementById('submitBtn').textContent = 'تعديل';
-  document.getElementById('cancelBtn').style.display = 'inline-block';
-  window.scrollTo(0, 0);
-}
-
-// إلغاء التعديل
-function cancelEdit() {
-  document.getElementById('editId').value = '';
-  document.getElementById('publishForm').reset();
-  document.getElementById('submitBtn').textContent = 'نشر';
-  document.getElementById('cancelBtn').style.display = 'none';
-}
-
-// الحذف مع التحقق من الجلسة - مضبوط الأقواس
-async function deleteItem(id) {
-  if (!confirm('متأكد تبغى تحذف؟')) return;
-  
-  const { data: { session } = await sb.auth.getSession();
-  if (!session) {
-    alert('انت مو مسجل دخول! ارجع سجل دخول');
-    window.location.href = 'login.html';
-    return;
-  }
-  
-  console.log('جاري الحذف... اليوزر:', session.user.id);
-  
-  const { error } = await sb.from('content').delete().eq('id', id);
-  
-  if (error) {
-    console.error('خطأ الحذف:', error);
-    return alert('خطأ: ' + error.message);
-  }
-  
-  alert('تم الحذف بنجاح ✅');
-  loadContent();
-}
-</script>
-
+    // تحميل اول ما تفتح الصفحة
+    loadPosts();
+  </script>
 </body>
 </html>
