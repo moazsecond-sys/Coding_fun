@@ -10,11 +10,13 @@
     .box { background: #222; padding: 30px; border-radius: 15px; max-width: 600px; margin: auto; }
     h2 { color: #4ade80; text-align: center; margin-bottom: 20px; }
     input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #333; border: 1px solid #555; border-radius: 8px; color: white; }
-    button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    button { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
     .btn-green { background: #4ade80; color: black; }
     .btn-red { background: #ef4444; color: white; }
+    .btn-blue { background: #3b82f6; color: white; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .post { background: #333; padding: 15px; border-radius: 10px; margin: 10px 0; }
+    .post { background: #333; padding: 15px; border-radius: 10px; margin: 10px 0; position: relative; }
+    .post-actions { margin-top: 10px; text-align: left; }
     #postsList { margin-top: 20px; }
   </style>
 </head>
@@ -25,7 +27,8 @@
       <button class="btn-red" id="logoutBtn">تسجيل خروج</button>
     </div>
 
-    <h3>إضافة / تعديل محتوى</h3>
+    <h3 id="formTitle">إضافة / تعديل محتوى</h3>
+    <input type="hidden" id="editId">
     <input type="text" id="title" placeholder="العنوان" required>
     <textarea id="content" placeholder="النص" rows="4" required></textarea>
     <select id="category">
@@ -33,7 +36,8 @@
       <option value="حديث">حديث</option>
       <option value="دعاء">دعاء</option>
     </select>
-    <button class="btn-green" id="addBtn">نشر</button>
+    <button class="btn-green" id="saveBtn">نشر</button>
+    <button class="btn-blue" id="cancelBtn" style="display:none;">إلغاء</button>
     <div id="msg"></div>
 
     <hr style="margin: 30px 0; border-color: #444;">
@@ -42,18 +46,24 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+    const SUPABASE_URL = 'https://xxxxx.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 1. تسجيل الخروج
+    const editId = document.getElementById('editId');
+    const saveBtn = document.getElementById('saveBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const formTitle = document.getElementById('formTitle');
+
+    // تسجيل خروج
     document.getElementById('logoutBtn').onclick = async () => {
       await sb.auth.signOut();
       window.location.href = 'index.html';
     };
 
-    // 2. اضافة منشور
-    document.getElementById('addBtn').onclick = async () => {
+    // حفظ او تعديل
+    saveBtn.onclick = async () => {
+      const id = editId.value;
       const title = document.getElementById('title').value;
       const content = document.getElementById('content').value;
       const category = document.getElementById('category').value;
@@ -65,26 +75,60 @@
         return;
       }
 
-      const { error } = await sb.from('posts').insert([{ title, content, category }]);
-      
-      if(error) {
-        msg.textContent = 'خطأ: ' + error.message;
-        msg.style.color = 'red';
+      let error;
+      if(id) {
+        // تعديل
+        ({ error } = await sb.from('posts').update({ title, content, category }).eq('id', id));
+        msg.textContent = error ? 'خطأ: ' + error.message : 'تم التعديل بنجاح!';
       } else {
-        msg.textContent = 'تم النشر بنجاح!';
-        msg.style.color = 'green';
-        document.getElementById('title').value = '';
-        document.getElementById('content').value = '';
-        loadPosts();
+        // اضافة
+        ({ error } = await sb.from('posts').insert([{ title, content, category }]));
+        msg.textContent = error ? 'خطأ: ' + error.message : 'تم النشر بنجاح!';
       }
+      
+      msg.style.color = error ? 'red' : 'green';
+      resetForm();
+      loadPosts();
     };
 
-    // 3. تحميل المنشورات
+    // الغاء التعديل
+    cancelBtn.onclick = resetForm;
+
+    function resetForm() {
+      editId.value = '';
+      document.getElementById('title').value = '';
+      document.getElementById('content').value = '';
+      saveBtn.textContent = 'نشر';
+      formTitle.textContent = 'إضافة / تعديل محتوى';
+      cancelBtn.style.display = 'none';
+    }
+
+    // تعبئة الفورم للتعديل
+    function editPost(id, title, content, category) {
+      editId.value = id;
+      document.getElementById('title').value = title;
+      document.getElementById('content').value = content;
+      document.getElementById('category').value = category;
+      saveBtn.textContent = 'حفظ التعديل';
+      formTitle.textContent = 'تعديل المحتوى';
+      cancelBtn.style.display = 'inline-block';
+      window.scrollTo(0, 0);
+    }
+
+    // حذف منشور
+    async function deletePost(id) {
+      if(confirm('متأكد تبي تحذف المنشور؟')) {
+        await sb.from('posts').delete().eq('id', id);
+        loadPosts();
+      }
+    }
+
+    // تحميل المنشورات
     async function loadPosts() {
-      const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+      const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
       const postsList = document.getElementById('postsList');
       
-      if(error || !data || data.length === 0) {
+      if(!data || data.length === 0) {
         postsList.textContent = 'لا يوجد محتوى منشور بعد';
         return;
       }
@@ -94,11 +138,14 @@
           <b>${p.title}</b> - <span style="color:#4ade80">${p.category}</span>
           <p>${p.content}</p>
           <small style="color:#888">${new Date(p.created_at).toLocaleDateString('ar-EG')}</small>
+          <div class="post-actions">
+            <button class="btn-blue" onclick="editPost(${p.id}, '${p.title.replace(/'/g,"\\'")}', '${p.content.replace(/'/g,"\\'")}', '${p.category}')">تعديل</button>
+            <button class="btn-red" onclick="deletePost(${p.id})">حذف</button>
+          </div>
         </div>
       `).join('');
     }
 
-    // تحميل اول ما تفتح الصفحة
     loadPosts();
   </script>
 </body>
