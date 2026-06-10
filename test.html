@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Tailwind يجيب الستايل جاهز -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 flex items-center justify-center h-screen">
+  
+  <!-- الصندوق اللي بنحط فيه المكعب -->
+  <div id="canvas" class="w-80 h-80 rounded-2xl shadow-2xl shadow-purple-500/50"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+
+    // 1. نجهز المشهد - Three.js
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+    
+    renderer.setSize(320, 320);
+    document.getElementById('canvas').appendChild(renderer.domElement);
+
+    // 2. نسوي المكعب + نلونه
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshStandardMaterial({ color: 0x3b82f6 }); // أزرق Tailwind
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    // 3. نضيف نور عشان يبين
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+
+    camera.position.z = 3;
+
+    // 4. نخليه يلف لحاله
+    function animate() {
+      requestAnimationFrame(animate);
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
