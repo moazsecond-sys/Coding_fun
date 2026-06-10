@@ -24,7 +24,7 @@
   import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
   
   // 1. نجهز المشهد - Three.js
-  const scene = new THREE.Scene();;
+  const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     
@@ -47,10 +47,6 @@ frontLight.position.set(0, 0, 5);
 scene.add(frontLight);
 
     camera.position.z = 5;
-
-    // 4. نخليه يلف لحاله
-    import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 const loader = new FontLoader();
 loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
