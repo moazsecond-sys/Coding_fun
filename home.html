@@ -63,7 +63,7 @@
 <div id="questions"></div>
 
 <script>
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 let currentUser = null;
 
 const catNames = {
@@ -86,7 +86,7 @@ function logout(){
   location.href='login.html';
 }
 
-// كود النشر - هذا بديل addProject القديم
+// كود النشر
 document.getElementById('postForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   
@@ -94,7 +94,7 @@ document.getElementById('postForm').addEventListener('submit', async (e)=>{
     title: document.getElementById('title').value,
     description: document.getElementById('description').value,
     image_url: document.getElementById('image_url').value,
-    categories: document.getElementById('categories').value, // ← categories جمع
+    categories: document.getElementById('categories').value,
     user_id: currentUser.id
   });
   
@@ -162,7 +162,11 @@ async function editProject(id,title,desc,img){
 async function loadComments(project_id){
   const {data} = await sb.from('comments').select('*').eq('project_id',project_id).order('id',{ascending:true});
   document.getElementById(`comments-${project_id}`).innerHTML =
-    data.map(c=>`<p style="margin:5px 0"><b style="color:#4ade80">${c.user_name}:</b> ${c.comment}</p>`).join('') || '<p style="color:#666;font-size:13px">لا توجد تعليقات</p>';
+    data.map(c=>`<p style="display:flex;align-items:center;gap:8px;margin:5px 0">
+    <a href="https://youtube.com/@read_write_well?si=cye7vR41TchjZMhE" target="_blank" style="text-decoration:none">
+      <div style="width:30px;height:30px;border-radius:50%;background:#4ade80;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px">M</div>
+    </a>
+    <b style="color:#4ade80">${c.user_name}:</b> ${c.comment}</p>`).join('') || '<p style="color:#666;font-size:13px">لا توجد تعليقات</p>';
 }
 
 async function addComment(project_id){
@@ -196,6 +200,7 @@ async function askQuestion(){
   loadQuestions();
 }
 </script>
+
 <!-- أزرار تواصل ثابتة -->
 <style>
 .float-btn{
