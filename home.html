@@ -27,32 +27,32 @@
     * { box-sizing: border-box; }
     body { background: var(--bg-main); color: var(--text-main); transition: 0.3s; font-family: 'Cairo', sans-serif; margin: 0; }
 
-   .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin: 15px; transition: 0.3s; }
-   .card:hover { border-color: var(--accent); }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin: 15px; transition: 0.3s; }
+  .card:hover { border-color: var(--accent); }
 
     input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; width: 100%; margin: 8px 0; font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
 
-   .btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-   .btn:hover { transform: translateY(-2px); }
-   .btn-small { padding: 6px 12px; font-size: 13px; }
-   .btn-danger { background: var(--danger); color: white; }
-   .btn-edit { background: #3b82f6; color: white; }
+  .btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-small { padding: 6px 12px; font-size: 13px; }
+  .btn-danger { background: var(--danger); color: white; }
+  .btn-edit { background: #3b82f6; color: white; }
 
-   .btn-publish {
+  .btn-publish {
       background: linear-gradient(135deg, var(--accent), #22c55e);
       color: #000; font-size: 16px; padding: 14px; width: 100%; margin-top: 10px;
       box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
     }
-   .btn-publish:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .btn-publish:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-   .file-input-wrapper { position: relative; width: 100%; }
-   .file-input-wrapper input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-   .file-input-btn {
+  .file-input-wrapper { position: relative; width: 100%; }
+  .file-input-wrapper input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .file-input-btn {
       display: block; padding: 12px; background: var(--bg-card); border: 2px dashed var(--accent);
       border-radius: 10px; text-align: center; color: var(--accent); font-weight: bold; transition: 0.3s;
     }
-   .file-input-btn:hover { background: rgba(74, 222, 128, 0.1); }
+  .file-input-btn:hover { background: rgba(74, 222, 128, 0.1); }
 
     #toast {
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
@@ -64,36 +64,35 @@
     #toast.success { border-left-color: #22c55e; }
     #toast.error { border-left-color: var(--danger); }
 
-   .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 999; }
-   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin: 25px 15px; }
-   .stat-box { text-align: center; padding: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; transition: 0.3s; }
-   .stat-box:hover { transform: translateY(-5px); border-color: var(--accent); }
-   .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 999; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin: 25px 15px; }
+  .stat-box { text-align: center; padding: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; transition: 0.3s; }
+  .stat-box:hover { transform: translateY(-5px); border-color: var(--accent); }
+  .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
 
-   .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 15px; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
-   .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-   .filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+  .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 15px; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
+  .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+  .filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
 
-   .project-actions { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
-   .like-btn,.fav-btn { display: flex; align-items: center; gap: 5px; padding: 8px 15px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-size: 14px; }
-   .like-btn.liked { background: var(--danger); border-color: var(--danger); color: white; }
-   .fav-btn.favorited { background: #fbbf24; border-color: #fbbf24; color: #000; }
+  .project-actions { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
+  .like-btn,.fav-btn { display: flex; align-items: center; gap: 5px; padding: 8px 15px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-size: 14px; }
+  .like-btn.liked { background: var(--danger); border-color: var(--danger); color: white; }
+  .fav-btn.favorited { background: #fbbf24; border-color: #fbbf24; color: #000; }
 
-   .badge { background: linear-gradient(135deg, var(--accent), #22c55e); color: #000; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
-   .actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
+  .badge { background: linear-gradient(135deg, var(--accent), #22c55e); color: #000; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+  .actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
 
-   .float-btn { position: fixed; bottom: 20px; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: 0.3s; z-index: 999; }
-   .float-btn:hover { transform: translateY(-8px) scale(1.1); }
-   .whatsapp { right: 20px; background: #25D366; }
-   .telegram { left: 20px; background: #0088cc; }
+  .float-btn { position: fixed; bottom: 20px; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: 0.3s; z-index: 999; }
+  .float-btn:hover { transform: translateY(-8px) scale(1.1); }
+  .whatsapp { right: 20px; background: #25D366; }
+  .telegram { left: 20px; background: #0088cc; }
     #backToTop { position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: #000; border: none; font-size: 24px; cursor: pointer; display: none; z-index: 998; }
 
-    /* مودال الحذف */
-   .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; }
-   .modal.show { display: flex; }
-   .modal-content { background: var(--bg-card); padding: 25px; border-radius: 15px; max-width: 400px; width: 90%; text-align: center; }
-   .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-   .modal-buttons button { flex: 1; }
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; }
+  .modal.show { display: flex; }
+  .modal-content { background: var(--bg-card); padding: 25px; border-radius: 15px; max-width: 400px; width: 90%; text-align: center; }
+  .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-buttons button { flex: 1; }
   </style>
 </head>
 <body>
@@ -162,7 +161,6 @@
   </div>
   <div id="questions"></div>
 
-  <!-- مودال تأكيد الحذف -->
   <div class="modal" id="deleteModal">
     <div class="modal-content">
       <h3 style="color:var(--danger)">🗑️ تأكيد الحذف</h3>
@@ -179,7 +177,7 @@
   <a href="https://t.me/يوزرك" target="_blank" class="float-btn telegram">✈️</a>
 
   <script>
-    const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+    const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
     let currentUser = null;
     let editProjectId = null;
     let deleteProjectId = null;
@@ -200,6 +198,35 @@
       document.getElementById('backToTop').style.display = window.scrollY > 300? 'block' : 'none';
     };
     function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    // دالة "منذ كم" الجديدة
+    function timeAgo(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const seconds = Math.floor((now - date) / 1000);
+
+      if (seconds < 10) return 'الآن';
+      if (seconds < 60) return `منذ ${seconds} ثانية`;
+
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `منذ ${minutes} دقيقة`;
+
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `منذ ${hours} ساعة`;
+
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `منذ ${days} يوم`;
+
+      const weeks = Math.floor(days / 7);
+      if (weeks < 4) return `منذ ${weeks} أسبوع`;
+
+      // لو قديم رجع تاريخ
+      return date.toLocaleDateString('ar-EG', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
 
     sb.auth.getUser().then(({ data: { user } }) => {
       if (!user) return location.href = 'login.html';
@@ -334,7 +361,7 @@
           <h3 style="margin-top:15px">${p.title}</h3>
           <p style="line-height:1.6">${p.description || 'بدون وصف'}</p>
           ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px" loading="lazy">` : ''}
-          <div style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
+          <div style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${timeAgo(p.created_at)}</div>
 
           <div class="project-actions">
             <button class="like-btn ${isLiked? 'liked' : ''}" onclick="toggleLike(${p.id}, this)">
@@ -358,7 +385,6 @@
       projects.forEach(p => loadComments(p.id));
     }
 
-    // دالة التعديل - كانت ناقصة
     function editProject(id, title, desc, cat, imgUrl) {
       editProjectId = id;
       document.getElementById('title').value = title;
@@ -378,7 +404,6 @@
       showToast('جاهز للتعديل ✏️');
     }
 
-    // دوال الحذف - كانت ناقصة
     function openDelete(id) {
       deleteProjectId = id;
       document.getElementById('deleteModal').classList.add('show');
