@@ -85,7 +85,6 @@
     @keyframes typing { from { width: 0 } to { width: 100% } }
     @keyframes blink { 50% { border-left-color: transparent } }
 
-    /* أزرار التفاعل */
 .project-actions {
       display: flex;
       gap: 10px;
@@ -118,7 +117,6 @@
     }
 .like-btn:hover,.fav-btn:hover { transform: scale(1.05); }
 
-    /* تأثير القلب */
     @keyframes heartBeat {
       0% { transform: scale(1); }
       50% { transform: scale(1.3); }
@@ -283,12 +281,32 @@
         document.getElementById('imagePreview').style.display = 'block';
       };
       reader.readAsDataURL(file);
-      const fileName = `${Date.now()}_${file.name}`;
-      const {data, error} = await sb.storage.from('projects').upload(fileName, file);
+
+      // تم التعديل هنا: استخدم AAMAL-IMAGES بدل projects
+      const fileName = `project_${Date.now()}_${file.name}`;
+      const {data, error} = await sb.storage.from('AAMAL-IMAGES').upload(fileName, file);
       if(error) return showToast('خطأ رفع الصورة: ' + error.message, 'error');
-      const {data: urlData} = sb.storage.from('projects').getPublicUrl(fileName);
+      const {data: urlData} = sb.storage.from('AAMAL-IMAGES').getPublicUrl(fileName);
       uploadedImageUrl = urlData.publicUrl;
       showToast('تم رفع الصورة بنجاح ✓');
+    });
+
+    document.getElementById('editImageFile').addEventListener('change', async function(e){
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('editImagePreview').src = ev.target.result;
+        document.getElementById('editImagePreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+
+      // تم التعديل هنا: استخدم AAMAL-IMAGES بدل projects
+      const fileName = `project_${Date.now()}_${file.name}`;
+      const {data, error} = await sb.storage.from('AAMAL-IMAGES').upload(fileName, file);
+      if(error) return showToast('خطأ رفع الصورة: ' + error.message, 'error');
+      const {data: urlData} = sb.storage.from('AAMAL-IMAGES').getPublicUrl(fileName);
+      editUploadedImageUrl = urlData.publicUrl;
     });
 
     document.getElementById('postForm').addEventListener('submit', async (e)=>{
@@ -344,7 +362,6 @@
           ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px">` : ''}
           <div class="date" style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${formatDate(p.created_at)}</div>
 
-          <!-- أزرار اللايك والمفضلة -->
           <div class="project-actions">
             <button class="like-btn ${isLiked? 'liked' : ''}" onclick="toggleLike(${p.id}, this)">
               <span class="${isLiked? 'heart-animation' : ''}">❤️</span>
@@ -369,20 +386,17 @@
       projects.forEach(p=>loadComments(p.id));
     }
 
-    // دالة اللايك
     async function toggleLike(projectId, btn) {
       const likedProjects = JSON.parse(localStorage.getItem('liked_' + currentUser.id) || '[]');
       const likeCountEl = document.getElementById('like-count-' + projectId);
       let currentLikes = parseInt(likeCountEl.textContent);
 
       if(likedProjects.includes(projectId)) {
-        // إلغاء اللايك
         likedProjects.splice(likedProjects.indexOf(projectId), 1);
         currentLikes--;
         btn.classList.remove('liked');
         showToast('تم إلغاء الإعجاب');
       } else {
-        // إضافة لايك
         likedProjects.push(projectId);
         currentLikes++;
         btn.classList.add('liked');
@@ -396,7 +410,6 @@
       await sb.from('projects').update({likes: currentLikes}).eq('id', projectId);
     }
 
-    // دالة المفضلة
     function toggleFavorite(projectId, btn) {
       const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
 
