@@ -25,7 +25,6 @@ sb.auth.getUser().then(({data:{user}})=>{
   if(!user) return location.href='login.html';
   document.getElementById('userEmail').textContent = user.email;
   loadProjects();
-  // خلي زر الكل نشط من البداية
   document.querySelector('.cat-btn[data-cat="all"]').style.background = catConfig.all.color;
   document.querySelector('.cat-btn[data-cat="all"]').style.color = '#000';
   document.querySelector('.cat-btn[data-cat="all"]').style.boxShadow = `0 0 15px ${catConfig.all.color}66`;
@@ -95,18 +94,22 @@ async function displayProjects(list){
         <h4 style="font-size:14px;color:#4ade80;margin-bottom:10px">💬 التعليقات ${comments.length}</h4>
         <div id="comments-${p.id}" style="max-height:300px;overflow-y:auto;margin-bottom:10px">
           ${comments.map(c=>`
-            <div style="display:flex;gap:8px;margin-bottom:10px">
-              <div style="width:32px;height:32px;border-radius:50%;background:${config.color};color:#000;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px">${c.user_name.charAt(0).toUpperCase()}</div>
-              <div style="flex:1;background:#2a2a2a;padding:8px 12px;border-radius:18px">
+            <div style="display:flex;gap:8px;margin-bottom:10px;justify-content:flex-end">
+              <div style="flex:1;background:#2a2a2a;padding:8px 12px;border-radius:18px;text-align:right">
                 <b style="color:${config.color};font-size:13px">${c.user_name}</b>
                 <p style="margin:3px 0 0 0;font-size:14px">${c.comment}</p>
                 <span style="font-size:11px;color:#666">${timeAgo(c.created_at)}</span>
               </div>
+              <a href="https://youtube.com/@read_write_well?si=cye7vR41TchjZMhE" target="_blank" style="text-decoration:none">
+                <div style="width:32px;height:32px;border-radius:50%;background:${config.color};color:#000;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px">${c.user_name.charAt(0).toUpperCase()}</div>
+              </a>
             </div>
           `).join('') || '<p style="color:#666;font-size:13px;text-align:center">لا توجد تعليقات</p>'}
         </div>
         <div style="display:flex;gap:8px">
-          <div style="width:32px;height:32px;border-radius:50%;background:#4ade80;color:#000;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px">${document.getElementById('userEmail').textContent.charAt(0).toUpperCase()}</div>
+          <a href="https://youtube.com/@read_write_well?si=cye7vR41TchjZMhE" target="_blank" style="text-decoration:none">
+            <div style="width:32px;height:32px;border-radius:50%;background:#4ade80;color:#000;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px">${document.getElementById('userEmail').textContent.charAt(0).toUpperCase()}</div>
+          </a>
           <input id="comment-${p.id}" placeholder="اكتب تعليقاً..." style="flex:1;border-radius:20px;border:1px solid #444;background:#1a1a1a;color:#fff;padding:8px 15px">
           <button class="btn btn-small" onclick="addComment(${p.id})" style="border-radius:50%;width:36px;height:36px;padding:0">➤</button>
         </div>
