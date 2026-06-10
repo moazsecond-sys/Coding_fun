@@ -5,89 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>معاذ العنيد | لوحة مهاراتي</title>
   
-  <!-- مكتبة Supabase حق الدخول -->
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <!-- مكتبة الرسوم البيانية -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <!-- خط عربي فخم من قوقل -->
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <!-- خط تاجوال العربي -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
-    * { font-family: 'Tajawal', sans-serif; }
+    * { 
+      font-family: 'Tajawal', sans-serif; 
+      box-sizing: border-box;
+    }
     body {
       background: linear-gradient(135deg, #0b1020 0%, #1a233a 100%);
       color: white;
       margin: 0;
-      padding: 40px 20px;
+      padding: 30px 15px;
       min-height: 100vh;
     }
     .container {
-      max-width: 800px;
+      max-width: 700px;
       margin: 0 auto;
       text-align: center;
     }
     h1 {
       font-size: 32px;
-      margin-bottom: 10px;
+      font-weight: 900;
+      margin-bottom: 8px;
       background: linear-gradient(90deg, #ff5722, #ff9800);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .subtitle {
       color: #aaa;
-      margin-bottom: 40px;
+      margin-bottom: 35px;
+      font-size: 16px;
     }
     .card {
       background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 20px;
-      padding: 30px;
+      padding: 25px 20px;
       box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      backdrop-filter: blur(10px);
+    }
+    .chart-box {
+      height: 300px; /* هذا اللي كان ناقص */
+      position: relative;
     }
     canvas {
       background: rgba(0,0,0,0.2);
-      border-radius: 15px;
-      padding: 20px;
+      border-radius: 12px;
     }
     .btn {
       display: inline-block;
       padding: 12px 30px;
-      background: #ff5722;
+      background: linear-gradient(90deg, #ff5722, #ff9800);
       color: white;
       text-decoration: none;
       border-radius: 10px;
       font-weight: bold;
-      margin-top: 20px;
+      margin-top: 15px;
       transition: 0.3s;
     }
     .btn:hover {
-      background: #e64a19;
       transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255,87,34,0.4);
     }
     #loading {
       font-size: 18px;
       color: #ff9800;
+      margin: 20px 0;
+    }
+    @media(max-width: 600px){
+      h1 { font-size: 26px; }
+      .chart-box { height: 250px; }
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>مرحباً، أنا معاذ العنيد 🌶️</h1>
+    <h1>🌶️ مرحباً، أنا معاذ العنيد</h1>
     <p class="subtitle">مبرمج ومصمم مواقع - هذي خريطة مهاراتي</p>
 
-    <!-- لوحة المهارات -->
+    <!-- كرت المهارات -->
     <div class="card">
-      <h2>مستوى إتقاني للتقنيات</h2>
-      <canvas id="مهاراتي"></canvas>
-      <p style="color:#aaa; font-size:14px; margin-top:15px;">
+      <h2 style="margin-top:0;">مستوى إتقاني للتقنيات</h2>
+      <div class="chart-box">
+        <canvas id="مهاراتي"></canvas>
+      </div>
+      <p style="color:#aaa; font-size:13px; margin-top:15px;">
         كل ما أتعلم شي جديد بحدث الرسم. تابعني عشان تشوف التطور
       </p>
     </div>
 
-    <!-- منطقة التحقق من الدخول -->
+    <!-- كرت الدخول -->
     <div class="card" id="login-card" style="display:none;">
       <p id="loading">جاري التحقق من الجلسة...</p>
       <a href="login.html" class="btn">تسجيل الدخول</a>
@@ -95,42 +112,60 @@
   </div>
 
   <script>
-    // 1. رسم المهارات بـ Chart.js
-    const ctx = document.getElementById('مهاراتي');
-    new Chart(ctx, {
-      type: 'bar', // أعمدة
-      data: {
-        labels: ['HTML', 'CSS', 'JavaScript', 'Ruby', 'تصميم UI'],
-        datasets: [{
-          label: 'نسبة الإتقان %',
-          data: [90, 85, 60, 40, 75], // عدّل الأرقام على حسبك
-          backgroundColor: [
-            '#ff5722', '#ff9800', '#ffc107', '#8bc34a', '#03a9f4'
-          ],
-          borderRadius: 10
-        }]
-      },
-      options: {
-        scales: {
-          y: { beginAtZero: true, max: 100, ticks: { color: 'white' } },
-          x: { ticks: { color: 'white', font: { size: 14 } }
+    // 1. ننتظر الصفحة تحمل كامل عشان الرسم يظهر
+    window.addEventListener('load', function() {
+      
+      const ctx = document.getElementById('مهاراتي');
+      
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['HTML', 'CSS', 'JavaScript', 'Ruby', 'تصميم UI'],
+          datasets: [{
+            label: 'نسبة الإتقان %',
+            data: [90, 85, 60, 40, 75], // عدّل الأرقام هنا
+            backgroundColor: [
+              '#ff5722', // برتقالي HTML
+              '#2196f3', // أزرق CSS  
+              '#ffc107', // أصفر JS
+              '#8bc34a', // أخضر Ruby
+              '#9c27b0'  // بنفسجي UI
+            ],
+            borderRadius: 10,
+            borderWidth: 0
+          }]
         },
-        plugins: {
-          legend: { labels: { color: 'white', font: { size: 14 } }
+        options: {
+          responsive: true,
+          maintainAspectRatio: false, // مهم عشان الارتفاع يضبط
+          scales: {
+            y: { 
+              beginAtZero: true, 
+              max: 100, 
+              ticks: { color: '#ccc' },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            },
+            x: { 
+              ticks: { color: '#ccc', font: { size: 13, weight: 'bold' } },
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { 
+              labels: { color: 'white', font: { size: 14 } }
+            }
+          }
         }
-      }
+      });
     });
 
-    // 2. كود Supabase حق التحقق - نفس حقك
-    const sb = supabase.createClient(
-      'https://mirrxytqttjglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+    // 2. كود Supabase حق التحقق
+    const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 
     sb.auth.getSession().then(({data:{session}})=>{
       if(session) {
-        // لو مسجل دخول، ودّيه home.html
         location.replace('home.html');
       } else {
-        // لو مو مسجل، ورّيه زر الدخول تحت الرسم
         document.getElementById('login-card').style.display = 'block';
         document.getElementById('loading').textContent = 'سجل دخول عشان تشوف لوحة التحكم';
       }
