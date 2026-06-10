@@ -3,52 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- SEO: معلومات تطلع في جوجل والواتساب لما تشارك الرابط -->
-  <title>موقعي | مشاريع برمجة وتصميم</title>
-  <meta name="description" content="أفضل المشاريع البرمجية والتصاميم والمقالات التقنية. تابع أحدث أعمالنا وشارك برأيك">
-  <meta name="keywords" content="برمجة, تصميم, مشاريع, مقالات تقنية">
-  <meta property="og:title" content="موقعي">
-  <meta property="og:description" content="مشاريع برمجة وتصميم احترافية">
-  <meta property="og:image" content="رابط_صورة_الموقع.jpg">
-  <meta name="theme-color" content="#4ade80"> <!-- لون شريط المتصفح في الجوال -->
 
-  <!-- مكتبة Supabase: عشان نربط بالموقع ونخزن البيانات -->
+  <title>موقعي | مشاريع برمجة وتصميم</title>
+  <meta name="description" content="أفضل المشاريع البرمجية والتصاميم والمقالات التقنية">
+  <meta name="theme-color" content="#4ade80">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <!-- ملف التنسيقات الخارجي -->
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* تحسينات الأزرار */
+   .btn,.btn-danger,.btn-small {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+   .btn:hover,.btn-small:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(74, 222, 128, 0.3);
+    }
+   .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    /* الكرت يطلع بحركة ناعمة */
+   .card {
+      animation: fadeInUp 0.5s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* عداد الحروف */
+   .char-count {
+      font-size: 12px;
+      color: #666;
+      text-align: left;
+      margin-top: -8px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ========== الهيدر: الشريط العلوي ========== -->
-  <!-- وظيفته: اسم الموقع + أزرار التنقل + بيانات المستخدم -->
+  <!-- الهيدر بدون إيميل للخصوصية -->
   <div class="header">
     <a href="contact.html" class="btn btn-small" style="background:#4ade80">📧 تواصل</a>
     <h1>🍏 موقعي</h1>
     <div>
       <a href="categories.html" class="btn btn-small">📂 الأقسام</a>
-      <span id="userEmail"></span> <!-- هنا ينكتب إيميل المستخدم بعد تسجيل الدخول -->
       <button class="btn-danger btn-small" onclick="logout()">خروج</button>
     </div>
   </div>
 
-  <!-- ========== الإحصائيات: الكروت الصغيرة فوق ========== -->
-  <!-- وظيفتها: تعطي نظرة سريعة عن عدد المشاريع والأسئلة -->
+  <!-- الإحصائيات -->
   <div class="stats">
     <div class="stat-box"><h3 id="count">0</h3><p>مشروع</p></div>
     <div class="stat-box"><h3>نشط</h3><p>النظام</p></div>
     <div class="stat-box"><h3 id="qCount">0</h3><p>أسئلة</p></div>
   </div>
 
-  <!-- ========== فورم النشر: عشان المستخدم يضيف مشروع جديد ========== -->
+  <!-- فورم النشر مع عداد حروف -->
   <div class="card">
     <form id="postForm">
       <h3>نشر مشروع جديد</h3>
-      <input id="title" placeholder="عنوان المشروع" required>
-      <textarea id="description" placeholder="الوصف" rows="4"></textarea>
+      <input id="title" placeholder="عنوان المشروع" required maxlength="100">
+      <textarea id="description" placeholder="الوصف" rows="4" maxlength="500"></textarea>
+      <div class="char-count"><span id="charCount">0</span>/500 حرف</div>
       <input id="image_url" placeholder="رابط الصورة">
-      
+
       <select id="categories" required>
         <option value="">اختر القسم</option>
         <option value="programming">💻 برمجة</option>
@@ -56,161 +80,193 @@
         <option value="articles">📝 مقالات</option>
         <option value="general">🌍 عام</option>
       </select>
-      
+
       <button class="btn" type="submit">نشر</button>
     </form>
   </div>
 
-  <!-- ========== مكان عرض المشاريع ========== -->
-  <!-- الكود الجافاسكربت بيملاه تلقائي من قاعدة البيانات -->
   <div id="projects"></div>
 
-  <!-- ========== قسم الأسئلة ========== -->
+  <!-- قسم الأسئلة -->
   <h2 style="margin-top:40px;color:#4ade80">اسألني أي شيء</h2>
   <div class="card">
     <input id="qName" placeholder="اسمك">
-    <textarea id="qText" placeholder="سؤالك"></textarea>
+    <textarea id="qText" placeholder="سؤالك" maxlength="300"></textarea>
     <button class="btn" onclick="askQuestion()">إرسال</button>
   </div>
   <div id="questions"></div>
 
-  <!-- ========== الجافاسكربت: عقل الموقع ========== -->
-  <script>
-    // 1. ربط Supabase: هذا مفتاح موقعك في قاعدة البيانات
-    const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
-    let currentUser = null; // نخزن بيانات المستخدم هنا
+  <!-- مودال التعديل الفخم بنفس ألوان الموقع -->
+  <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center; animation:fadeIn 0.3s ease;">
+    <div class="card" style="width:90%; max-width:450px; background:#0f0f0f; border:2px solid #4ade80; box-shadow:0 0 30px rgba(74,222,128,0.3);">
+      <h3 style="color:#4ade80; text-align:center; margin-bottom:20px">✏️ تعديل المشروع</h3>
+      <input id="editTitle" placeholder="العنوان الجديد" maxlength="100">
+      <textarea id="editDesc" placeholder="الوصف الجديد" rows="4" maxlength="500"></textarea>
+      <div class="char-count"><span id="editCharCount">0</span>/500 حرف</div>
+      <input id="editImg" placeholder="رابط الصورة الجديد">
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+        <button class="btn" onclick="saveEdit()">💾 حفظ</button>
+        <button class="btn-danger" onclick="closeEdit()">❌ إلغاء</button>
+      </div>
+    </div>
+  </div>
 
-    // 2. قاموس الأقسام: يحول programming → برمجة عشان العرض
+  <script>
+    const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+    let currentUser = null;
+    let editProjectId = null;
+
     const catNames = {
       'articles': 'مقالات',
-      'design': 'تصميم', 
+      'design': 'تصميم',
       'programming': 'برمجة',
       'general': 'عام'
     };
 
-    // 3. فحص تسجيل الدخول: لو ما فيه يوزر، ارجع لصفحة login
     sb.auth.getUser().then(({data:{user}})=>{
       if(!user) return location.href='login.html';
       currentUser = user;
-      document.getElementById('userEmail').textContent = user.email;
-      loadProjects(); // جيب المشاريع
-      loadQuestions(); // جيب الأسئلة
+      loadProjects();
+      loadQuestions();
     });
 
-    // 4. تسجيل الخروج
     function logout(){
       sb.auth.signOut();
       location.href='login.html';
     }
 
-    // 5. نشر مشروع جديد: لما تضغط زر "نشر"
+    // عداد حروف للوصف
+    document.getElementById('description').addEventListener('input', function(){
+      document.getElementById('charCount').textContent = this.value.length;
+    });
+    document.getElementById('editDesc').addEventListener('input', function(){
+      document.getElementById('editCharCount').textContent = this.value.length;
+    });
+
     document.getElementById('postForm').addEventListener('submit', async (e)=>{
-      e.preventDefault(); // لا تعيد تحميل الصفحة
-      
+      e.preventDefault();
+
       const {error} = await sb.from('projects').insert({
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
         image_url: document.getElementById('image_url').value,
         categories: document.getElementById('categories').value,
-        user_id: currentUser.id // يربط المشروع بالمستخدم
+        user_id: currentUser.id
       });
-      
+
       if(error) return alert('خطأ: '+error.message);
-      
-      e.target.reset(); // فضي الفورم
-      loadProjects(); // حدث العرض
+
+      e.target.reset();
+      document.getElementById('charCount').textContent = '0';
+      loadProjects();
     });
 
-    // 6. جلب وعرض المشاريع من قاعدة البيانات
     async function loadProjects(){
       const {data} = await sb.from('projects').select('*').order('id',{ascending:false});
       document.getElementById('count').textContent = data.length;
       const projectsDiv = document.getElementById('projects');
-      
-      if(!data.length) return projectsDiv.innerHTML = '<p style="text-align:center;color:#666">لا توجد مشاريع بعد</p>';
+
+      if(!data.length) return projectsDiv.innerHTML = '<p style="text-align:center;color:#666; padding:40px">لا توجد مشاريع بعد. كن أول من ينشر! 🚀</p>';
 
       projectsDiv.innerHTML = data.map(p=>`
         <div class="card">
           <div class="actions">
             ${p.user_id == currentUser.id? `
-            <button class="btn btn-edit btn-small" onclick='editProject(${p.id},"${p.title.replace(/"/g, '&quot;')}","${(p.description||'').replace(/"/g, '&quot;')}","${p.image_url||''}")'>تعديل</button>
-            <button class="btn-danger btn-small" onclick="deleteProject(${p.id})">حذف</button>
+            <button class="btn btn-edit btn-small" onclick='editProject(${p.id},"${p.title.replace(/"/g, '&quot;')}","${(p.description||'').replace(/"/g, '&quot;')}","${p.image_url||''}")'>✏️ تعديل</button>
+            <button class="btn-danger btn-small" onclick="deleteProject(${p.id})">🗑️ حذف</button>
             ` : ''}
           </div>
-          <span class="badge" style="background:#4ade80;color:#000;padding:4px 8px;border-radius:6px;font-size:12px">${catNames[p.categories] || p.categories}</span>
-          <h3>${p.title}</h3>
-          <p>${p.description || 'بدون وصف'}</p>
-          ${p.image_url? `<img src="${p.image_url}" style="max-width:100%;border-radius:8px;margin-top:10px">` : ''}
-          <div class="date">${formatDate(p.created_at)}</div>
+          <span class="badge" style="background:linear-gradient(135deg, #4ade80, #22c55e); color:#000; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:bold">${catNames[p.categories] || p.categories}</span>
+          <h3 style="margin-top:15px">${p.title}</h3>
+          <p style="line-height:1.6">${p.description || 'بدون وصف'}</p>
+          ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px; box-shadow:0 4px 15px rgba(0,0,0,0.3)">` : ''}
+          <div class="date" style="margin-top:15px; color:#888; font-size:13px">📅 ${formatDate(p.created_at)}</div>
 
-          <!-- قسم التعليقات لكل مشروع -->
-          <div class="comments-section">
-            <h4>💬 التعليقات</h4>
+          <div class="comments-section" style="margin-top:20px; padding-top:15px; border-top:1px solid #333">
+            <h4 style="color:#4ade80">💬 التعليقات</h4>
             <div id="comments-${p.id}"></div>
-            <input id="comment-${p.id}" placeholder="اكتب تعليقك...">
-            <button class="btn btn-small" onclick="addComment(${p.id})">إرسال</button>
+            <div style="display:flex; gap:8px; margin-top:10px">
+              <input id="comment-${p.id}" placeholder="اكتب تعليقك..." style="flex:1">
+              <button class="btn btn-small" onclick="addComment(${p.id})">إرسال</button>
+            </div>
           </div>
         </div>
       `).join('');
 
-      data.forEach(p=>loadComments(p.id)); // جيب تعليقات كل مشروع
+      data.forEach(p=>loadComments(p.id));
     }
 
-    // 7. تنسيق التاريخ للعربي
     function formatDate(d){
-      return new Date(d).toLocaleDateString('ar-EG',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return new Date(d).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
     }
 
-    // 8. حذف + تعديل المشروع
     async function deleteProject(id){
-      if(!confirm('متأكد تبي تحذف المشروع؟')) return;
+      if(!confirm('⚠️ متأكد تبي تحذف المشروع؟ لا يمكن التراجع')) return;
       await sb.from('projects').delete().eq('id',id);
       loadProjects();
     }
 
-    async function editProject(id,title,desc,img){
-      const newTitle = prompt('العنوان الجديد:',title);
-      if(!newTitle) return;
-      const newDesc = prompt('الوصف الجديد:',desc);
-      const newImg = prompt('رابط الصورة الجديد:',img);
+    // مودال التعديل
+    function editProject(id, title, desc, img){
+      editProjectId = id;
+      document.getElementById('editTitle').value = title;
+      document.getElementById('editDesc').value = desc;
+      document.getElementById('editImg').value = img;
+      document.getElementById('editCharCount').textContent = desc.length;
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeEdit(){
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    async function saveEdit(){
+      const newTitle = document.getElementById('editTitle').value;
+      const newDesc = document.getElementById('editDesc').value;
+      const newImg = document.getElementById('editImg').value;
+
+      if(!newTitle.trim()) return alert('العنوان مطلوب');
 
       await sb.from('projects').update({
-        title:newTitle,description:newDesc,image_url:newImg
-      }).eq('id',id);
+        title:newTitle, description:newDesc, image_url:newImg
+      }).eq('id', editProjectId);
+
+      closeEdit();
       loadProjects();
     }
 
-    // 9. التعليقات: جلب + إضافة
     async function loadComments(project_id){
       const {data} = await sb.from('comments').select('*').eq('project_id',project_id).order('id',{ascending:true});
       document.getElementById(`comments-${project_id}`).innerHTML =
-        data.map(c=>`<p style="display:flex;align-items:center;gap:8px;margin:5px 0">
-        <a href="https://youtube.com/@read_write_well?si=cye7vR41TchjZMhE" target="_blank" style="text-decoration:none">
-          <div style="width:30px;height:30px;border-radius:50%;background:#4ade80;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px">M</div>
-        </a>
-        <b style="color:#4ade80">${c.user_name}:</b> ${c.comment}</p>`).join('') || '<p style="color:#666;font-size:13px">لا توجد تعليقات</p>';
+        data.map(c=>`<div style="display:flex; align-items:center; gap:10px; margin:8px 0; padding:8px; background:#1a1a1a; border-radius:8px">
+        <div style="width:35px; height:35px; border-radius:50%; background:linear-gradient(135deg, #4ade80, #22c55e); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px">${c.user_name.charAt(0).toUpperCase()}</div>
+        <div><b style="color:#4ade80">${c.user_name}:</b> <span style="color:#ddd">${c.comment}</span></div>
+        </div>`).join('') || '<p style="color:#666; font-size:13px; text-align:center; padding:10px">لا توجد تعليقات بعد</p>';
     }
 
     async function addComment(project_id){
       const input = document.getElementById(`comment-${project_id}`);
       if(!input.value.trim()) return;
       await sb.from('comments').insert({
-        project_id,user_name:currentUser.email.split('@')[0],comment:input.value.trim()
+        project_id, user_name:currentUser.email.split('@')[0], comment:input.value.trim()
       });
       input.value = '';
       loadComments(project_id);
     }
 
-    // 10. الأسئلة: جلب + إضافة
     async function loadQuestions(){
       const {data} = await sb.from('questions').select('*').order('id',{ascending:false});
       document.getElementById('qCount').textContent = data.length;
       document.getElementById('questions').innerHTML = data.map(q=>`
         <div class="card">
-          <b style="color:#4ade80">${q.user_name}:</b> ${q.question}
-          ${q.answer? `<p style="margin-top:10px;color:#22c55e"><b>الرد:</b> ${q.answer}</p>` : ''}
+          <div style="display:flex; align-items:center; gap:10px">
+            <div style="width:40px; height:40px; border-radius:50%; background:#4ade80; color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold">${q.user_name.charAt(0)}</div>
+            <b style="color:#4ade80">${q.user_name}:</b>
+          </div>
+          <p style="margin-top:10px">${q.question}</p>
+          ${q.answer? `<div style="margin-top:10px; padding:10px; background:#1a1a1a; border-right:3px solid #4ade80; border-radius:5px"><b style="color:#22c55e">الرد:</b> ${q.answer}</div>` : ''}
         </div>
-      `).join('') || '<p style="color:#666">لا توجد أسئلة بعد</p>';
+      `).join('') || '<p style="color:#666; text-align:center; padding:20px">لا توجد أسئلة بعد</p>';
     }
 
     async function askQuestion(){
@@ -218,26 +274,26 @@
       const question = document.getElementById('qText').value.trim();
       if(!question) return alert('اكتب سؤالك');
 
-      await sb.from('questions').insert({user_name:name,question});
+      await sb.from('questions').insert({user_name:name, question});
       document.getElementById('qText').value = '';
       loadQuestions();
     }
   </script>
 
-  <!-- ========== أزرار التواصل الثابتة ========== -->
+  <!-- أزرار التواصل -->
   <style>
-    .float-btn{
+   .float-btn{
       position:fixed; bottom:20px; width:55px; height:55px;
       border-radius:50%; display:flex; align-items:center; justify-content:center;
       font-size:28px; color:#fff; text-decoration:none;
-      box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:0.3s; z-index:999;
+      box-shadow:0 4px 20px rgba(0,0,0,0.5); transition:0.3s; z-index:999;
     }
-    .float-btn:hover{ transform:translateY(-5px) scale(1.1); }
-    .whatsapp{ right:20px; background:#25D366; }
-    .telegram{ left:20px; background:#0088cc; }
+   .float-btn:hover{ transform:translateY(-8px) scale(1.1); box-shadow:0 8px 25px rgba(0,0,0,0.7); }
+   .whatsapp{ right:20px; background:#25D366; }
+   .telegram{ left:20px; background:#0088cc; }
   </style>
 
-  <a href="#" class="float-btn whatsapp" title="واتساب">💬</a>
-  <a href="#" class="float-btn telegram" title="تلجرام">✈️</a>
+  <a href="https://wa.me/967XXXXXXXX" class="float-btn whatsapp" title="واتساب" target="_blank">💬</a>
+  <a href="https://t.me/username" class="float-btn telegram" title="تلجرام" target="_blank">✈️</a>
 </body>
 </html>
