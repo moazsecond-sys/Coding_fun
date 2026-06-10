@@ -3,195 +3,212 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة النشر - الادمن</title>
+<title>لوحة نشر المحتوى الديني</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-* { box-sizing: border-box; font-family: 'Cairo', Tahoma, sans-serif; }
-body { background: #0a0a0a; color: #f0f0f0; margin: 0; padding: 20px; font-size: 18px; }
-.container { max-width: 900px; margin: 0 auto; }
-h1 { font-size: 32px; color: #4ade80; margin-bottom: 30px; text-align: center; }
-h3 { font-size: 22px; color: #4ade80; }
-.card { background: #1a1a1a; border: 1px solid #333; border-radius: 16px; padding: 25px; margin-bottom: 20px; }
-input, textarea, select { 
-  width: 100%; padding: 18px; margin: 10px 0; 
-  background: #0a0a0a; border: 2px solid #333; 
-  border-radius: 10px; color: #fff; font-size: 20px; 
+body {
+  background: #0a0a0a;
+  color: #eee;
+  font-family: 'Cairo', sans-serif;
+  padding: 20px;
+  margin: 0;
 }
-input:focus, textarea:focus, select:focus { border-color: #4ade80; outline: none; }
-textarea { min-height: 180px; resize: vertical; }
-.btn { 
-  background: linear-gradient(135deg, #4ade80, #22c55e); 
-  color: #000; border: none; padding: 18px 25px; 
-  border-radius: 10px; cursor: pointer; font-weight: bold; 
-  font-size: 20px; margin-top: 10px; width: 100%;
+h1 { color: #4ade80; text-align: center; }
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #333;
 }
-.btn:hover { transform: translateY(-2px); }
-.btn-danger { background: #ef4444; color: white; }
-.btn-edit { background: #3b82f6; color: white; }
-.btn-small { padding: 10px 16px; font-size: 16px; width: auto; margin-left: 8px; }
-.badge { 
-  background: #2a2a2a; padding: 8px 14px; border-radius: 8px; 
-  font-size: 16px; display: inline-block; margin-bottom: 10px;
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
-.actions { float: left; }
-.stats { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
-.stat-box { background: #1a1a1a; padding: 20px; border-radius: 12px; flex: 1; min-width: 120px; text-align: center; }
-.stat-box h3 { font-size: 2.5rem; margin: 0; }
-#msg { text-align: center; font-size: 19px; font-weight: bold; margin-top: 15px; min-height: 30px; }
-.logout { background: #555; width: auto; padding: 12px 20px; font-size: 16px; float: left; margin-bottom: 15px; }
-@media(max-width: 600px) { .actions { float: none; margin-bottom: 10px; } }
+button {
+  background: #4ade80;
+  color: #000;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 5px;
+}
+button:hover { background: #22c55e; }
+button.danger { background: #ef4444; color: #fff; }
+button.danger:hover { background: #dc2626; }
+.item {
+  background: #2a2a2a;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #444;
+}
+.msg { padding: 10px; margin: 10px 0; border-radius: 8px; }
+.success { background: #166534; }
+.error { background: #7f1d1d; }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 </style>
 </head>
 <body>
+
 <div class="container">
-  <h1>📝 لوحة نشر المحتوى الديني</h1>
+  <div class="header">
+    <h1>📝 لوحة نشر المحتوى الديني</h1>
+    <button onclick="logout()" class="danger">تسجيل خروج</button>
+  </div>
   
-  <!-- 1. صندوق تسجيل الدخول -->
-  <div id="loginBox" class="card">
-    <h3>🔐 تسجيل دخول الادمن</h3>
-    <input type="email" id="email" placeholder="إيميلك" required>
-    <input type="password" id="password" placeholder="كلمة السر" required>
-    <button class="btn" onclick="login()">دخول</button>
-    <div id="loginMsg" style="margin-top:10px; font-size:18px; text-align:center"></div>
-  </div>
-
-  <!-- 2. لوحة الادمن - مخفية لين تسجل دخول -->
-  <div id="adminPanel" style="display:none">
-    <button class="btn logout" onclick="logout()">🚪 تسجيل خروج</button>
-    
-    <div class="stats">
-      <div class="stat-box"><h3 id="count">0</h3><p>المجموع</p></div>
-      <div class="stat-box"><h3 id="postCount">0</h3><p>مقالات</p></div>
-      <div class="stat-box"><h3 id="qCount">0</h3><p>استفسارات</p></div>
-      <div class="stat-box"><h3 id="thesisCount">0</h3><p>اطروحات</p></div>
-    </div>
-
-    <div class="card">
-      <h3 id="formTitle">نشر جديد</h3>
-      <form id="publishForm">
-        <input type="hidden" id="editId">
-        <input type="text" id="title" placeholder="عنوان المقال/الاستفسار" required>
-        <textarea id="content" placeholder="اكتب المحتوى هنا..." required></textarea>
-        <select id="type" required>
-          <option value="">اختر النوع</option>
-          <option value="post">📝 مقال ديني</option>
-          <option value="question">❓ استفسار شرعي</option>
-          <option value="thesis">📚 اطروحة/بحث</option>
-        </select>
-        <button type="submit" class="btn" id="submitBtn">🚀 نشر</button>
-        <button type="button" class="btn btn-danger" id="cancelBtn" style="display:none">إلغاء التعديل</button>
-        <div id="msg"></div>
-      </form>
-    </div>
-
-    <h3>المحتوى المنشور</h3>
-    <div id="contentList"><p style="text-align:center; color:#888">جاري التحميل...</p></div>
-  </div>
+  <div id="msg"></div>
+  
+  <h3>إضافة / تعديل محتوى</h3>
+  <form id="publishForm">
+    <input type="hidden" id="editId">
+    <input type="text" id="title" placeholder="العنوان" required>
+    <textarea id="content" placeholder="النص" rows="5" required></textarea>
+    <select id="type">
+      <option value="آية">آية</option>
+      <option value="حديث">حديث</option>
+      <option value="دعاء">دعاء</option>
+      <option value="حكمة">حكمة</option>
+    </select>
+    <button type="submit" id="submitBtn">نشر</button>
+    <button type="button" onclick="cancelEdit()" style="display:none" id="cancelBtn">إلغاء</button>
+  </form>
+  
+  <hr style="margin: 30px 0; border-color: #444;">
+  
+  <h3>المحتوى المنشور</h3>
+  <div id="contentList">جاري التحميل...</div>
 </div>
 
 <script>
-// غير المفتاح حقك هنا
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+const SUPABASE_URL = 'https://hpkuaivphtqzljyuwbpp.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhwa3VhaXZwaHRxemxqeXV3YnBwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzMjU2NjAsImV4cCI6MjA3NTkwMTY2MH0.1l3OfYROVqSrMoAInMFEDlxeDclC3vfFMMtAeR6yNgc';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let allContent = [];
+// تحقق من تسجيل الدخول اول ما يفتح
+checkAuth();
 
-// فحص اذا مسجل دخول اول ما يفتح
-sb.auth.getSession().then(({ data: { session } }) => {
-  if (session) {
-    document.getElementById('loginBox').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
+async function checkAuth() {
+  const { data: { session } = await sb.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+  } else {
     loadContent();
   }
-});
-
-async function login() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const msg = document.getElementById('loginMsg');
-  
-  if (!email || !password) {
-    msg.innerHTML = '<span style="color:#ef4444">عبي الإيميل وكلمة السر</span>';
-    return;
-  }
-  
-  msg.innerHTML = 'جاري الدخول...';
-  const { data, error } = await sb.auth.signInWithPassword({email, password});
-  
-  if (error) {
-    msg.innerHTML = `<span style="color:#ef4444">خطأ: ${error.message}</span>`;
-    return;
-  }
-  
-  document.getElementById('loginBox').style.display = 'none';
-  document.getElementById('adminPanel').style.display = 'block';
-  msg.innerHTML = '';
-  loadContent();
 }
 
 async function logout() {
   await sb.auth.signOut();
-  document.getElementById('adminPanel').style.display = 'none';
-  document.getElementById('loginBox').style.display = 'block';
-  document.getElementById('email').value = '';
-  document.getElementById('password').value = '';
+  window.location.href = 'login.html';
 }
 
-document.getElementById('publishForm').onsubmit = async (e) => {
-  e.preventDefault();
-  const id = document.getElementById('editId').value;
-  const title = document.getElementById('title').value.trim();
-  const content = document.getElementById('content').value.trim();
-  const type = document.getElementById('type').value;
-  const btn = document.getElementById('submitBtn');
-  
-  if (!title || !content || !type) {
-    showMsg('عبي كل الحقول', 'error');
+function showMsg(text, type) {
+  const msg = document.getElementById('msg');
+  msg.className = 'msg ' + type;
+  msg.textContent = text;
+  setTimeout(() => msg.textContent = '', 3000);
+}
+
+// تحميل المحتوى
+async function loadContent() {
+  const { data, error } = await sb.from('content').select('*').order('id', { ascending: false });
+  if (error) {
+    document.getElementById('contentList').innerHTML = 'خطأ في التحميل';
     return;
   }
-
-  btn.disabled = true;
-  btn.textContent = 'جاري الحفظ...';
-
-  if (id) {
-    const { error } = await sb.from('content').update({ title, content, type }).eq('id', id);
-    if (error) return showMsg(error.message, 'error');
-    showMsg('تم التعديل بنجاح ✓', 'success');
-    cancelEdit();
-  } else {
-    const { error } = await sb.from('content').insert([{ title, content, type }]);
-    if (error) return showMsg(error.message, 'error');
-    showMsg('تم النشر بنجاح ✓', 'success');
-    document.getElementById('publishForm').reset();
+  
+  if (data.length === 0) {
+    document.getElementById('contentList').innerHTML = 'لا يوجد محتوى بعد';
+    return;
   }
+  
+  document.getElementById('contentList').innerHTML = data.map(item => `
+    <div class="item">
+      <h4>${item.title}</h4>
+      <p>${item.content}</p>
+      <small>النوع: ${item.type}</small>
+      <br><br>
+      <button onclick="editItem(${item.id}, '${item.title.replace(/'/g, "\\'")}', '${item.content.replace(/'/g, "\\'")}', '${item.type}')">✏️ تعديل</button>
+      <button onclick="deleteItem(${item.id})" class="danger">🗑️ حذف</button>
+    </div>
+  `).join('');
+}
 
-  btn.disabled = false;
-  btn.textContent = '🚀 نشر';
+// إضافة أو تعديل
+document.getElementById('publishForm').onsubmit = async (e) => {
+  e.preventDefault();
+  
+  const { data: { session } = await sb.auth.getSession();
+  if (!session) {
+    showMsg('سجل دخول اول', 'error');
+    return;
+  }
+  
+  const id = document.getElementById('editId').value;
+  const title = document.getElementById('title').value;
+  const content = document.getElementById('content').value;
+  const type = document.getElementById('type').value;
+  
+  let error;
+  
+  if (id) {
+    // تعديل
+    const result = await sb.from('content').update({ title, content, type }).eq('id', id);
+    error = result.error;
+  } else {
+    // إضافة جديدة
+    const result = await sb.from('content').insert([{ title, content, type }]);
+    error = result.error;
+  }
+  
+  if (error) {
+    console.error(error);
+    showMsg('خطأ: ' + error.message, 'error');
+    return;
+  }
+  
+  showMsg(id ? 'تم التعديل بنجاح ✅' : 'تم النشر بنجاح ✅', 'success');
+  cancelEdit();
   loadContent();
 };
 
+// تعبئة النموذج للتعديل
 function editItem(id, title, content, type) {
   document.getElementById('editId').value = id;
   document.getElementById('title').value = title;
   document.getElementById('content').value = content;
   document.getElementById('type').value = type;
-  document.getElementById('formTitle').textContent = 'تعديل المحتوى';
-  document.getElementById('submitBtn').textContent = '💾 حفظ التعديل';
-  document.getElementById('cancelBtn').style.display = 'block';
+  document.getElementById('submitBtn').textContent = 'تعديل';
+  document.getElementById('cancelBtn').style.display = 'inline-block';
   window.scrollTo(0, 0);
 }
 
+// إلغاء التعديل
 function cancelEdit() {
   document.getElementById('editId').value = '';
   document.getElementById('publishForm').reset();
-  document.getElementById('formTitle').textContent = 'نشر جديد';
-  document.getElementById('submitBtn').textContent = '🚀 نشر';
+  document.getElementById('submitBtn').textContent = 'نشر';
   document.getElementById('cancelBtn').style.display = 'none';
 }
 
+// الحذف مع التحقق من الجلسة - مضبوط الأقواس
 async function deleteItem(id) {
   if (!confirm('متأكد تبغى تحذف؟')) return;
   
-  // تأكد ان فيه جلسة قبل الحذف
   const { data: { session } = await sb.auth.getSession();
   if (!session) {
     alert('انت مو مسجل دخول! ارجع سجل دخول');
@@ -211,51 +228,7 @@ async function deleteItem(id) {
   alert('تم الحذف بنجاح ✅');
   loadContent();
 }
-
-async function loadContent() {
-  const { data } = await sb.from('content').select('*').order('created_at', { ascending: false });
-  allContent = data || [];
-  document.getElementById('count').textContent = allContent.length;
-  document.getElementById('postCount').textContent = allContent.filter(c => c.type === 'post').length;
-  document.getElementById('qCount').textContent = allContent.filter(c => c.type === 'question').length;
-  document.getElementById('thesisCount').textContent = allContent.filter(c => c.type === 'thesis').length;
-  displayContent(allContent);
-}
-
-function displayContent(items) {
-  const div = document.getElementById('contentList');
-  if (!items.length) return div.innerHTML = '<p style="text-align:center; color:#888; padding:40px; font-size:20px">لا يوجد محتوى بعد 📭</p>';
-
-  div.innerHTML = items.map(item => {
-    const typeName = item.type === 'post' ? '📝 مقال ديني' 
-                    : item.type === 'question' ? '❓ استفسار شرعي' 
-                    : '📚 اطروحة/بحث';
-    
-    const safeTitle = item.title.replace(/`/g, "'").replace(/"/g, '&quot;');
-    const safeContent = item.content.replace(/`/g, "'").replace(/"/g, '&quot;');
-    
-    return `
-    <div class="card">
-      <div class="actions">
-        <button class="btn btn-edit btn-small" onclick='editItem(${item.id}, \`${safeTitle}\`, \`${safeContent}\`, "${item.type}")'>✏️ تعديل</button>
-        <button class="btn-danger btn-small" onclick="deleteItem(${item.id})">🗑️ حذف</button>
-      </div>
-      <span class="badge">${typeName}</span>
-      <h3 style="margin-top:15px; font-size:24px">${item.title}</h3>
-      <p style="line-height:1.8; font-size:20px; margin-top:12px">${item.content}</p>
-      <div style="margin-top:20px; color:#666; font-size:16px">📅 ${new Date(item.created_at).toLocaleDateString('ar-EG')}</div>
-    </div>
-    `;
-  }).join('');
-}
-
-document.getElementById('cancelBtn').onclick = cancelEdit;
-
-function showMsg(text, type) {
-  const msg = document.getElementById('msg');
-  msg.textContent = text;
-  msg.style.color = type === 'success' ? '#22c55e' : '#ef4444';
-}
 </script>
+
 </body>
 </html>
