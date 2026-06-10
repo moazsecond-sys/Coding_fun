@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>دخول الادمن</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; }
+body{
+  background:#0b1020;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  margin:0;
+  font-family:'Cairo', Tahoma, sans-serif;
+  padding:20px;
+}
+.box{
+  background:#1a1f36;
+  padding:45px 30px;
+  border-radius:20px;
+  width:100%;
+  max-width:400px;
+  box-shadow:0 15px 50px rgba(0,0,0,0.7);
+  border:1px solid #2a2f46;
+}
+h2{
+  text-align:center;
+  font-size:28px;
+  margin-bottom:35px;
+  color:#4ade80;
+}
+input{
+  width:100%;
+  padding:20px;
+  margin:14px 0;
+  border-radius:12px;
+  border:2px solid #333;
+  background:#0b1020;
+  color:white;
+  font-size:20px;
+}
+input:focus{
+  border-color:#4ade80;
+  outline:none;
+}
+button{
+  width:100%;
+  padding:20px;
+  margin-top:20px;
+  border-radius:12px;
+  border:0;
+  background:linear-gradient(135deg, #4ade80, #22c55e);
+  color:#000;
+  font-size:22px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover:not(:disabled){
+  transform:translateY(-3px);
+  box-shadow:0 5px 20px rgba(74, 222, 128, 0.4);
+}
+button:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  background:#555;
+}
+#msg{
+  margin-top:20px;
+  text-align:center;
+  font-size:19px;
+  font-weight:bold;
+  min-height:28px;
+}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>دخول الادمن 🔐</h2>
+<input id="email" type="email" placeholder="الايميل" autocomplete="email">
+<input id="pass" type="password" placeholder="كلمة السر" autocomplete="current-password">
+<button id="btn" onclick="login()">دخول</button>
+<div id="msg"></div>
+</div>
+
+<script>
+// حط المفتاح حقك هنا
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('pass').value;
+  const btn = document.getElementById('btn');
+
+  if (!email || !password) {
+    showMsg('اكتب الايميل وكلمة السر', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'جاري الدخول...';
+
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  
+  if (error) {
+    showMsg(error.message.includes('Invalid login') ? 'الايميل أو كلمة السر غلط' : error.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'دخول';
+    return;
+  }
+  
+  showMsg('تم الدخول بنجاح ✓', 'success');
+  btn.textContent = 'تم ✓';
+  
+  setTimeout(() => location.replace('home.html'), 800);
+}
+
+function showMsg(text, type) {
+  const msg = document.getElementById('msg');
+  msg.textContent = text;
+  msg.style.color = type === 'success' ? '#22c55e' : '#ef4444';
+}
+</script>
+</body>
+</html>
