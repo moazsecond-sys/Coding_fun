@@ -95,8 +95,8 @@ button.danger:hover { background: #dc2626; }
 </div>
 
 <script>
-const SUPABASE_URL = 'https://hpkuaivphtqzljyuwbpp.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhwa3VhaXZwaHRxemxqeXV3YnBwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzMjU2NjAsImV4cCI6MjA3NTkwMTY2MH0.1l3OfYROVqSrMoAInMFEDlxeDclC3vfFMMtAeR6yNgc';
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // تحقق من تسجيل الدخول اول ما يفتح
@@ -105,7 +105,7 @@ checkAuth();
 async function checkAuth() {
   const { data: { session } = await sb.auth.getSession();
   if (!session) {
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
   } else {
     loadContent();
   }
@@ -113,7 +113,7 @@ async function checkAuth() {
 
 async function logout() {
   await sb.auth.signOut();
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 function showMsg(text, type) {
@@ -151,8 +151,7 @@ async function loadContent() {
 // إضافة أو تعديل
 document.getElementById('publishForm').onsubmit = async (e) => {
   e.preventDefault();
-  
-  const { data: { session } = await sb.auth.getSession();
+  const { data: { session } = await sb.auth.getSession(); // ← وعدل هنا
   if (!session) {
     showMsg('سجل دخول اول', 'error');
     return;
