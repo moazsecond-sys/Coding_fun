@@ -79,20 +79,40 @@ async function checkSession() {
   }
 }
 
+<script>
+// ضع مفاتيحك هنا
+const SUPABASE_URL = 'https://xxxx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGc...';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// كود تسجيل الدخول - انسخه كامل
 document.getElementById('loginForm').onsubmit = async (e) => {
-  e.preventDefault(); // ← هذا السطر لازم يكون اول شي
+  e.preventDefault();
+  
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
+  const msg = document.getElementById('msg');
   
-  const { error } = await sb.auth.signInWithPassword({ email, password });
+  msg.className = 'msg';
+  msg.textContent = 'جاري تسجيل الدخول...';
+  
+  const { error } = await sb.auth.signInWithPassword({ 
+    email, 
+    password 
+  });
   
   if (error) {
-    document.getElementById('msg').className = 'msg error';
-    document.getElementById('msg').textContent = 'خطأ: ' + error.message;
+    msg.className = 'msg error';
+    msg.textContent = 'خطأ: ' + error.message;
     return;
   }
   
-  window.location.href = 'home.html';
+  msg.className = 'msg success';
+  msg.textContent = 'تم الدخول! جاري التحويل...';
+  
+  setTimeout(() => {
+    window.location.href = 'home.html';
+  }, 1000);
 };
 </script>
 
