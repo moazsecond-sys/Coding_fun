@@ -42,11 +42,10 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
 
 // نور ثاني من قدام عشان يبين التفاصيل
-const frontLight = new THREE.DirectionalLight(0xffffff, 1);
-frontLight.position.set(0, 0, 5);
-scene.add(frontLight);
-
-    camera.position.z = 5;
+const sideLight = new THREE.DirectionalLight(0xffffff, 0.5);
+sideLight.position.set(5, 0, 0);
+scene.add(sideLight);
+    camera.position.z = 10;
 
 const loader = new FontLoader();
 loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
@@ -66,9 +65,9 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
   // نخلي النص يلف مع المكعب
   function animate() {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-    textMesh.rotation.y += 0.01; // النص يلف بعد
+    cube.rotation.x += 0.015;
+    cube.rotation.y += 0.015;
+    textMesh.rotation.y += 0.015; // النص يلف بعد
     renderer.render(scene, camera);
   }
   animate();
