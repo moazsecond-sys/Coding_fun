@@ -38,6 +38,7 @@ textarea { min-height: 180px; resize: vertical; }
 .stat-box { background: #1a1a1a; padding: 20px; border-radius: 12px; flex: 1; min-width: 120px; text-align: center; }
 .stat-box h3 { font-size: 2.5rem; margin: 0; }
 #msg { text-align: center; font-size: 19px; font-weight: bold; margin-top: 15px; min-height: 30px; }
+.logout { background: #555; width: auto; padding: 12px 20px; font-size: 16px; float: left; margin-bottom: 15px; }
 @media(max-width: 600px) { .actions { float: none; margin-bottom: 10px; } }
 </style>
 </head>
@@ -45,33 +46,47 @@ textarea { min-height: 180px; resize: vertical; }
 <div class="container">
   <h1>📝 لوحة نشر المحتوى الديني</h1>
   
-  <div class="stats">
-    <div class="stat-box"><h3 id="count">0</h3><p>المجموع</p></div>
-    <div class="stat-box"><h3 id="postCount">0</h3><p>مقالات</p></div>
-    <div class="stat-box"><h3 id="qCount">0</h3><p>استفسارات</p></div>
-    <div class="stat-box"><h3 id="thesisCount">0</h3><p>اطروحات</p></div>
+  <!-- 1. صندوق تسجيل الدخول -->
+  <div id="loginBox" class="card">
+    <h3>🔐 تسجيل دخول الادمن</h3>
+    <input type="email" id="email" placeholder="إيميلك" required>
+    <input type="password" id="password" placeholder="كلمة السر" required>
+    <button class="btn" onclick="login()">دخول</button>
+    <div id="loginMsg" style="margin-top:10px; font-size:18px; text-align:center"></div>
   </div>
 
-  <div class="card">
-    <h3 id="formTitle">نشر جديد</h3>
-    <form id="publishForm">
-      <input type="hidden" id="editId">
-      <input type="text" id="title" placeholder="عنوان المقال/الاستفسار" required>
-      <textarea id="content" placeholder="اكتب المحتوى هنا..." required></textarea>
-      <select id="type" required>
-        <option value="">اختر النوع</option>
-        <option value="post">📝 مقال ديني</option>
-        <option value="question">❓ استفسار شرعي</option>
-        <option value="thesis">📚 اطروحة/بحث</option>
-      </select>
-      <button type="submit" class="btn" id="submitBtn">🚀 نشر</button>
-      <button type="button" class="btn btn-danger" id="cancelBtn" style="display:none">إلغاء التعديل</button>
-      <div id="msg"></div>
-    </form>
-  </div>
+  <!-- 2. لوحة الادمن - مخفية لين تسجل دخول -->
+  <div id="adminPanel" style="display:none">
+    <button class="btn logout" onclick="logout()">🚪 تسجيل خروج</button>
+    
+    <div class="stats">
+      <div class="stat-box"><h3 id="count">0</h3><p>المجموع</p></div>
+      <div class="stat-box"><h3 id="postCount">0</h3><p>مقالات</p></div>
+      <div class="stat-box"><h3 id="qCount">0</h3><p>استفسارات</p></div>
+      <div class="stat-box"><h3 id="thesisCount">0</h3><p>اطروحات</p></div>
+    </div>
 
-  <h3>المحتوى المنشور</h3>
-  <div id="contentList"><p style="text-align:center; color:#888">جاري التحميل...</p></div>
+    <div class="card">
+      <h3 id="formTitle">نشر جديد</h3>
+      <form id="publishForm">
+        <input type="hidden" id="editId">
+        <input type="text" id="title" placeholder="عنوان المقال/الاستفسار" required>
+        <textarea id="content" placeholder="اكتب المحتوى هنا..." required></textarea>
+        <select id="type" required>
+          <option value="">اختر النوع</option>
+          <option value="post">📝 مقال ديني</option>
+          <option value="question">❓ استفسار شرعي</option>
+          <option value="thesis">📚 اطروحة/بحث</option>
+        </select>
+        <button type="submit" class="btn" id="submitBtn">🚀 نشر</button>
+        <button type="button" class="btn btn-danger" id="cancelBtn" style="display:none">إلغاء التعديل</button>
+        <div id="msg"></div>
+      </form>
+    </div>
+
+    <h3>المحتوى المنشور</h3>
+    <div id="contentList"><p style="text-align:center; color:#888">جاري التحميل...</p></div>
+  </div>
 </div>
 
 <script>
@@ -79,6 +94,47 @@ textarea { min-height: 180px; resize: vertical; }
 const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
 
 let allContent = [];
+
+// فحص اذا مسجل دخول اول ما يفتح
+sb.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadContent();
+  }
+});
+
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const msg = document.getElementById('loginMsg');
+  
+  if (!email || !password) {
+    msg.innerHTML = '<span style="color:#ef4444">عبي الإيميل وكلمة السر</span>';
+    return;
+  }
+  
+  msg.innerHTML = 'جاري الدخول...';
+  const { data, error } = await sb.auth.signInWithPassword({email, password});
+  
+  if (error) {
+    msg.innerHTML = `<span style="color:#ef4444">خطأ: ${error.message}</span>`;
+    return;
+  }
+  
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+  msg.innerHTML = '';
+  loadContent();
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('loginBox').style.display = 'block';
+  document.getElementById('email').value = '';
+  document.getElementById('password').value = '';
+}
 
 document.getElementById('publishForm').onsubmit = async (e) => {
   e.preventDefault();
@@ -158,7 +214,6 @@ function displayContent(items) {
                     : item.type === 'question' ? '❓ استفسار شرعي' 
                     : '📚 اطروحة/بحث';
     
-    // نهرب الكوتس عشان ما يخرب onclick
     const safeTitle = item.title.replace(/`/g, "'").replace(/"/g, '&quot;');
     const safeContent = item.content.replace(/`/g, "'").replace(/"/g, '&quot;');
     
@@ -178,7 +233,6 @@ function displayContent(items) {
 }
 
 document.getElementById('cancelBtn').onclick = cancelEdit;
-loadContent();
 
 function showMsg(text, type) {
   const msg = document.getElementById('msg');
