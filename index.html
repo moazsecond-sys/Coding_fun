@@ -78,13 +78,6 @@ async function checkSession() {
     window.location.href = 'home.html';
   }
 }
-
-<script>
-// ضع مفاتيحك هنا
-const SUPABASE_URL = 'https://xxxx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGc...';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 // كود تسجيل الدخول - انسخه كامل
 document.getElementById('loginForm').onsubmit = async (e) => {
   e.preventDefault();
