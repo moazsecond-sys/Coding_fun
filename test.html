@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مقياس العناد</title>
+  <!-- نجيب المكتبة من النت، ما تحتاج تنزل شي -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 30px; background: #f5f5f5; }
+    canvas { background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    button { padding: 12px 25px; font-size: 18px; border: none; border-radius: 10px;
+             background: #ff5722; color: white; cursor: pointer; margin-top: 20px; }
+    button:hover { background: #e64a19; }
+  </style>
+</head>
+<body>
+
+  <h1>🌶️ مقياس العناد الرسمي 🌶️</h1>
+  <canvas id="مقياسي" width="400" height="200"></canvas>
+  <br>
+  <button onclick="زد_عنادي()">اضغطني وازداد عناد!</button>
+
+  <script>
+    // نجهز الرسم البياني
+    const ctx = document.getElementById('مقياسي');
+    let مستوى_العناد = [2]; // نبدأ بعناد خفيف
+
+    const الرسم = new Chart(ctx, {
+      type: 'line', // نوعه خط متعرج
+      data: {
+        labels: ['البداية'],
+        datasets: [{
+          label: 'نسبة العناد %',
+          data: مستوى_العناد,
+          borderColor: '#ff5722',
+          borderWidth: 3,
+          tension: 0.4 // يخلي الخط ناعم
+        }]
+      }
+    });
+
+    // هذي الدالة تشتغل كل ما تضغط الزر
+    function زد_عنادي() {
+      let جديد = مستوى_العناد[مستوى_العناد.length - 1] + Math.floor(Math.random() * 15) + 5;
+      if(جديد > 100) جديد = 100; // العناد ما يتعدى 100%
+
+      مستوى_العناد.push(جديد);
+      الرسم.data.labels.push('ضغطة ' + مستوى_العناد.length);
+      الرسم.data.datasets[0].data = مستوى_العناد;
+      الرسم.update(); // حدث الرسم
+    }
+  </script>
+
+</body>
+</html>
