@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>موقعي | مشاريع برمجة وتصميم</title>
+  <title>موقعي | مقالات وأسئلة</title>
   <meta name="theme-color" content="#4ade80">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -27,32 +27,23 @@
     * { box-sizing: border-box; }
     body { background: var(--bg-main); color: var(--text-main); transition: 0.3s; font-family: 'Cairo', sans-serif; margin: 0; }
 
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin: 15px; transition: 0.3s; }
-  .card:hover { border-color: var(--accent); }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin: 15px; transition: 0.3s; }
+    .card:hover { border-color: var(--accent); }
 
     input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; width: 100%; margin: 8px 0; font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
 
-  .btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-  .btn:hover { transform: translateY(-2px); }
-  .btn-small { padding: 6px 12px; font-size: 13px; }
-  .btn-danger { background: var(--danger); color: white; }
-  .btn-edit { background: #3b82f6; color: white; }
+    .btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-small { padding: 6px 12px; font-size: 13px; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-edit { background: #3b82f6; color: white; }
 
-  .btn-publish {
+    .btn-publish {
       background: linear-gradient(135deg, var(--accent), #22c55e);
       color: #000; font-size: 16px; padding: 14px; width: 100%; margin-top: 10px;
-      box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
     }
-  .btn-publish:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-  .file-input-wrapper { position: relative; width: 100%; }
-  .file-input-wrapper input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .file-input-btn {
-      display: block; padding: 12px; background: var(--bg-card); border: 2px dashed var(--accent);
-      border-radius: 10px; text-align: center; color: var(--accent); font-weight: bold; transition: 0.3s;
-    }
-  .file-input-btn:hover { background: rgba(74, 222, 128, 0.1); }
+    .btn-publish:disabled { opacity: 0.6; cursor: not-allowed; }
 
     #toast {
       position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
@@ -64,35 +55,17 @@
     #toast.success { border-left-color: #22c55e; }
     #toast.error { border-left-color: var(--danger); }
 
-  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 999; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin: 25px 15px; }
-  .stat-box { text-align: center; padding: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; transition: 0.3s; }
-  .stat-box:hover { transform: translateY(-5px); border-color: var(--accent); }
-  .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 999; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 25px 15px; }
+    .stat-box { text-align: center; padding: 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; }
+    .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
 
-  .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 15px; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
-  .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-  .filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+    .filter-bar { display: flex; gap: 10px; justify-content: center; margin: 20px 15px; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
+    .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; font-weight: bold; }
+    .filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-  .project-actions { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
-  .like-btn,.fav-btn { display: flex; align-items: center; gap: 5px; padding: 8px 15px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-size: 14px; }
-  .like-btn.liked { background: var(--danger); border-color: var(--danger); color: white; }
-  .fav-btn.favorited { background: #fbbf24; border-color: #fbbf24; color: #000; }
-
-  .badge { background: linear-gradient(135deg, var(--accent), #22c55e); color: #000; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
-  .actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
-
-  .float-btn { position: fixed; bottom: 20px; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transition: 0.3s; z-index: 999; }
-  .float-btn:hover { transform: translateY(-8px) scale(1.1); }
-  .whatsapp { right: 20px; background: #25D366; }
-  .telegram { left: 20px; background: #0088cc; }
-    #backToTop { position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: var(--accent); color: #000; border: none; font-size: 24px; cursor: pointer; display: none; z-index: 998; }
-
-  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; }
-  .modal.show { display: flex; }
-  .modal-content { background: var(--bg-card); padding: 25px; border-radius: 15px; max-width: 400px; width: 90%; text-align: center; }
-  .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-  .modal-buttons button { flex: 1; }
+    .badge { background: linear-gradient(135deg, var(--accent), #22c55e); color: #000; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+    .actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -109,83 +82,41 @@
   </div>
 
   <div class="stats">
-    <div class="stat-box"><h3 id="count">0</h3><p>📦 مشروع</p></div>
-    <div class="stat-box"><h3 id="programmingCount">0</h3><p>💻 برمجة</p></div>
-    <div class="stat-box"><h3 id="designCount">0</h3><p>🎨 تصميم</p></div>
+    <div class="stat-box"><h3 id="count">0</h3><p>📦 الكل</p></div>
+    <div class="stat-box"><h3 id="postCount">0</h3><p>📝 مقالات</p></div>
     <div class="stat-box"><h3 id="qCount">0</h3><p>❓ أسئلة</p></div>
   </div>
 
   <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterProjects('all', event)">🌍 الكل</button>
-    <button class="filter-btn" onclick="filterProjects('programming', event)">💻 برمجة</button>
-    <button class="filter-btn" onclick="filterProjects('design', event)">🎨 تصميم</button>
-    <button class="filter-btn" onclick="filterProjects('articles', event)">📝 مقالات</button>
-    <button class="filter-btn" onclick="filterProjects('general', event)">🌐 عام</button>
-    <button class="filter-btn" onclick="filterProjects('favorites', event)">⭐ مفضلاتي</button>
+    <button class="filter-btn active" onclick="filterContent('all', event)">🌍 الكل</button>
+    <button class="filter-btn" onclick="filterContent('post', event)">📝 مقالات</button>
+    <button class="filter-btn" onclick="filterContent('question', event)">❓ أسئلة</button>
   </div>
 
   <div class="card">
     <form id="postForm">
-      <h3 id="formTitle">نشر مشروع جديد</h3>
-      <input id="title" placeholder="عنوان المشروع" required maxlength="100">
-      <textarea id="description" placeholder="الوصف" rows="4" maxlength="500"></textarea>
-      <div style="text-align:left; font-size:12px; color:var(--text-muted)"><span id="charCount">0</span>/500 حرف</div>
-
-      <label style="display:block; margin:10px 0; color:var(--accent)">🖼️ اختر صورة:</label>
-      <div class="file-input-wrapper">
-        <div class="file-input-btn" id="fileName">📁 اضغط لاختيار صورة</div>
-        <input type="file" id="imageFile" accept="image/*">
-      </div>
-      <img id="imagePreview" style="max-width:100%; border-radius:12px; margin-top:10px; display:none">
-
-      <select id="categories" required>
-        <option value="">اختر القسم</option>
-        <option value="programming">💻 برمجة</option>
-        <option value="design">🎨 تصميم</option>
-        <option value="articles">📝 مقالات</option>
-        <option value="general">🌐 عام</option>
+      <h3 id="formTitle">نشر جديد</h3>
+      <input id="title" placeholder="العنوان" required maxlength="100">
+      <textarea id="content" placeholder="المحتوى أو السؤال" rows="4" required></textarea>
+      
+      <select id="type" required>
+        <option value="">اختر النوع</option>
+        <option value="post">📝 مقال</option>
+        <option value="question">❓ سؤال</option>
       </select>
 
-      <button class="btn-publish" type="submit" id="publishBtn">🚀 نشر المشروع</button>
+      <button class="btn-publish" type="submit" id="publishBtn">🚀 نشر</button>
       <button type="button" class="btn" onclick="cancelEdit()" id="cancelBtn" style="display:none; margin-top:8px; background:var(--text-muted); color:white">إلغاء التعديل</button>
     </form>
   </div>
 
-  <div id="projects"></div>
-
-  <h2 style="margin:40px 15px 0; color:var(--accent)">اسألني أي شيء</h2>
-  <div class="card">
-    <input id="qName" placeholder="اسمك">
-    <textarea id="qText" placeholder="سؤالك" maxlength="300"></textarea>
-    <button class="btn" onclick="askQuestion()">إرسال</button>
-  </div>
-  <div id="questions"></div>
-
-  <div class="modal" id="deleteModal">
-    <div class="modal-content">
-      <h3 style="color:var(--danger)">🗑️ تأكيد الحذف</h3>
-      <p>متأكد تبغى تحذف المشروع؟ العملية لا يمكن التراجع عنها</p>
-      <div class="modal-buttons">
-        <button class="btn btn-danger" onclick="confirmDelete()">نعم احذف</button>
-        <button class="btn" onclick="closeDelete()">إلغاء</button>
-      </div>
-    </div>
-  </div>
-
-  <button id="backToTop" onclick="scrollToTop()">⬆️</button>
-  <a href="https://wa.me/رقمك" target="_blank" class="float-btn whatsapp">💬</a>
-  <a href="https://t.me/يوزرك" target="_blank" class="float-btn telegram">✈️</a>
+  <div id="content-list"></div>
 
   <script>
     const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
     let currentUser = null;
-    let editProjectId = null;
-    let deleteProjectId = null;
-    let uploadedImageUrl = '';
-    let allProjects = [];
-    let isUploading = false;
-
-    const catNames = { 'articles': 'مقالات', 'design': 'تصميم', 'programming': 'برمجة', 'general': 'عام' };
+    let editId = null;
+    let allContent = [];
 
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
@@ -194,303 +125,107 @@
       setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
     }
 
-    window.onscroll = () => {
-      document.getElementById('backToTop').style.display = window.scrollY > 300? 'block' : 'none';
-    };
-    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-    // دالة "منذ كم" الجديدة
     function timeAgo(dateString) {
       const date = new Date(dateString);
-      const now = new Date();
-      const seconds = Math.floor((now - date) / 1000);
-
-      if (seconds < 10) return 'الآن';
+      const seconds = Math.floor((new Date() - date) / 1000);
       if (seconds < 60) return `منذ ${seconds} ثانية`;
-
       const minutes = Math.floor(seconds / 60);
       if (minutes < 60) return `منذ ${minutes} دقيقة`;
-
       const hours = Math.floor(minutes / 60);
       if (hours < 24) return `منذ ${hours} ساعة`;
-
       const days = Math.floor(hours / 24);
-      if (days < 7) return `منذ ${days} يوم`;
-
-      const weeks = Math.floor(days / 7);
-      if (weeks < 4) return `منذ ${weeks} أسبوع`;
-
-      // لو قديم رجع تاريخ
-      return date.toLocaleDateString('ar-EG', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
+      return `منذ ${days} يوم`;
     }
 
     sb.auth.getUser().then(({ data: { user } }) => {
       if (!user) return location.href = 'login.html';
       currentUser = user;
-      loadProjects();
-      loadQuestions();
+      loadContent();
     });
 
     function logout() { sb.auth.signOut(); location.href = 'login.html'; }
 
-    function filterProjects(category, event) {
+    function filterContent(type, event) {
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
-
-      if (category === 'all') displayProjects(allProjects);
-      else if (category === 'favorites') {
-        const favs = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
-        displayProjects(allProjects.filter(p => favs.includes(p.id)));
-      } else {
-        displayProjects(allProjects.filter(p => p.categories === category));
-      }
+      if (type === 'all') displayContent(allContent);
+      else displayContent(allContent.filter(c => c.type === type));
     }
-
-    document.getElementById('description').addEventListener('input', e => {
-      document.getElementById('charCount').textContent = e.target.value.length;
-    });
-
-    document.getElementById('imageFile').addEventListener('change', async function (e) {
-      isUploading = true;
-      document.getElementById('fileName').textContent = '⏳ جاري الرفع...';
-      document.getElementById('publishBtn').disabled = true;
-
-      const file = e.target.files[0];
-      if (!file) { isUploading = false; document.getElementById('publishBtn').disabled = false; return; }
-
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('imagePreview').src = ev.target.result;
-        document.getElementById('imagePreview').style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-
-      const fileName = `project_${Date.now()}_${file.name}`;
-      const { data, error } = await sb.storage.from('AAMAL-IMAGES').upload(fileName, file);
-      if (error) {
-        showToast('خطأ رفع الصورة: ' + error.message, 'error');
-        isUploading = false; document.getElementById('publishBtn').disabled = false;
-        return;
-      }
-      const { data: urlData } = sb.storage.from('AAMAL-IMAGES').getPublicUrl(fileName);
-      uploadedImageUrl = urlData.publicUrl;
-      document.getElementById('fileName').textContent = '✅ تم الرفع';
-      isUploading = false; document.getElementById('publishBtn').disabled = false;
-      showToast('تم رفع الصورة بنجاح ✓');
-    });
 
     document.getElementById('postForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (isUploading) return showToast('انتظر شوي، الصورة قاعدة تترفع ⏳', 'error');
-      if (!uploadedImageUrl) return showToast('ارفع صورة اولاً', 'error');
-
       const data = {
         title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        image_url: uploadedImageUrl,
-        categories: document.getElementById('categories').value,
-        user_id: currentUser.id
+        content: document.getElementById('content').value,
+        type: document.getElementById('type').value
       };
 
-      if (editProjectId) {
-        const { error } = await sb.from('projects').update(data).eq('id', editProjectId);
+      if (editId) {
+        const { error } = await sb.from('content').update(data).eq('id', editId);
         if (error) return showToast('خطأ: ' + error.message, 'error');
-        showToast('تم تعديل المشروع بنجاح ✓');
+        showToast('تم التعديل ✓');
         cancelEdit();
       } else {
-        data.likes = 0;
-        const { error } = await sb.from('projects').insert(data);
+        const { error } = await sb.from('content').insert(data);
         if (error) return showToast('خطأ: ' + error.message, 'error');
-        showToast('تم نشر المشروع بنجاح 🚀');
+        showToast('تم النشر 🚀');
       }
 
       e.target.reset();
-      resetForm();
-      loadProjects();
+      loadContent();
     });
 
-    function resetForm() {
-      document.getElementById('imagePreview').style.display = 'none';
-      document.getElementById('fileName').textContent = '📁 اضغط لاختيار صورة';
-      uploadedImageUrl = '';
-      document.getElementById('charCount').textContent = '0';
-    }
-
     function cancelEdit() {
-      editProjectId = null;
-      document.getElementById('formTitle').textContent = 'نشر مشروع جديد';
-      document.getElementById('publishBtn').textContent = '🚀 نشر المشروع';
+      editId = null;
+      document.getElementById('formTitle').textContent = 'نشر جديد';
+      document.getElementById('publishBtn').textContent = '🚀 نشر';
       document.getElementById('cancelBtn').style.display = 'none';
-      resetForm();
     }
 
-    async function loadProjects() {
-      const { data } = await sb.from('projects').select('*').order('created_at', { ascending: false });
-      allProjects = data || [];
-      document.getElementById('count').textContent = allProjects.length;
-      document.getElementById('programmingCount').textContent = allProjects.filter(p => p.categories === 'programming').length;
-      document.getElementById('designCount').textContent = allProjects.filter(p => p.categories === 'design').length;
-      displayProjects(allProjects);
+    async function loadContent() {
+      const { data } = await sb.from('content').select('*').order('created_at', { ascending: false });
+      allContent = data || [];
+      document.getElementById('count').textContent = allContent.length;
+      document.getElementById('postCount').textContent = allContent.filter(c => c.type === 'post').length;
+      document.getElementById('qCount').textContent = allContent.filter(c => c.type === 'question').length;
+      displayContent(allContent);
     }
 
-    function displayProjects(projects) {
-      const projectsDiv = document.getElementById('projects');
-      if (!projects.length) return projectsDiv.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:40px">لا توجد مشاريع 📭</p>';
+    function displayContent(items) {
+      const div = document.getElementById('content-list');
+      if (!items.length) return div.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:40px">لا يوجد محتوى 📭</p>';
 
-      const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
-      const likedProjects = JSON.parse(localStorage.getItem('liked_' + currentUser.id) || '[]');
-
-      projectsDiv.innerHTML = projects.map(p => {
-        const isLiked = likedProjects.includes(p.id);
-        const isFav = favorites.includes(p.id);
-        const isOwner = p.user_id == currentUser.id;
-
-        return `
+      div.innerHTML = items.map(item => `
         <div class="card">
-          ${isOwner? `
           <div class="actions">
-            <button class="btn btn-edit btn-small" onclick='editProject(${p.id}, "${p.title.replace(/"/g, '&quot;')}", "${(p.description || '').replace(/"/g, '&quot;')}", "${p.categories}", "${p.image_url || ''}")'>✏️ تعديل</button>
-            <button class="btn-danger btn-small" onclick="openDelete(${p.id})">🗑️ حذف</button>
-          </div>` : ''}
-
-          <span class="badge">${catNames[p.categories] || p.categories}</span>
-          <h3 style="margin-top:15px">${p.title}</h3>
-          <p style="line-height:1.6">${p.description || 'بدون وصف'}</p>
-          ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px" loading="lazy">` : ''}
-          <div style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${timeAgo(p.created_at)}</div>
-
-          <div class="project-actions">
-            <button class="like-btn ${isLiked? 'liked' : ''}" onclick="toggleLike(${p.id}, this)">
-              <span>❤️</span><span id="like-count-${p.id}">${p.likes || 0}</span>
-            </button>
-            <button class="fav-btn ${isFav? 'favorited' : ''}" onclick="toggleFavorite(${p.id}, this)">
-              <span>⭐</span><span>مفضلة</span>
-            </button>
+            <button class="btn btn-edit btn-small" onclick='editItem(${item.id}, "${item.title.replace(/"/g, '&quot;')}", "${item.content.replace(/"/g, '&quot;')}", "${item.type}")'>✏️ تعديل</button>
+            <button class="btn-danger btn-small" onclick="deleteItem(${item.id})">🗑️ حذف</button>
           </div>
-
-          <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border)">
-            <h4 style="color:var(--accent)">💬 التعليقات</h4>
-            <div id="comments-${p.id}"></div>
-            <div style="display:flex; gap:8px; margin-top:10px">
-              <input id="comment-${p.id}" placeholder="اكتب تعليقك..." style="flex:1">
-              <button class="btn btn-small" onclick="addComment(${p.id})">إرسال</button>
-            </div>
-          </div>
+          <span class="badge">${item.type === 'post' ? 'مقال' : 'سؤال'}</span>
+          <h3 style="margin-top:15px">${item.title}</h3>
+          <p style="line-height:1.6">${item.content}</p>
+          <div style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${timeAgo(item.created_at)}</div>
         </div>
-      `}).join('');
-      projects.forEach(p => loadComments(p.id));
+      `).join('');
     }
 
-    function editProject(id, title, desc, cat, imgUrl) {
-      editProjectId = id;
+    function editItem(id, title, content, type) {
+      editId = id;
       document.getElementById('title').value = title;
-      document.getElementById('description').value = desc;
-      document.getElementById('categories').value = cat;
-      document.getElementById('charCount').textContent = desc.length;
-      uploadedImageUrl = imgUrl;
-      if (imgUrl) {
-        document.getElementById('imagePreview').src = imgUrl;
-        document.getElementById('imagePreview').style.display = 'block';
-        document.getElementById('fileName').textContent = '✅ صورة موجودة';
-      }
-      document.getElementById('formTitle').textContent = 'تعديل المشروع';
-      document.getElementById('publishBtn').textContent = '💾 حفظ التعديلات';
+      document.getElementById('content').value = content;
+      document.getElementById('type').value = type;
+      document.getElementById('formTitle').textContent = 'تعديل';
+      document.getElementById('publishBtn').textContent = '💾 حفظ';
       document.getElementById('cancelBtn').style.display = 'block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      showToast('جاهز للتعديل ✏️');
     }
 
-    function openDelete(id) {
-      deleteProjectId = id;
-      document.getElementById('deleteModal').classList.add('show');
-    }
-    function closeDelete() {
-      deleteProjectId = null;
-      document.getElementById('deleteModal').classList.remove('show');
-    }
-    async function confirmDelete() {
-      const { error } = await sb.from('projects').delete().eq('id', deleteProjectId);
+    async function deleteItem(id) {
+      if (!confirm('متأكد تبغى تحذف؟')) return;
+      const { error } = await sb.from('content').delete().eq('id', id);
       if (error) return showToast('خطأ: ' + error.message, 'error');
-      closeDelete();
-      showToast('تم حذف المشروع 🗑️');
-      loadProjects();
-    }
-
-    async function toggleLike(projectId, btn) {
-      const likedProjects = JSON.parse(localStorage.getItem('liked_' + currentUser.id) || '[]');
-      const likeCountEl = document.getElementById('like-count-' + projectId);
-      let currentLikes = parseInt(likeCountEl.textContent);
-
-      if (likedProjects.includes(projectId)) {
-        likedProjects.splice(likedProjects.indexOf(projectId), 1);
-        currentLikes--; btn.classList.remove('liked');
-      } else {
-        likedProjects.push(projectId);
-        currentLikes++; btn.classList.add('liked');
-      }
-      localStorage.setItem('liked_' + currentUser.id, JSON.stringify(likedProjects));
-      likeCountEl.textContent = currentLikes;
-      await sb.from('projects').update({ likes: currentLikes }).eq('id', projectId);
-    }
-
-    function toggleFavorite(projectId, btn) {
-      const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
-      if (favorites.includes(projectId)) {
-        favorites.splice(favorites.indexOf(projectId), 1);
-        btn.classList.remove('favorited');
-        showToast('تم حذف من المفضلة');
-      } else {
-        favorites.push(projectId);
-        btn.classList.add('favorited');
-        showToast('أضيف للمفضلة ⭐');
-      }
-      localStorage.setItem('favorites_' + currentUser.id, JSON.stringify(favorites));
-    }
-
-    async function loadComments(project_id) {
-      const { data } = await sb.from('comments').select('*').eq('project_id', project_id).order('id', { ascending: true });
-      document.getElementById(`comments-${project_id}`).innerHTML =
-        data.map(c => `<div style="display:flex; align-items:center; gap:10px; margin:8px 0; padding:8px; background:var(--bg-main); border-radius:8px">
-        <div style="width:35px; height:35px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold">${c.user_name.charAt(0).toUpperCase()}</div>
-        <div><b style="color:var(--accent)">${c.user_name}:</b> <span>${c.comment}</span></div></div>`).join('') || '<p style="color:var(--text-muted); font-size:13px; text-align:center; padding:10px">لا توجد تعليقات</p>';
-    }
-
-    async function addComment(project_id) {
-      const input = document.getElementById(`comment-${project_id}`);
-      if (!input.value.trim()) return;
-      await sb.from('comments').insert({ project_id, user_name: currentUser.email.split('@')[0], comment: input.value.trim() });
-      input.value = '';
-      loadComments(project_id);
-      showToast('تم إضافة التعليق 💬');
-    }
-
-    async function loadQuestions() {
-      const { data } = await sb.from('questions').select('*').order('id', { ascending: false });
-      document.getElementById('qCount').textContent = data.length;
-      document.getElementById('questions').innerHTML = data.map(q => `
-        <div class="card">
-          <div style="display:flex; align-items:center; gap:10px">
-            <div style="width:40px; height:40px; border-radius:50%; background:var(--accent); color:#000; display:flex; align-items:center; justify-content:center; font-weight:bold">${q.user_name.charAt(0)}</div>
-            <b style="color:var(--accent)">${q.user_name}:</b>
-          </div>
-          <p style="margin-top:10px">${q.question}</p>
-          ${q.answer? `<div style="margin-top:10px; padding:10px; background:var(--bg-main); border-right:3px solid var(--accent); border-radius:5px"><b style="color:#22c55e">الرد:</b> ${q.answer}</div>` : ''}
-        </div>
-      `).join('') || '<p style="color:var(--text-muted); text-align:center; padding:20px">لا توجد أسئلة بعد</p>';
-    }
-
-    async function askQuestion() {
-      const name = document.getElementById('qName').value.trim() || 'زائر';
-      const question = document.getElementById('qText').value.trim();
-      if (!question) return showToast('اكتب سؤالك', 'error');
-      await sb.from('questions').insert({ user_name: name, question });
-      document.getElementById('qText').value = '';
-      showToast('تم إرسال سؤالك ✓');
-      loadQuestions();
+      showToast('تم الحذف 🗑️');
+      loadContent();
     }
   </script>
 </body>
