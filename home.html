@@ -17,7 +17,6 @@
       --border: #e0e0e0;
       --accent: #4ade80;
     }
-
     body.dark-mode {
       --bg-main: #0a0a0a;
       --bg-card: #1a1a1a;
@@ -26,114 +25,66 @@
       --border: #333;
       --accent: #4ade80;
     }
-
     body { background: var(--bg-main); color: var(--text-main); transition: 0.3s; scroll-behavior: smooth; }
-.card,.stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; }
-    input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-
+   .card,.stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; padding:20px; margin:15px 0; }
+    input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; width:100%; margin:8px 0; box-sizing:border-box; }
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
-
-.btn-publish {
+   .btn-publish {
       background: linear-gradient(135deg, var(--accent), #22c55e);
-      color: #000;
-      font-weight: bold;
-      font-size: 16px;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
+      color: #000; font-weight: bold; font-size: 16px; padding: 14px; border: none;
+      border-radius: 10px; cursor: pointer; transition: 0.3s; width:100%; margin-top:10px;
       box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
     }
-.btn-publish:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
-
-.file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
-.file-input-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.file-input-btn {
-      display: block; padding: 12px; background: var(--bg-card);
-      border: 2px dashed var(--accent); border-radius: 10px;
-      text-align: center; color: var(--accent); font-weight: bold;
-      cursor: pointer; transition: 0.3s;
+   .btn-publish:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
+   .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+   .file-input-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+   .file-input-btn {
+      display: block; padding: 12px; background: var(--bg-card); border: 2px dashed var(--accent);
+      border-radius: 10px; text-align: center; color: var(--accent); font-weight: bold; cursor: pointer; transition: 0.3s;
     }
-.file-input-btn:hover { background: rgba(74, 222, 128, 0.1); border-style: solid; }
-
+   .file-input-btn:hover { background: rgba(74, 222, 128, 0.1); border-style: solid; }
     #backToTop {
-      position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px;
-      border-radius: 50%; background: var(--accent); color: #000; border: none;
-      font-size: 24px; cursor: pointer; display: none; z-index: 998;
-      box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4); transition: 0.3s;
+      position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px; border-radius: 50%;
+      background: var(--accent); color: #000; border: none; font-size: 24px; cursor: pointer;
+      display: none; z-index: 998; box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4); transition: 0.3s;
     }
     #backToTop:hover { transform: translateY(-5px) scale(1.1); }
-
     #toast {
-      position: fixed; top: 20px; left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      background: var(--bg-card); color: var(--text-main);
-      padding: 15px 25px; border-radius: 10px; border-left: 4px solid var(--accent);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 10001;
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+      background: var(--bg-card); color: var(--text-main); padding: 15px 25px; border-radius: 10px;
+      border-left: 4px solid var(--accent); box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 10001;
       opacity: 0; transition: 0.4s; min-width: 250px; text-align: center;
     }
     #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast.success { border-left-color: #22c55e; }
     #toast.error { border-left-color: #ef4444; }
-
-.typing {
-      overflow: hidden; border-left: 3px solid var(--accent);
-      white-space: nowrap; animation: typing 2s steps(20), blink 0.7s step-end infinite;
-    }
+   .typing { overflow: hidden; border-left: 3px solid var(--accent); white-space: nowrap; animation: typing 2s steps(20), blink 0.7s step-end infinite; }
     @keyframes typing { from { width: 0 } to { width: 100% } }
     @keyframes blink { 50% { border-left-color: transparent } }
-
-.project-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      padding-top: 15px;
-      border-top: 1px solid var(--border);
+   .project-actions { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); }
+   .like-btn,.fav-btn {
+      display: flex; align-items: center; gap: 5px; padding: 8px 15px; border: 2px solid var(--border);
+      background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-size: 14px;
     }
-.like-btn,.fav-btn {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 8px 15px;
-      border: 2px solid var(--border);
-      background: transparent;
-      color: var(--text-main);
-      border-radius: 25px;
-      cursor: pointer;
-      transition: 0.3s;
-      font-size: 14px;
-    }
-.like-btn.liked {
-      background: #ef4444;
-      border-color: #ef4444;
-      color: white;
-    }
-.fav-btn.favorited {
-      background: #fbbf24;
-      border-color: #fbbf24;
-      color: #000;
-    }
-.like-btn:hover,.fav-btn:hover { transform: scale(1.05); }
-
-    @keyframes heartBeat {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-      100% { transform: scale(1); }
-    }
-.heart-animation {
-      animation: heartBeat 0.5s ease;
-    }
-
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 25px 0; }
-.stat-box { text-align: center; padding: 20px; transition: 0.3s; }
-.stat-box:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2); border-color: var(--accent); }
-.stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
-
-.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 0; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
-.filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-.filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: scale(1.05); }
+   .like-btn.liked { background: #ef4444; border-color: #ef4444; color: white; }
+   .fav-btn.favorited { background: #fbbf24; border-color: #fbbf24; color: #000; }
+   .like-btn:hover,.fav-btn:hover { transform: scale(1.05); }
+    @keyframes heartBeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+   .heart-animation { animation: heartBeat 0.5s ease; }
+   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 25px 0; }
+   .stat-box { text-align: center; padding: 20px; transition: 0.3s; }
+   .stat-box:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2); border-color: var(--accent); }
+   .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
+   .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 0; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
+   .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+   .filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: scale(1.05); }
+   .header { display:flex; justify-content:space-between; align-items:center; padding:15px; background:var(--bg-card); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:999; }
+   .btn { padding:8px 16px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
+   .btn-small { padding:6px 12px; font-size:13px; }
+   .btn-danger { background:#ef4444; color:white; }
+   .btn-edit { background:#3b82f6; color:white; }
+   .char-count { text-align:left; font-size:12px; color:var(--text-muted); margin-top:-5px; }
   </style>
 </head>
 <body>
@@ -158,12 +109,12 @@
   </div>
 
   <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterProjects('all')">🌍 الكل</button>
-    <button class="filter-btn" onclick="filterProjects('programming')">💻 برمجة</button>
-    <button class="filter-btn" onclick="filterProjects('design')">🎨 تصميم</button>
-    <button class="filter-btn" onclick="filterProjects('articles')">📝 مقالات</button>
-    <button class="filter-btn" onclick="filterProjects('general')">🌐 عام</button>
-    <button class="filter-btn" onclick="filterProjects('favorites')">⭐ مفضلاتي</button>
+    <button class="filter-btn active" onclick="filterProjects('all', event)">🌍 الكل</button>
+    <button class="filter-btn" onclick="filterProjects('programming', event)">💻 برمجة</button>
+    <button class="filter-btn" onclick="filterProjects('design', event)">🎨 تصميم</button>
+    <button class="filter-btn" onclick="filterProjects('articles', event)">📝 مقالات</button>
+    <button class="filter-btn" onclick="filterProjects('general', event)">🌐 عام</button>
+    <button class="filter-btn" onclick="filterProjects('favorites', event)">⭐ مفضلاتي</button>
   </div>
 
   <div class="card">
@@ -205,6 +156,7 @@
   <button id="backToTop" onclick="scrollToTop()">⬆️</button>
 
   <script>
+    // ⚠️ حط مفتاحك هنا
     const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
     let currentUser = null;
     let editProjectId = null;
@@ -227,11 +179,6 @@
     };
     function scrollToTop() { window.scrollTo({top: 0, behavior: 'smooth'}); }
 
-    if(localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark-mode');
-      document.getElementById('darkModeToggle').checked = true;
-    }
-
     sb.auth.getUser().then(({data:{user}})=>{
       if(!user) return location.href='login.html';
       currentUser = user;
@@ -240,15 +187,9 @@
     });
 
     function logout(){ sb.auth.signOut(); location.href='login.html'; }
-    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+    function openSettings() { alert('قريباً ⚙️'); }
 
-    document.getElementById('darkModeToggle').addEventListener('change', function(){
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', this.checked);
-    });
-
-    function filterProjects(category){
+    function filterProjects(category, event){
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
 
@@ -267,9 +208,6 @@
     document.getElementById('description').addEventListener('input', e => {
       document.getElementById('charCount').textContent = e.target.value.length;
     });
-    document.getElementById('editDesc').addEventListener('input', e => {
-      document.getElementById('editCharCount').textContent = e.target.value.length;
-    });
 
     document.getElementById('imageFile').addEventListener('change', async function(e){
       const file = e.target.files[0];
@@ -282,7 +220,6 @@
       };
       reader.readAsDataURL(file);
 
-      // تم التعديل هنا: استخدم AAMAL-IMAGES بدل projects
       const fileName = `project_${Date.now()}_${file.name}`;
       const {data, error} = await sb.storage.from('AAMAL-IMAGES').upload(fileName, file);
       if(error) return showToast('خطأ رفع الصورة: ' + error.message, 'error');
@@ -291,26 +228,10 @@
       showToast('تم رفع الصورة بنجاح ✓');
     });
 
-    document.getElementById('editImageFile').addEventListener('change', async function(e){
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('editImagePreview').src = ev.target.result;
-        document.getElementById('editImagePreview').style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-
-      // تم التعديل هنا: استخدم AAMAL-IMAGES بدل projects
-      const fileName = `project_${Date.now()}_${file.name}`;
-      const {data, error} = await sb.storage.from('AAMAL-IMAGES').upload(fileName, file);
-      if(error) return showToast('خطأ رفع الصورة: ' + error.message, 'error');
-      const {data: urlData} = sb.storage.from('AAMAL-IMAGES').getPublicUrl(fileName);
-      editUploadedImageUrl = urlData.publicUrl;
-    });
-
     document.getElementById('postForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
+      if(!uploadedImageUrl) return showToast('ارفع صورة اولاً', 'error');
+
       const {error} = await sb.from('projects').insert({
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
@@ -319,18 +240,20 @@
         user_id: currentUser.id,
         likes: 0
       });
+
       if(error) return showToast('خطأ: '+error.message, 'error');
+
       e.target.reset();
       document.getElementById('imagePreview').style.display = 'none';
       document.getElementById('fileName').textContent = '📁 اضغط لاختيار صورة';
       uploadedImageUrl = '';
       document.getElementById('charCount').textContent = '0';
-      showToast('تم نشر المشروع بنجاح 🚀');
+      showToast('تم نشر المشروع بنجاح 🚀', 'success');
       loadProjects();
     });
 
     async function loadProjects(){
-      const {data} = await sb.from('projects').select('*').order('id',{ascending:false});
+      const {data} = await sb.from('projects').select('*').order('created_at',{ascending:false});
       allProjects = data || [];
       document.getElementById('count').textContent = allProjects.length;
       document.getElementById('programmingCount').textContent = allProjects.filter(p => p.categories === 'programming').length;
@@ -412,7 +335,6 @@
 
     function toggleFavorite(projectId, btn) {
       const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
-
       if(favorites.includes(projectId)) {
         favorites.splice(favorites.indexOf(projectId), 1);
         btn.classList.remove('favorited');
@@ -422,54 +344,11 @@
         btn.classList.add('favorited');
         showToast('أضيف للمفضلة ⭐');
       }
-
       localStorage.setItem('favorites_' + currentUser.id, JSON.stringify(favorites));
     }
 
     function formatDate(d){
       return new Date(d).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    }
-
-    function openDelete(id){
-      deleteProjectId = id;
-      document.getElementById('deleteModal').style.display = 'flex';
-    }
-    function closeDelete(){
-      document.getElementById('deleteModal').style.display = 'none';
-      deleteProjectId = null;
-    }
-    async function confirmDelete(){
-      await sb.from('projects').delete().eq('id',deleteProjectId);
-      closeDelete();
-      showToast('تم حذف المشروع 🗑️', 'success');
-      loadProjects();
-    }
-
-    function editProject(id, title, desc, img){
-      editProjectId = id;
-      document.getElementById('editTitle').value = title;
-      document.getElementById('editDesc').value = desc;
-      if(img) {
-        document.getElementById('editImagePreview').src = img;
-        document.getElementById('editImagePreview').style.display = 'block';
-        editUploadedImageUrl = img;
-      }
-      document.getElementById('editCharCount').textContent = desc.length;
-      document.getElementById('editModal').style.display = 'flex';
-    }
-    function closeEdit(){ document.getElementById('editModal').style.display = 'none'; }
-
-    async function saveEdit(){
-      const newTitle = document.getElementById('editTitle').value;
-      const newDesc = document.getElementById('editDesc').value;
-      const newImg = editUploadedImageUrl || document.getElementById('editImagePreview').src;
-      if(!newTitle.trim()) return showToast('العنوان مطلوب', 'error');
-      await sb.from('projects').update({
-        title:newTitle, description:newDesc, image_url:newImg
-      }).eq('id', editProjectId);
-      closeEdit();
-      showToast('تم التعديل بنجاح ✓');
-      loadProjects();
     }
 
     async function loadComments(project_id){
@@ -519,18 +398,18 @@
   </script>
 
   <style>
-.float-btn{
+   .float-btn{
       position:fixed; bottom:20px; width:55px; height:55px;
       border-radius:50%; display:flex; align-items:center; justify-content:center;
       font-size:28px; color:#fff; text-decoration:none;
       box-shadow:0 4px 20px rgba(0,0,0,0.5); transition:0.3s; z-index:999;
     }
-.float-btn:hover{ transform:translateY(-8px) scale(1.1); }
-.whatsapp{ right:20px; background:#25D366; }
-.telegram{ left:20px; background:#0088cc; }
+   .float-btn:hover{ transform:translateY(-8px) scale(1.1); }
+   .whatsapp{ right:20px; background:#25D366; }
+   .telegram{ left:20px; background:#0088cc; }
   </style>
 
-  <a href="#" class="float-btn whatsapp" title="واتساب">💬</a>
-  <a href="#" class="float-btn telegram" title="تلجرام">✈️</a>
+  <a href="https://wa.me/رقمك" target="_blank" class="float-btn whatsapp">💬</a>
+  <a href="https://t.me/يوزرك" target="_blank" class="float-btn telegram">✈️</a>
 </body>
 </html>
