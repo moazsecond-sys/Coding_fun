@@ -28,15 +28,13 @@
     }
 
     body { background: var(--bg-main); color: var(--text-main); transition: 0.3s; scroll-behavior: smooth; }
- .card,.stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; }
+.card,.stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 15px; }
     input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
 
     ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-main); }
     ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
-    /* زر نشر متوهج */
- .btn-publish {
+.btn-publish {
       background: linear-gradient(135deg, var(--accent), #22c55e);
       color: #000;
       font-weight: bold;
@@ -48,120 +46,102 @@
       transition: 0.3s;
       box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
     }
- .btn-publish:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 0 30px rgba(74, 222, 128, 0.8);
-    }
+.btn-publish:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
 
-    /* زر رفع ملف مخصص */
- .file-input-wrapper {
-      position: relative;
-      overflow: hidden;
-      display: inline-block;
-      width: 100%;
+.file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+.file-input-wrapper input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.file-input-btn {
+      display: block; padding: 12px; background: var(--bg-card);
+      border: 2px dashed var(--accent); border-radius: 10px;
+      text-align: center; color: var(--accent); font-weight: bold;
+      cursor: pointer; transition: 0.3s;
     }
- .file-input-wrapper input[type=file] {
-      position: absolute;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-    }
- .file-input-btn {
-      display: block;
-      padding: 12px;
-      background: var(--bg-card);
-      border: 2px dashed var(--accent);
-      border-radius: 10px;
-      text-align: center;
-      color: var(--accent);
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
- .file-input-btn:hover {
-      background: rgba(74, 222, 128, 0.1);
-      border-style: solid;
-    }
+.file-input-btn:hover { background: rgba(74, 222, 128, 0.1); border-style: solid; }
 
-    /* زر العودة للأعلى */
     #backToTop {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #000;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      display: none;
-      z-index: 998;
-      box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
-      transition: 0.3s;
+      position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px;
+      border-radius: 50%; background: var(--accent); color: #000; border: none;
+      font-size: 24px; cursor: pointer; display: none; z-index: 998;
+      box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4); transition: 0.3s;
     }
     #backToTop:hover { transform: translateY(-5px) scale(1.1); }
 
-    /* Toast إشعارات */
     #toast {
-      position: fixed;
-      top: 20px;
-      left: 50%;
+      position: fixed; top: 20px; left: 50%;
       transform: translateX(-50%) translateY(-100px);
-      background: var(--bg-card);
-      color: var(--text-main);
-      padding: 15px 25px;
-      border-radius: 10px;
-      border-left: 4px solid var(--accent);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-      z-index: 10001;
-      opacity: 0;
-      transition: 0.4s;
-      min-width: 250px;
-      text-align: center;
+      background: var(--bg-card); color: var(--text-main);
+      padding: 15px 25px; border-radius: 10px; border-left: 4px solid var(--accent);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 10001;
+      opacity: 0; transition: 0.4s; min-width: 250px; text-align: center;
     }
-    #toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast.success { border-left-color: #22c55e; }
     #toast.error { border-left-color: #ef4444; }
 
-    /* تأثير كتابة */
- .typing {
-      overflow: hidden;
-      border-left: 3px solid var(--accent);
-      white-space: nowrap;
-      animation: typing 2s steps(20), blink 0.7s step-end infinite;
+.typing {
+      overflow: hidden; border-left: 3px solid var(--accent);
+      white-space: nowrap; animation: typing 2s steps(20), blink 0.7s step-end infinite;
     }
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes blink { 50% { border-left-color: transparent } }
+
+    /* أزرار التفاعل */
+.project-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
     }
-    @keyframes blink {
-      50% { border-left-color: transparent }
+.like-btn,.fav-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 15px;
+      border: 2px solid var(--border);
+      background: transparent;
+      color: var(--text-main);
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
+    }
+.like-btn.liked {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: white;
+    }
+.fav-btn.favorited {
+      background: #fbbf24;
+      border-color: #fbbf24;
+      color: #000;
+    }
+.like-btn:hover,.fav-btn:hover { transform: scale(1.05); }
+
+    /* تأثير القلب */
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+.heart-animation {
+      animation: heartBeat 0.5s ease;
     }
 
- .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 25px 0; }
- .stat-box { text-align: center; padding: 20px; transition: 0.3s; }
- .stat-box:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2); border-color: var(--accent); }
- .stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 25px 0; }
+.stat-box { text-align: center; padding: 20px; transition: 0.3s; }
+.stat-box:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(74, 222, 128, 0.2); border-color: var(--accent); }
+.stat-box h3 { font-size: 2rem; color: var(--accent); margin: 0; }
 
- .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 0; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
- .filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
- .filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: scale(1.05); }
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 20px 0; padding: 15px; background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border); }
+.filter-btn { padding: 8px 16px; border: 2px solid var(--border); background: transparent; color: var(--text-main); border-radius: 25px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+.filter-btn.active,.filter-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); transform: scale(1.05); }
   </style>
 </head>
 <body>
 
-  <!-- Toast الإشعارات -->
   <div id="toast"></div>
 
-  <!-- الهيدر -->
   <div class="header">
     <a href="contact.html" class="btn btn-small" style="background:var(--accent)">📧 تواصل</a>
     <h1 class="typing">🍏 موقعي</h1>
@@ -172,7 +152,6 @@
     </div>
   </div>
 
-  <!-- الإحصائيات -->
   <div class="stats">
     <div class="stat-box"><h3 id="count">0</h3><p>📦 مشروع</p></div>
     <div class="stat-box"><h3 id="programmingCount">0</h3><p>💻 برمجة</p></div>
@@ -180,16 +159,15 @@
     <div class="stat-box"><h3 id="qCount">0</h3><p>❓ أسئلة</p></div>
   </div>
 
-  <!-- فلترة الأقسام -->
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterProjects('all')">🌍 الكل</button>
     <button class="filter-btn" onclick="filterProjects('programming')">💻 برمجة</button>
     <button class="filter-btn" onclick="filterProjects('design')">🎨 تصميم</button>
     <button class="filter-btn" onclick="filterProjects('articles')">📝 مقالات</button>
     <button class="filter-btn" onclick="filterProjects('general')">🌐 عام</button>
+    <button class="filter-btn" onclick="filterProjects('favorites')">⭐ مفضلاتي</button>
   </div>
 
-  <!-- فورم النشر -->
   <div class="card">
     <form id="postForm">
       <h3>نشر مشروع جديد</h3>
@@ -218,7 +196,6 @@
 
   <div id="projects"></div>
 
-  <!-- قسم الأسئلة -->
   <h2 style="margin-top:40px; color:var(--accent)">اسألني أي شيء</h2>
   <div class="card">
     <input id="qName" placeholder="اسمك">
@@ -227,10 +204,7 @@
   </div>
   <div id="questions"></div>
 
-  <!-- زر العودة للأعلى -->
   <button id="backToTop" onclick="scrollToTop()">⬆️</button>
-
-  <!-- باقي المودالات زي ما هي... -->
 
   <script>
     const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
@@ -243,24 +217,17 @@
 
     const catNames = {'articles':'مقالات','design':'تصميم','programming':'برمجة','general':'عام'};
 
-    // دالة Toast
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
       toast.textContent = message;
       toast.className = 'show ' + type;
-      setTimeout(() => {
-        toast.className = toast.className.replace('show', '');
-      }, 3000);
+      setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
     }
 
-    // زر العودة للأعلى
     window.onscroll = function() {
-      document.getElementById('backToTop').style.display =
-        window.scrollY > 300? 'block' : 'none';
+      document.getElementById('backToTop').style.display = window.scrollY > 300? 'block' : 'none';
     };
-    function scrollToTop() {
-      window.scrollTo({top: 0, behavior: 'smooth'});
-    }
+    function scrollToTop() { window.scrollTo({top: 0, behavior: 'smooth'}); }
 
     if(localStorage.getItem('darkMode') === 'true') {
       document.body.classList.add('dark-mode');
@@ -286,8 +253,13 @@
     function filterProjects(category){
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
+
       if(category === 'all') {
         displayProjects(allProjects);
+      } else if(category === 'favorites') {
+        const favs = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
+        const filtered = allProjects.filter(p => favs.includes(p.id));
+        displayProjects(filtered);
       } else {
         const filtered = allProjects.filter(p => p.categories === category);
         displayProjects(filtered);
@@ -301,41 +273,22 @@
       document.getElementById('editCharCount').textContent = e.target.value.length;
     });
 
-    // اسم الملف المختار
     document.getElementById('imageFile').addEventListener('change', async function(e){
       const file = e.target.files[0];
       if(!file) return;
       document.getElementById('fileName').textContent = '✅ ' + file.name;
-
       const reader = new FileReader();
       reader.onload = ev => {
         document.getElementById('imagePreview').src = ev.target.result;
         document.getElementById('imagePreview').style.display = 'block';
       };
       reader.readAsDataURL(file);
-
       const fileName = `${Date.now()}_${file.name}`;
       const {data, error} = await sb.storage.from('projects').upload(fileName, file);
       if(error) return showToast('خطأ رفع الصورة: ' + error.message, 'error');
       const {data: urlData} = sb.storage.from('projects').getPublicUrl(fileName);
       uploadedImageUrl = urlData.publicUrl;
       showToast('تم رفع الصورة بنجاح ✓');
-    });
-
-    document.getElementById('editImageFile').addEventListener('change', async function(e){
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('editImagePreview').src = ev.target.result;
-        document.getElementById('editImagePreview').style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-      const fileName = `${Date.now()}_${file.name}`;
-      const {data, error} = await sb.storage.from('projects').upload(fileName, file);
-      if(error) return showToast('خطأ رفع الصورة: ' + error.message, 'error');
-      const {data: urlData} = sb.storage.from('projects').getPublicUrl(fileName);
-      editUploadedImageUrl = urlData.publicUrl;
     });
 
     document.getElementById('postForm').addEventListener('submit', async (e)=>{
@@ -345,7 +298,8 @@
         description: document.getElementById('description').value,
         image_url: uploadedImageUrl,
         categories: document.getElementById('categories').value,
-        user_id: currentUser.id
+        user_id: currentUser.id,
+        likes: 0
       });
       if(error) return showToast('خطأ: '+error.message, 'error');
       e.target.reset();
@@ -369,7 +323,14 @@
     function displayProjects(projects){
       const projectsDiv = document.getElementById('projects');
       if(!projects.length) return projectsDiv.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:40px">لا توجد مشاريع في هذا القسم 📭</p>';
-      projectsDiv.innerHTML = projects.map(p=>`
+
+      const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
+      const likedProjects = JSON.parse(localStorage.getItem('liked_' + currentUser.id) || '[]');
+
+      projectsDiv.innerHTML = projects.map(p=>{
+        const isLiked = likedProjects.includes(p.id);
+        const isFav = favorites.includes(p.id);
+        return `
         <div class="card" data-category="${p.categories}">
           <div class="actions">
             ${p.user_id == currentUser.id? `
@@ -382,6 +343,19 @@
           <p style="line-height:1.6">${p.description || 'بدون وصف'}</p>
           ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px">` : ''}
           <div class="date" style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${formatDate(p.created_at)}</div>
+
+          <!-- أزرار اللايك والمفضلة -->
+          <div class="project-actions">
+            <button class="like-btn ${isLiked? 'liked' : ''}" onclick="toggleLike(${p.id}, this)">
+              <span class="${isLiked? 'heart-animation' : ''}">❤️</span>
+              <span id="like-count-${p.id}">${p.likes || 0}</span>
+            </button>
+            <button class="fav-btn ${isFav? 'favorited' : ''}" onclick="toggleFavorite(${p.id}, this)">
+              <span>⭐</span>
+              <span>مفضلة</span>
+            </button>
+          </div>
+
           <div class="comments-section" style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border)">
             <h4 style="color:var(--accent)">💬 التعليقات</h4>
             <div id="comments-${p.id}"></div>
@@ -391,8 +365,52 @@
             </div>
           </div>
         </div>
-      `).join('');
+      `}).join('');
       projects.forEach(p=>loadComments(p.id));
+    }
+
+    // دالة اللايك
+    async function toggleLike(projectId, btn) {
+      const likedProjects = JSON.parse(localStorage.getItem('liked_' + currentUser.id) || '[]');
+      const likeCountEl = document.getElementById('like-count-' + projectId);
+      let currentLikes = parseInt(likeCountEl.textContent);
+
+      if(likedProjects.includes(projectId)) {
+        // إلغاء اللايك
+        likedProjects.splice(likedProjects.indexOf(projectId), 1);
+        currentLikes--;
+        btn.classList.remove('liked');
+        showToast('تم إلغاء الإعجاب');
+      } else {
+        // إضافة لايك
+        likedProjects.push(projectId);
+        currentLikes++;
+        btn.classList.add('liked');
+        btn.querySelector('span').classList.add('heart-animation');
+        setTimeout(() => btn.querySelector('span').classList.remove('heart-animation'), 500);
+        showToast('أعجبك المشروع ❤️');
+      }
+
+      localStorage.setItem('liked_' + currentUser.id, JSON.stringify(likedProjects));
+      likeCountEl.textContent = currentLikes;
+      await sb.from('projects').update({likes: currentLikes}).eq('id', projectId);
+    }
+
+    // دالة المفضلة
+    function toggleFavorite(projectId, btn) {
+      const favorites = JSON.parse(localStorage.getItem('favorites_' + currentUser.id) || '[]');
+
+      if(favorites.includes(projectId)) {
+        favorites.splice(favorites.indexOf(projectId), 1);
+        btn.classList.remove('favorited');
+        showToast('تم حذف من المفضلة');
+      } else {
+        favorites.push(projectId);
+        btn.classList.add('favorited');
+        showToast('أضيف للمفضلة ⭐');
+      }
+
+      localStorage.setItem('favorites_' + currentUser.id, JSON.stringify(favorites));
     }
 
     function formatDate(d){
@@ -487,7 +505,6 @@
     }
   </script>
 
-  <!-- أزرار التواصل -->
   <style>
 .float-btn{
       position:fixed; bottom:20px; width:55px; height:55px;
