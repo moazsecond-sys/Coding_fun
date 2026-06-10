@@ -149,19 +149,19 @@ async function loadContent() {
 }
 
 // إضافة أو تعديل
+// إضافة أو تعديل
 document.getElementById('publishForm').onsubmit = async (e) => {
   e.preventDefault();
-  const { data: { session } = await sb.auth.getSession(); // ← وعدل هنا
+  const { data: { session } = await sb.auth.getSession();
   if (!session) {
     showMsg('سجل دخول اول', 'error');
     return;
   }
-  
+
   const id = document.getElementById('editId').value;
   const title = document.getElementById('title').value;
   const content = document.getElementById('content').value;
   const type = document.getElementById('type').value;
-  
   let error;
   
   if (id) {
