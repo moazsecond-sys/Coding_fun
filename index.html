@@ -2,108 +2,51 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل الدخول - متجر سيف</title>
+  <title>متجر سيف - المحتوى الديني</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .login-box {
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      width: 90%;
-      max-width: 400px;
-    }
-    h2 { text-align: center; color: #667eea; margin-bottom: 30px; }
-    input {
-      width: 100%;
-      padding: 15px;
-      margin: 10px 0;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-    input:focus { border-color: #667eea; outline: none; }
-    button {
-      width: 100%;
-      padding: 15px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover { background: #5568d3; }
-    .msg {
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      text-align: center;
-      display: none;
-    }
-    .msg.error { background: #ffe0e0; color: #d32f2f; display: block; }
-    .msg.success { background: #e0ffe0; color: #2e7d32; display: block; }
+    body { font-family: 'Tajawal', sans-serif; background: #0a0a0a; color: white; padding: 20px; }
+    h1 { text-align: center; color: #4ade80; margin: 30px 0; }
+    .container { max-width: 700px; margin: auto; }
+    .post { background: #1a1a1a; padding: 20px; border-radius: 15px; margin: 15px 0; border: 1px solid #333; }
+    .category { color: #4ade80; font-weight: bold; }
+    .date { color: #666; font-size: 13px; margin-top: 10px; }
+    .admin-link { text-align: center; margin-top: 40px; }
+    .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>تسجيل الدخول</h2>
-    <form id="loginForm" onsubmit="return false">
-      <input type="email" id="email" placeholder="الايميل" required>
-      <input type="password" id="password" placeholder="كلمة السر" required>
-      <button type="submit">دخول</button>
-      <div id="msg"></div>
-    </form>
+  <h1>📖 المحتوى الديني</h1>
+  <div class="container" id="postsContainer">جاري التحميل...</div>
+  
+  <div class="admin-link">
+    <a href="admin.html">لوحة التحكم</a>
   </div>
 
   <script>
-    // ===== حط بيانات Supabase حقتك هنا =====
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ===== كود تسجيل الدخول =====
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    async function loadPosts() {
+      const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+      const container = document.getElementById('postsContainer');
       
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const msg = document.getElementById('msg');
-      
-      msg.className = 'msg';
-      msg.textContent = 'جاري تسجيل الدخول...';
-      msg.style.display = 'block';
-      
-      const { data, error } = await sb.auth.signInWithPassword({ 
-        email: email, 
-        password: password 
-      });
-      
-      if (error) {
-        msg.className = 'msg error';
-        msg.textContent = 'خطأ: ' + error.message;
+      if(!data || data.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#666;">لا يوجد محتوى بعد</p>';
         return;
       }
       
-      msg.className = 'msg success';
-      msg.textContent = 'تم الدخول بنجاح! جاري التحويل...';
-      
-      setTimeout(() => {
-        window.location.href = 'home.html';
-      }, 1000);
-    });
+      container.innerHTML = data.map(p => `
+        <div class="post">
+          <h3>${p.title} <span class="category">- ${p.category}</span></h3>
+          <p style="line-height: 1.8; margin: 15px 0;">${p.content}</p>
+          <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
+        </div>
+      `).join('');
+    }
+
+    loadPosts();
   </script>
 </body>
 </html>
