@@ -3,56 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>موقعي | مشاريع برمجة وتصميم</title>
-  <meta name="description" content="أفضل المشاريع البرمجية والتصاميم والمقالات التقنية">
   <meta name="theme-color" content="#4ade80">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* تحسينات الأزرار */
+    /* الوضع النهاري */
+    :root {
+      --bg-main: #ffffff;
+      --bg-card: #f5f5f5;
+      --text-main: #1a1a1a;
+      --text-muted: #666;
+      --border: #ddd;
+    }
+
+    /* الوضع الليلي */
+    body.dark-mode {
+      --bg-main: #0a0a0a;
+      --bg-card: #1a1a1a;
+      --text-main: #f0f0f0;
+      --text-muted: #aaa;
+      --border: #333;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    body { background: var(--bg-main); color: var(--text-main); transition: 0.3s; }
+   .card,.stat-box { background: var(--bg-card); border: 1px solid var(--border); }
+    input, textarea, select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); }
+
    .btn,.btn-danger,.btn-small {
       transition: all 0.3s ease;
       cursor: pointer;
     }
-   .btn:hover,.btn-small:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(74, 222, 128, 0.3);
-    }
-   .btn-danger:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+   .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(74, 222, 128, 0.3); }
+
+    /* معاينة الصورة */
+    #imagePreview {
+      max-width: 100%;
+      border-radius: 12px;
+      margin-top: 10px;
+      display: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
 
-    /* الكرت يطلع بحركة ناعمة */
-   .card {
-      animation: fadeInUp 0.5s ease;
+    /* مودال الإعدادات */
+    #settingsModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
     }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+   .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
     }
-
-    /* عداد الحروف */
-   .char-count {
-      font-size: 12px;
-      color: #666;
-      text-align: left;
-      margin-top: -8px;
-      margin-bottom: 10px;
+   .switch input { opacity: 0; width: 0; height: 0; }
+   .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition:.4s;
+      border-radius: 34px;
     }
+   .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition:.4s;
+      border-radius: 50%;
+    }
+    input:checked +.slider { background-color: #4ade80; }
+    input:checked +.slider:before { transform: translateX(26px); }
   </style>
 </head>
 <body>
 
-  <!-- الهيدر بدون إيميل للخصوصية -->
+  <!-- الهيدر مع زر الإعدادات -->
   <div class="header">
     <a href="contact.html" class="btn btn-small" style="background:#4ade80">📧 تواصل</a>
     <h1>🍏 موقعي</h1>
     <div>
       <a href="categories.html" class="btn btn-small">📂 الأقسام</a>
+      <button class="btn btn-small" onclick="openSettings()">⚙️ إعدادات</button>
       <button class="btn-danger btn-small" onclick="logout()">خروج</button>
     </div>
   </div>
@@ -64,14 +111,18 @@
     <div class="stat-box"><h3 id="qCount">0</h3><p>أسئلة</p></div>
   </div>
 
-  <!-- فورم النشر مع عداد حروف -->
+  <!-- فورم النشر مع رفع صورة -->
   <div class="card">
     <form id="postForm">
       <h3>نشر مشروع جديد</h3>
       <input id="title" placeholder="عنوان المشروع" required maxlength="100">
       <textarea id="description" placeholder="الوصف" rows="4" maxlength="500"></textarea>
       <div class="char-count"><span id="charCount">0</span>/500 حرف</div>
-      <input id="image_url" placeholder="رابط الصورة">
+
+      <!-- رفع صورة بدل رابط -->
+      <label style="display:block; margin:10px 0; color:#4ade80">🖼️ اختر صورة من المعرض:</label>
+      <input type="file" id="imageFile" accept="image/*" style="margin-bottom:10px">
+      <img id="imagePreview" alt="معاينة الصورة">
 
       <select id="categories" required>
         <option value="">اختر القسم</option>
@@ -96,15 +147,34 @@
   </div>
   <div id="questions"></div>
 
-  <!-- مودال التعديل الفخم بنفس ألوان الموقع -->
-  <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center; animation:fadeIn 0.3s ease;">
-    <div class="card" style="width:90%; max-width:450px; background:#0f0f0f; border:2px solid #4ade80; box-shadow:0 0 30px rgba(74,222,128,0.3);">
+  <!-- مودال الإعدادات -->
+  <div id="settingsModal">
+    <div class="card" style="width:90%; max-width:400px; background:var(--bg-card)">
+      <h3 style="color:#4ade80; text-align:center">⚙️ الإعدادات</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0; padding:15px; background:var(--bg-main); border-radius:10px">
+        <span>🌙 الوضع الليلي</span>
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <button class="btn" onclick="closeSettings()" style="width:100%">إغلاق</button>
+    </div>
+  </div>
+
+  <!-- مودال التعديل -->
+  <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:9999; justify-content:center; align-items:center">
+    <div class="card" style="width:90%; max-width:450px; background:var(--bg-card); border:2px solid #4ade80">
       <h3 style="color:#4ade80; text-align:center; margin-bottom:20px">✏️ تعديل المشروع</h3>
       <input id="editTitle" placeholder="العنوان الجديد" maxlength="100">
       <textarea id="editDesc" placeholder="الوصف الجديد" rows="4" maxlength="500"></textarea>
       <div class="char-count"><span id="editCharCount">0</span>/500 حرف</div>
-      <input id="editImg" placeholder="رابط الصورة الجديد">
-      <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+
+      <label style="display:block; margin:10px 0; color:#4ade80">🖼️ غير الصورة:</label>
+      <input type="file" id="editImageFile" accept="image/*">
+      <img id="editImagePreview" style="max-width:100%; border-radius:8px; margin-top:10px; display:none">
+
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:20px">
         <button class="btn" onclick="saveEdit()">💾 حفظ</button>
         <button class="btn-danger" onclick="closeEdit()">❌ إلغاء</button>
       </div>
@@ -115,13 +185,16 @@
     const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
     let currentUser = null;
     let editProjectId = null;
+    let uploadedImageUrl = '';
+    let editUploadedImageUrl = '';
 
-    const catNames = {
-      'articles': 'مقالات',
-      'design': 'تصميم',
-      'programming': 'برمجة',
-      'general': 'عام'
-    };
+    const catNames = {'articles':'مقالات','design':'تصميم','programming':'برمجة','general':'عام'};
+
+    // تحميل الوضع المحفوظ
+    if(localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('darkModeToggle').checked = true;
+    }
 
     sb.auth.getUser().then(({data:{user}})=>{
       if(!user) return location.href='login.html';
@@ -130,26 +203,80 @@
       loadQuestions();
     });
 
-    function logout(){
-      sb.auth.signOut();
-      location.href='login.html';
-    }
+    function logout(){ sb.auth.signOut(); location.href='login.html'; }
 
-    // عداد حروف للوصف
-    document.getElementById('description').addEventListener('input', function(){
-      document.getElementById('charCount').textContent = this.value.length;
-    });
-    document.getElementById('editDesc').addEventListener('input', function(){
-      document.getElementById('editCharCount').textContent = this.value.length;
+    // الوضع الليلي
+    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+
+    document.getElementById('darkModeToggle').addEventListener('change', function(){
+      if(this.checked) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('darkMode', 'true');
+      } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('darkMode', 'false');
+      }
     });
 
+    // عداد الحروف
+    document.getElementById('description').addEventListener('input', e => {
+      document.getElementById('charCount').textContent = e.target.value.length;
+    });
+    document.getElementById('editDesc').addEventListener('input', e => {
+      document.getElementById('editCharCount').textContent = e.target.value.length;
+    });
+
+    // رفع الصورة + معاينة
+    document.getElementById('imageFile').addEventListener('change', async function(e){
+      const file = e.target.files[0];
+      if(!file) return;
+
+      // معاينة
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('imagePreview').src = ev.target.result;
+        document.getElementById('imagePreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+
+      // رفع لـ Supabase Storage
+      const fileName = `${Date.now()}_${file.name}`;
+      const {data, error} = await sb.storage.from('projects').upload(fileName, file);
+      if(error) return alert('خطأ رفع الصورة: ' + error.message);
+
+      const {data: urlData} = sb.storage.from('projects').getPublicUrl(fileName);
+      uploadedImageUrl = urlData.publicUrl;
+    });
+
+    // نفس الشي للتعديل
+    document.getElementById('editImageFile').addEventListener('change', async function(e){
+      const file = e.target.files[0];
+      if(!file) return;
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('editImagePreview').src = ev.target.result;
+        document.getElementById('editImagePreview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+
+      const fileName = `${Date.now()}_${file.name}`;
+      const {data, error} = await sb.storage.from('projects').upload(fileName, file);
+      if(error) return alert('خطأ رفع الصورة: ' + error.message);
+
+      const {data: urlData} = sb.storage.from('projects').getPublicUrl(fileName);
+      editUploadedImageUrl = urlData.publicUrl;
+    });
+
+    // نشر مشروع
     document.getElementById('postForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
 
       const {error} = await sb.from('projects').insert({
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
-        image_url: document.getElementById('image_url').value,
+        image_url: uploadedImageUrl,
         categories: document.getElementById('categories').value,
         user_id: currentUser.id
       });
@@ -157,6 +284,8 @@
       if(error) return alert('خطأ: '+error.message);
 
       e.target.reset();
+      document.getElementById('imagePreview').style.display = 'none';
+      uploadedImageUrl = '';
       document.getElementById('charCount').textContent = '0';
       loadProjects();
     });
@@ -166,7 +295,7 @@
       document.getElementById('count').textContent = data.length;
       const projectsDiv = document.getElementById('projects');
 
-      if(!data.length) return projectsDiv.innerHTML = '<p style="text-align:center;color:#666; padding:40px">لا توجد مشاريع بعد. كن أول من ينشر! 🚀</p>';
+      if(!data.length) return projectsDiv.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:40px">لا توجد مشاريع بعد 🚀</p>';
 
       projectsDiv.innerHTML = data.map(p=>`
         <div class="card">
@@ -179,10 +308,10 @@
           <span class="badge" style="background:linear-gradient(135deg, #4ade80, #22c55e); color:#000; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:bold">${catNames[p.categories] || p.categories}</span>
           <h3 style="margin-top:15px">${p.title}</h3>
           <p style="line-height:1.6">${p.description || 'بدون وصف'}</p>
-          ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px; box-shadow:0 4px 15px rgba(0,0,0,0.3)">` : ''}
-          <div class="date" style="margin-top:15px; color:#888; font-size:13px">📅 ${formatDate(p.created_at)}</div>
+          ${p.image_url? `<img src="${p.image_url}" style="max-width:100%; border-radius:12px; margin-top:15px">` : ''}
+          <div class="date" style="margin-top:15px; color:var(--text-muted); font-size:13px">📅 ${formatDate(p.created_at)}</div>
 
-          <div class="comments-section" style="margin-top:20px; padding-top:15px; border-top:1px solid #333">
+          <div class="comments-section" style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border)">
             <h4 style="color:#4ade80">💬 التعليقات</h4>
             <div id="comments-${p.id}"></div>
             <div style="display:flex; gap:8px; margin-top:10px">
@@ -201,29 +330,30 @@
     }
 
     async function deleteProject(id){
-      if(!confirm('⚠️ متأكد تبي تحذف المشروع؟ لا يمكن التراجع')) return;
+      if(!confirm('⚠️ متأكد تبي تحذف المشروع؟')) return;
       await sb.from('projects').delete().eq('id',id);
       loadProjects();
     }
 
-    // مودال التعديل
     function editProject(id, title, desc, img){
       editProjectId = id;
       document.getElementById('editTitle').value = title;
       document.getElementById('editDesc').value = desc;
-      document.getElementById('editImg').value = img;
+      if(img) {
+        document.getElementById('editImagePreview').src = img;
+        document.getElementById('editImagePreview').style.display = 'block';
+        editUploadedImageUrl = img;
+      }
       document.getElementById('editCharCount').textContent = desc.length;
       document.getElementById('editModal').style.display = 'flex';
     }
 
-    function closeEdit(){
-      document.getElementById('editModal').style.display = 'none';
-    }
+    function closeEdit(){ document.getElementById('editModal').style.display = 'none'; }
 
     async function saveEdit(){
       const newTitle = document.getElementById('editTitle').value;
       const newDesc = document.getElementById('editDesc').value;
-      const newImg = document.getElementById('editImg').value;
+      const newImg = editUploadedImageUrl || document.getElementById('editImagePreview').src;
 
       if(!newTitle.trim()) return alert('العنوان مطلوب');
 
@@ -238,10 +368,10 @@
     async function loadComments(project_id){
       const {data} = await sb.from('comments').select('*').eq('project_id',project_id).order('id',{ascending:true});
       document.getElementById(`comments-${project_id}`).innerHTML =
-        data.map(c=>`<div style="display:flex; align-items:center; gap:10px; margin:8px 0; padding:8px; background:#1a1a1a; border-radius:8px">
-        <div style="width:35px; height:35px; border-radius:50%; background:linear-gradient(135deg, #4ade80, #22c55e); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px">${c.user_name.charAt(0).toUpperCase()}</div>
-        <div><b style="color:#4ade80">${c.user_name}:</b> <span style="color:#ddd">${c.comment}</span></div>
-        </div>`).join('') || '<p style="color:#666; font-size:13px; text-align:center; padding:10px">لا توجد تعليقات بعد</p>';
+        data.map(c=>`<div style="display:flex; align-items:center; gap:10px; margin:8px 0; padding:8px; background:var(--bg-main); border-radius:8px">
+        <div style="width:35px; height:35px; border-radius:50%; background:linear-gradient(135deg, #4ade80, #22c55e); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold">${c.user_name.charAt(0).toUpperCase()}</div>
+        <div><b style="color:#4ade80">${c.user_name}:</b> <span>${c.comment}</span></div>
+        </div>`).join('') || '<p style="color:var(--text-muted); font-size:13px; text-align:center; padding:10px">لا توجد تعليقات</p>';
     }
 
     async function addComment(project_id){
@@ -264,9 +394,9 @@
             <b style="color:#4ade80">${q.user_name}:</b>
           </div>
           <p style="margin-top:10px">${q.question}</p>
-          ${q.answer? `<div style="margin-top:10px; padding:10px; background:#1a1a1a; border-right:3px solid #4ade80; border-radius:5px"><b style="color:#22c55e">الرد:</b> ${q.answer}</div>` : ''}
+          ${q.answer? `<div style="margin-top:10px; padding:10px; background:var(--bg-main); border-right:3px solid #4ade80; border-radius:5px"><b style="color:#22c55e">الرد:</b> ${q.answer}</div>` : ''}
         </div>
-      `).join('') || '<p style="color:#666; text-align:center; padding:20px">لا توجد أسئلة بعد</p>';
+      `).join('') || '<p style="color:var(--text-muted); text-align:center; padding:20px">لا توجد أسئلة بعد</p>';
     }
 
     async function askQuestion(){
@@ -282,18 +412,18 @@
 
   <!-- أزرار التواصل -->
   <style>
-   .float-btn{
+  .float-btn{
       position:fixed; bottom:20px; width:55px; height:55px;
       border-radius:50%; display:flex; align-items:center; justify-content:center;
       font-size:28px; color:#fff; text-decoration:none;
       box-shadow:0 4px 20px rgba(0,0,0,0.5); transition:0.3s; z-index:999;
     }
-   .float-btn:hover{ transform:translateY(-8px) scale(1.1); box-shadow:0 8px 25px rgba(0,0,0,0.7); }
-   .whatsapp{ right:20px; background:#25D366; }
-   .telegram{ left:20px; background:#0088cc; }
+  .float-btn:hover{ transform:translateY(-8px) scale(1.1); }
+  .whatsapp{ right:20px; background:#25D366; }
+  .telegram{ left:20px; background:#0088cc; }
   </style>
 
-  <a href="https://wa.me/967XXXXXXXX" class="float-btn whatsapp" title="واتساب" target="_blank">💬</a>
-  <a href="https://t.me/username" class="float-btn telegram" title="تلجرام" target="_blank">✈️</a>
+  <a href="#" class="float-btn whatsapp" title="واتساب">💬</a>
+  <a href="#" class="float-btn telegram" title="تلجرام">✈️</a>
 </body>
 </html>
