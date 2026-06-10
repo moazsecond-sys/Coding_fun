@@ -2,26 +2,35 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة النشر</title>
+  <title>لوحة التحكم</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { font-family: 'Tajawal', sans-serif; background: #111; color: white; padding: 20px; }
     .box { background: #222; padding: 30px; border-radius: 15px; max-width: 600px; margin: auto; }
-    h2 { color: #4ade80; text-align: center; margin-bottom: 20px; }
+    h2 { color: #4ade80; text-align: center; }
     input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #333; border: 1px solid #555; border-radius: 8px; color: white; }
     button { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
     .btn-green { background: #4ade80; color: black; }
     .btn-red { background: #ef4444; color: white; }
     .btn-blue { background: #3b82f6; color: white; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .post { background: #333; padding: 15px; border-radius: 10px; margin: 10px 0; position: relative; }
+    .post { background: #333; padding: 15px; border-radius: 10px; margin: 10px 0; }
     .post-actions { margin-top: 10px; text-align: left; }
-    #postsList { margin-top: 20px; }
+    #adminPanel, #loginPanel { display: none; }
   </style>
 </head>
 <body>
-  <div class="box">
+  <!-- 1. لوحة تسجيل الدخول -->
+  <div class="box" id="loginPanel">
+    <h2>تسجيل دخول الأدمن</h2>
+    <input type="email" id="email" placeholder="الايميل">
+    <input type="password" id="password" placeholder="كلمة السر">
+    <button class="btn-green" id="loginBtn">دخول</button>
+    <div id="loginMsg" style="margin-top:10px"></div>
+  </div>
+
+  <!-- 2. لوحة النشر -->
+  <div class="box" id="adminPanel">
     <div class="header">
       <h2>لوحة نشر 📝 المحتوى الديني</h2>
       <button class="btn-red" id="logoutBtn">تسجيل خروج</button>
@@ -38,7 +47,7 @@
     </select>
     <button class="btn-green" id="saveBtn">نشر</button>
     <button class="btn-blue" id="cancelBtn" style="display:none;">إلغاء</button>
-    <div id="msg"></div>
+    <div id="msg" style="margin-top:10px"></div>
 
     <hr style="margin: 30px 0; border-color: #444;">
     <h3>المحتوى المنشور</h3>
@@ -50,18 +59,48 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    const loginPanel = document.getElementById('loginPanel');
+    const adminPanel = document.getElementById('adminPanel');
+
+    // شيك اول ما تفتح الصفحة
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        adminPanel.style.display = 'block';
+        loginPanel.style.display = 'none';
+        loadPosts();
+      } else {
+        loginPanel.style.display = 'block';
+        adminPanel.style.display = 'none';
+      }
+    });
+
+    // تسجيل دخول
+    document.getElementById('loginBtn').onclick = async () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        document.getElementById('loginMsg').textContent = 'خطأ: ' + error.message;
+        document.getElementById('loginMsg').style.color = 'red';
+      } else {
+        adminPanel.style.display = 'block';
+        loginPanel.style.display = 'none';
+        loadPosts();
+      }
+    };
+
+    // تسجيل خروج - يرجعك للوحة تسجيل الدخول بنفس الصفحة
+    document.getElementById('logoutBtn').onclick = async () => {
+      await sb.auth.signOut();
+      adminPanel.style.display = 'none';
+      loginPanel.style.display = 'block';
+    };
+
+    // باقي كود النشر والتعديل والحذف...
     const editId = document.getElementById('editId');
     const saveBtn = document.getElementById('saveBtn');
     const cancelBtn = document.getElementById('cancelBtn');
-    const formTitle = document.getElementById('formTitle');
 
-    // تسجيل خروج
-    document.getElementById('logoutBtn').onclick = async () => {
-      await sb.auth.signOut();
-      window.location.href = 'admin.html';
-    };
-
-    // حفظ او تعديل
     saveBtn.onclick = async () => {
       const id = editId.value;
       const title = document.getElementById('title').value;
@@ -77,11 +116,9 @@
 
       let error;
       if(id) {
-        // تعديل
         ({ error } = await sb.from('posts').update({ title, content, category }).eq('id', id));
         msg.textContent = error ? 'خطأ: ' + error.message : 'تم التعديل بنجاح!';
       } else {
-        // اضافة
         ({ error } = await sb.from('posts').insert([{ title, content, category }]));
         msg.textContent = error ? 'خطأ: ' + error.message : 'تم النشر بنجاح!';
       }
@@ -91,7 +128,6 @@
       loadPosts();
     };
 
-    // الغاء التعديل
     cancelBtn.onclick = resetForm;
 
     function resetForm() {
@@ -99,31 +135,28 @@
       document.getElementById('title').value = '';
       document.getElementById('content').value = '';
       saveBtn.textContent = 'نشر';
-      formTitle.textContent = 'إضافة / تعديل محتوى';
+      document.getElementById('formTitle').textContent = 'إضافة / تعديل محتوى';
       cancelBtn.style.display = 'none';
     }
 
-    // تعبئة الفورم للتعديل
-    function editPost(id, title, content, category) {
+    window.editPost = function(id, title, content, category) {
       editId.value = id;
       document.getElementById('title').value = title;
       document.getElementById('content').value = content;
       document.getElementById('category').value = category;
       saveBtn.textContent = 'حفظ التعديل';
-      formTitle.textContent = 'تعديل المحتوى';
+      document.getElementById('formTitle').textContent = 'تعديل المحتوى';
       cancelBtn.style.display = 'inline-block';
       window.scrollTo(0, 0);
     }
 
-    // حذف منشور
-    async function deletePost(id) {
+    window.deletePost = async function(id) {
       if(confirm('متأكد تبي تحذف المنشور؟')) {
         await sb.from('posts').delete().eq('id', id);
         loadPosts();
       }
     }
 
-    // تحميل المنشورات
     async function loadPosts() {
       const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
       const postsList = document.getElementById('postsList');
@@ -145,8 +178,6 @@
         </div>
       `).join('');
     }
-
-    loadPosts();
   </script>
 </body>
 </html>
