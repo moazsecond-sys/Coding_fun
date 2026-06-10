@@ -199,12 +199,12 @@ async function deleteItem(id) {
     return;
   }
   
-  console.log('جاري الحذف... اليوزر:', session.user.id); // عشان نشوف في Console
+  console.log('جاري الحذف... اليوزر:', session.user.id);
   
   const { error } = await sb.from('content').delete().eq('id', id);
   
   if (error) {
-    console.error('خطأ الحذف:', error); // بيطلع تفاصيل الخطأ كاملة
+    console.error('خطأ الحذف:', error);
     return alert('خطأ: ' + error.message);
   }
   
