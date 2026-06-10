@@ -18,11 +18,13 @@
 }
 </script>
   
-  <script type="module">
-    import * as THREE from 'three';
-
-    // 1. نجهز المشهد - Three.js
-    const scene = new THREE.Scene();
+<script type="module">
+  import * as THREE from 'three';
+  import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+  import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+  
+  // 1. نجهز المشهد - Three.js
+  const scene = new THREE.Scene();;
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
     
