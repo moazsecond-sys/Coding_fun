@@ -80,7 +80,7 @@ async function checkSession() {
 }
 
 document.getElementById('loginForm').onsubmit = async (e) => {
-  e.preventDefault();
+  e.preventDefault(); // ← هذا السطر لازم يكون اول شي
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   
