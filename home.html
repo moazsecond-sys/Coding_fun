@@ -190,8 +190,25 @@ function cancelEdit() {
 
 async function deleteItem(id) {
   if (!confirm('متأكد تبغى تحذف؟')) return;
+  
+  // تأكد ان فيه جلسة قبل الحذف
+  const { data: { session } = await sb.auth.getSession();
+  if (!session) {
+    alert('انت مو مسجل دخول! ارجع سجل دخول');
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  console.log('جاري الحذف... اليوزر:', session.user.id); // عشان نشوف في Console
+  
   const { error } = await sb.from('content').delete().eq('id', id);
-  if (error) return alert(error.message);
+  
+  if (error) {
+    console.error('خطأ الحذف:', error); // بيطلع تفاصيل الخطأ كاملة
+    return alert('خطأ: ' + error.message);
+  }
+  
+  alert('تم الحذف بنجاح ✅');
   loadContent();
 }
 
