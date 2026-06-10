@@ -8,6 +8,11 @@
   
   <!-- الصندوق اللي بنحط فيه المكعب -->
   <div id="canvas" class="w-80 h-80 rounded-2xl shadow-2xl shadow-purple-500/50"></div>
+  <div class="flex gap-2 mt-4 justify-center">
+  <button onclick="window.cube.rotation.x += 0.3" class="px-4 py-2 bg-blue-500 rounded-lg text-white">لف فوق</button>
+  <button onclick="window.cube.rotation.y += 0.3" class="px-4 py-2 bg-purple-500 rounded-lg text-white">لف يمين</button>
+  <button onclick="window.cube.rotation.z += 0.3" class="px-4 py-2 bg-pink-500 rounded-lg text-white">لف دوران</button>
+</div>
 
 <script type="importmap">
 {
@@ -34,8 +39,8 @@
     // 2. نسوي المكعب + نلونه
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshStandardMaterial({ color: 0x3b82f6 }); // أزرق Tailwind
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    window.cube = new THREE.Mesh(geometry, material);
+    scene.add(window.cube);
     
 // نور عام يضيء كل شي
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); 
@@ -50,7 +55,7 @@ scene.add(sideLight);
 const loader = new FontLoader();
 loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
   
-  const textGeo = new TextGeometry('Hello 3D', {
+  const textGeo = new TextGeometry('Muath 3D', {
     font: font,
     size: 0.3,
     height: 0.1,
@@ -65,8 +70,8 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
   // نخلي النص يلف مع المكعب
   function animate() {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.015;
-    cube.rotation.y += 0.015;
+    window.cube.rotation.x += 0.015;
+    window.cube.rotation.y += 0.015;
     textMesh.rotation.y += 0.015; // النص يلف بعد
     renderer.render(scene, camera);
   }
