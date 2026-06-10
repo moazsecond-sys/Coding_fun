@@ -9,13 +9,14 @@
   <!-- الصندوق اللي بنحط فيه المكعب -->
   <div id="canvas" class="w-80 h-80 rounded-2xl shadow-2xl shadow-purple-500/50"></div>
 
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-      }
-    }
-  </script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 
   <script type="module">
     import * as THREE from 'three';
@@ -46,13 +47,34 @@ scene.add(frontLight);
     camera.position.z = 5;
 
     // 4. نخليه يلف لحاله
-    function animate() {
-      requestAnimationFrame(animate);
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-      renderer.render(scene, camera);
-    }
-    animate();
+    import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+const loader = new FontLoader();
+loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+  
+  const textGeo = new TextGeometry('Hello 3D', {
+    font: font,
+    size: 0.3,
+    height: 0.1,
+  });
+  
+  const textMaterial = new THREE.MeshStandardMaterial({ color: 0xff69b4 }); // وردي
+  const textMesh = new THREE.Mesh(textGeo, textMaterial);
+  
+  textMesh.position.set(-0.8, 1.5, 0); // فوق المكعب
+  scene.add(textMesh);
+
+  // نخلي النص يلف مع المكعب
+  function animate() {
+    requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    textMesh.rotation.y += 0.01; // النص يلف بعد
+    renderer.render(scene, camera);
+  }
+  animate();
+});
   </script>
 </body>
 </html>
