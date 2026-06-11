@@ -15,8 +15,9 @@
       padding: 20px; 
       transition: 0.3s ease;
     }
-    h1 { text-align: center; color: #2d5a3d; margin: 30px 0; }
+    h1 { text-align: center; color: #2d5a3d; margin: 30px 0; font-size: 32px; }
     .container { max-width: 700px; margin: auto; }
+    
     .post { 
       background: white; 
       padding: 20px; 
@@ -24,9 +25,19 @@
       margin: 15px 0; 
       border: 1px solid #e0e0e0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      cursor: pointer;
+      animation: fadeInUp 0.5s ease;
+      transition: transform 0.2s;
     }
-    .category { color: #2d5a3d; font-weight: bold; }
-    .date { color: #666; font-size: 13px; margin-top: 10px; }
+    .post:hover { transform: translateY(-3px); }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .category { color: #2d5a3d; font-weight: bold; font-size: 14px; }
+    .date { color: #666; font-size: 13px; }
     .admin-link { text-align: center; margin-top: 40px; }
     .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
 
@@ -44,16 +55,28 @@
     .filter-buttons button:hover {
       background: #4ade80; color: white;
     }
-    .share-btn {
-      background: #25D366; color: white; border: none;
-      padding: 6px 12px; border-radius: 8px; 
-      margin-top: 10px; cursor: pointer; font-size: 14px;
+    
+    .btn {
+      border: none; padding: 6px 12px; border-radius: 8px; 
+      cursor: pointer; font-size: 14px; font-family: 'Tajawal';
+      transition: 0.2s;
     }
+    .btn:hover { opacity: 0.8; }
+    .share-btn { background: #25D366; color: white; }
+    .copy-btn { background: #3b82f6; color: white; }
+    
     #themeBtn {
       padding: 8px 16px; border: none; border-radius: 20px;
       background: #f0f0f0; color: #333; cursor: pointer;
       font-family: 'Tajawal';
     }
+    #searchBox {
+      width: 80%; max-width: 400px; padding: 10px 15px; 
+      border-radius: 25px; border: 1px solid #4ade80; 
+      font-family: 'Tajawal'; font-size: 16px; text-align: center;
+      outline: none;
+    }
+    #searchBox:focus { border-color: #2d5a3d; }
 
     /* ===== وضع الليل ===== */
     body.dark {
@@ -67,6 +90,7 @@
       box-shadow: none;
     }
     body.dark .category { color: #4ade80; }
+    body.dark .date { color: #999; }
     body.dark .filter-buttons button {
       background: transparent;
       border-color: #4ade80;
@@ -79,6 +103,11 @@
     body.dark #themeBtn {
       background: #333;
       color: white;
+    }
+    body.dark #searchBox {
+      background: #1a1a1a;
+      color: white;
+      border: 1px solid #4ade80;
     }
   </style>
 </head>
@@ -96,11 +125,7 @@
   </div>
   
   <div style="text-align:center; margin: 20px 0;">
-    <input type="text" id="searchBox" placeholder="ابحث عن آية، حديث، دعاء..." 
-      onkeyup="searchPosts(this.value)"
-      style="width: 80%; max-width: 400px; padding: 10px 15px; 
-      border-radius: 25px; border: 1px solid #4ade80; 
-      font-family: 'Tajawal'; font-size: 16px; text-align: center;">
+    <input type="text" id="searchBox" placeholder="ابحث عن آية، حديث، دعاء..." onkeyup="searchPosts(this.value)">
   </div>
   
   <h1>📖 المحتوى الديني</h1>
@@ -132,11 +157,16 @@
       }
 
       container.innerHTML = posts.map(p => `
-        <div class="post">
+        <div class="post" onclick="addView(${p.id})">
           <h3>${p.title} <span class="category">${p.category}</span></h3>
-          <p style="line-height: 1.8; margin: 10px 0;">${p.content}</p>
-          <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
-          <button class="share-btn" onclick="sharePost(\`${p.title}\`, \`${p.content}\`)">📤 مشاركة</button>
+          <p style="line-height: 1.8; margin: 10px 0;" id="content-${p.id}">${p.content}</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px">
+            <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')} • 👁️ ${p.views || 0} قراءة</div>
+            <div>
+              <button class="btn copy-btn" onclick="copyPost(${p.id}); event.stopPropagation()">📋 نسخ</button>
+              <button class="btn share-btn" onclick="sharePost(\`${p.title}\`, \`${p.content}\`); event.stopPropagation()">📤 مشاركة</button>
+            </div>
+          </div>
         </div>
       `).join('');
     }
@@ -166,6 +196,25 @@
       
       displayPosts(results);
       document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
+    }
+
+    async function addView(id) {
+      const post = allPosts.find(p => p.id === id);
+      if(!post) return;
+      
+      const newViews = (post.views || 0) + 1;
+      await sb.from('posts').update({ views: newViews }).eq('id', id);
+      post.views = newViews;
+      
+      // حدث العداد في الشاشة بدون اعادة تحميل
+      const el = document.querySelector(`#content-${id}`).parentElement.querySelector('.date');
+      el.innerHTML = `${new Date(post.created_at).toLocaleDateString('ar-EG')} • 👁️ ${newViews} قراءة`;
+    }
+
+    function copyPost(id) {
+      const text = document.getElementById(`content-${id}`).innerText;
+      navigator.clipboard.writeText(text);
+      alert('تم نسخ النص 📋');
     }
 
     function sharePost(title, content) {
