@@ -2,78 +2,107 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>متجر سيف - المحتوى الديني</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: 'Tajawal', sans-serif; background: #0a0a0a; color: white; padding: 20px; }
-    h1 { text-align: center; color: #4ade80; margin: 30px 0; }
+    /* ===== وضع النهار الافتراضي ===== */
+    body { 
+      font-family: 'Tajawal', sans-serif; 
+      background: #f8f9fa; 
+      color: #222; 
+      padding: 20px; 
+      transition: 0.3s ease;
+    }
+    h1 { text-align: center; color: #2d5a3d; margin: 30px 0; }
     .container { max-width: 700px; margin: auto; }
-    .post { background: #1a1a1a; padding: 20px; border-radius: 15px; margin: 15px 0; border: 1px solid #333; }
-    .category { color: #4ade80; font-weight: bold; }
+    .post { 
+      background: white; 
+      padding: 20px; 
+      border-radius: 15px; 
+      margin: 15px 0; 
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .category { color: #2d5a3d; font-weight: bold; }
     .date { color: #666; font-size: 13px; margin-top: 10px; }
     .admin-link { text-align: center; margin-top: 40px; }
     .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
-.filter-buttons {
-  display: flex; gap: 8px; justify-content: center; 
-  flex-wrap: wrap; margin: 20px 0;
-}
-.filter-buttons button {
-  padding: 8px 14px; border: 1px solid #4ade80; 
-  background: transparent; color: #4ade80; 
-  border-radius: 20px; cursor: pointer; font-family: 'Tajawal';
-}
-.filter-buttons button.active, 
-.filter-buttons button:hover {
-  background: #4ade80; color: #1a1a1a;
-}
-.share-btn {
-  background: #25D366; color: white; border: none;
-  padding: 6px 12px; border-radius: 8px; 
-  margin-top: 10px; cursor: pointer; font-size: 14px;
-}
+
+    .filter-buttons {
+      display: flex; gap: 8px; justify-content: center; 
+      flex-wrap: wrap; margin: 20px 0;
+    }
+    .filter-buttons button {
+      padding: 8px 14px; border: 1px solid #4ade80; 
+      background: white; color: #2d5a3d; 
+      border-radius: 20px; cursor: pointer; font-family: 'Tajawal';
+      transition: 0.2s;
+    }
+    .filter-buttons button.active, 
+    .filter-buttons button:hover {
+      background: #4ade80; color: white;
+    }
+    .share-btn {
+      background: #25D366; color: white; border: none;
+      padding: 6px 12px; border-radius: 8px; 
+      margin-top: 10px; cursor: pointer; font-size: 14px;
+    }
+    #themeBtn {
+      padding: 8px 16px; border: none; border-radius: 20px;
+      background: #f0f0f0; color: #333; cursor: pointer;
+      font-family: 'Tajawal';
+    }
+
+    /* ===== وضع الليل ===== */
     body.dark {
-  background: #0f0f0f;
-  color: #e0e0e0;
-}
-body.dark .post {
-  background: #1e1e1e;
-  border-color: #333;
-}
-body.dark .filter-buttons button {
-  border-color: #4ade80;
-  color: #4ade80;
-}
-body.dark .filter-buttons button.active {
-  background: #4ade80;
-  color: #0f0f0f;
-}
-#themeBtn {
-  padding: 8px 16px; border: none; border-radius: 20px;
-  background: #333; color: white; cursor: pointer;
-  font-family: 'Tajawal';
-}
-    
+      background: #0f0f0f;
+      color: #e0e0e0;
+    }
+    body.dark h1 { color: #4ade80; }
+    body.dark .post {
+      background: #1e1e1e;
+      border-color: #333;
+      box-shadow: none;
+    }
+    body.dark .category { color: #4ade80; }
+    body.dark .filter-buttons button {
+      background: transparent;
+      border-color: #4ade80;
+      color: #4ade80;
+    }
+    body.dark .filter-buttons button.active {
+      background: #4ade80;
+      color: #0f0f0f;
+    }
+    body.dark #themeBtn {
+      background: #333;
+      color: white;
+    }
   </style>
 </head>
 <body>
-<div class="filter-buttons">
-  <button onclick="filterPosts('all', this)" class="active">الكل</button>
-  <button onclick="filterPosts('آية', this)">آيات</button>
-  <button onclick="filterPosts('حديث', this)">أحاديث</button>
-  <button onclick="filterPosts('دعاء', this)">أدعية</button>
-  <button onclick="filterPosts('سؤال ديني', this)">أسئلة</button>
-</div>
+  <div class="filter-buttons">
+    <button onclick="filterPosts('all', this)" class="active">الكل</button>
+    <button onclick="filterPosts('آية', this)">آيات</button>
+    <button onclick="filterPosts('حديث', this)">أحاديث</button>
+    <button onclick="filterPosts('دعاء', this)">أدعية</button>
+    <button onclick="filterPosts('سؤال ديني', this)">أسئلة</button>
+  </div>
+  
   <div style="text-align:center; margin: 15px 0;">
-  <button id="themeBtn" onclick="toggleTheme()">🌙 وضع ليلي</button>
+    <button id="themeBtn" onclick="toggleTheme()">🌙 وضع ليلي</button>
   </div>
+  
   <div style="text-align:center; margin: 20px 0;">
-  <input type="text" id="searchBox" placeholder="ابحث عن آية، حديث، دعاء..." 
-    onkeyup="searchPosts(this.value)"
-    style="width: 80%; max-width: 400px; padding: 10px 15px; 
-    border-radius: 25px; border: 1px solid #4ade80; 
-    background: #1a1a1a; color: white; font-family: 'Tajawal'; 
-    font-size: 16px; text-align: center;">
+    <input type="text" id="searchBox" placeholder="ابحث عن آية، حديث، دعاء..." 
+      onkeyup="searchPosts(this.value)"
+      style="width: 80%; max-width: 400px; padding: 10px 15px; 
+      border-radius: 25px; border: 1px solid #4ade80; 
+      font-family: 'Tajawal'; font-size: 16px; text-align: center;">
   </div>
+  
   <h1>📖 المحتوى الديني</h1>
   <div class="container" id="postsContainer">جاري التحميل...</div>
   
@@ -85,88 +114,89 @@ body.dark .filter-buttons button.active {
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let allPosts = [];
+    let allPosts = [];
+
     async function loadPosts() {
-  const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-  allPosts = data; // خزن كل المنشورات
-  displayPosts(allPosts); // اعرض الكل
-}
+      const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+      if(error) { console.log(error); return; }
+      allPosts = data;
+      displayPosts(allPosts);
+    }
 
-function displayPosts(posts) {
-  const container = document.getElementById('postsContainer');
-  
-  if(!posts || posts.length === 0) {
-  container.innerHTML = '<p style="text-align:center; color:#666; padding:40px">لم نجد نتائج 🔍</p>';
-  return;
-}
+    function displayPosts(posts) {
+      const container = document.getElementById('postsContainer');
+      
+      if(!posts || posts.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#666; padding:40px">لم نجد نتائج 🔍</p>';
+        return;
+      }
 
-  container.innerHTML = posts.map(p => `
-    <div class="post">
-      <h3>${p.title} <span class="category">${p.category}</span></h3>
-      <p style="line-height: 1.8; margin: 10px 0;">${p.content}</p>
-      <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
-      <button class="share-btn" onclick="sharePost(\`${p.title}\`, \`${p.content}\`)">📤 مشاركة</button>
-    </div>
-  `).join('');
-}
+      container.innerHTML = posts.map(p => `
+        <div class="post">
+          <h3>${p.title} <span class="category">${p.category}</span></h3>
+          <p style="line-height: 1.8; margin: 10px 0;">${p.content}</p>
+          <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
+          <button class="share-btn" onclick="sharePost(\`${p.title}\`, \`${p.content}\`)">📤 مشاركة</button>
+        </div>
+      `).join('');
+    }
 
-function filterPosts(category, btn) {
-  document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  
-  if(category === 'all') displayPosts(allPosts);
-  else displayPosts(allPosts.filter(p => p.category === category));
-}
-function searchPosts(keyword) {
-  keyword = keyword.trim().toLowerCase();
-  
-  // لو فاضي ارجع كل المنشورات
-  if(keyword === '') {
-    displayPosts(allPosts);
-    return;
-  }
-  
-  // دور في العنوان + المحتوى + التصنيف
-  const results = allPosts.filter(p => 
-    p.title.toLowerCase().includes(keyword) ||
-    p.content.toLowerCase().includes(keyword) ||
-    p.category.toLowerCase().includes(keyword)
-  );
-  
-  displayPosts(results);
-  
-  // الغي تفعيل ازرار الفلترة وقت البحث
-  document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
-}
-function sharePost(title, content) {
-  const text = `${title}\n\n${content}\n\nمن موقع المحتوى الديني`;
-  if(navigator.share) {
-    navigator.share({ title, text });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert('تم نسخ المنشور 🌸');
-  }
-}
-function toggleTheme() {
-  document.body.classList.toggle('dark');
-  const btn = document.getElementById('themeBtn');
-  if(document.body.classList.contains('dark')) {
-    btn.textContent = '☀️ وضع نهاري';
-    localStorage.setItem('theme', 'dark');
-  } else {
-    btn.textContent = '🌙 وضع ليلي';
-    localStorage.setItem('theme', 'light');
-  }
-}
+    function filterPosts(category, btn) {
+      document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      if(category === 'all') displayPosts(allPosts);
+      else displayPosts(allPosts.filter(p => p.category === category));
+    }
 
-// يحفظ الاختيار كل مرة تفتح الموقع
-window.onload = () => {
-  if(localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark');
-    document.getElementById('themeBtn').textContent = '☀️ وضع نهاري';
-  }
-  loadPosts();
-}
+    function searchPosts(keyword) {
+      keyword = keyword.trim().toLowerCase();
+      
+      if(keyword === '') {
+        displayPosts(allPosts);
+        document.querySelector('.filter-buttons button').classList.add('active');
+        return;
+      }
+      
+      const results = allPosts.filter(p => 
+        p.title.toLowerCase().includes(keyword) ||
+        p.content.toLowerCase().includes(keyword) ||
+        p.category.toLowerCase().includes(keyword)
+      );
+      
+      displayPosts(results);
+      document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
+    }
+
+    function sharePost(title, content) {
+      const text = `${title}\n\n${content}\n\nمن موقع المحتوى الديني`;
+      if(navigator.share) {
+        navigator.share({ title, text });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert('تم نسخ المنشور 🌸');
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeBtn');
+      if(document.body.classList.contains('dark')) {
+        btn.textContent = '☀️ وضع نهاري';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        btn.textContent = '🌙 وضع ليلي';
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    window.onload = () => {
+      if(localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+        document.getElementById('themeBtn').textContent = '☀️ وضع نهاري';
+      }
+      loadPosts();
+    }
   </script>
 </body>
 </html>
