@@ -266,7 +266,7 @@
         <div class="post">
           <b>${p.title}</b> - <span style="color:#4ade80">${p.category}</span>
           <p style="margin:8px 0; line-height:1.6">${p.content}</p>
-          <small style="color:#888">📅 ${new Date(p.created_at).toLocaleDateString('ar-EG')} • 👁️ ${p.views || 0} قراءة</small>
+          <small style="color:#888">📅 ${new Date(p.created_at).toLocaleDateString('ar-EG', {day:'numeric', month:'long'}) • 👁️ ${p.views || 0} قراءة</small>
           <div class="post-actions">
             <button class="btn-blue" onclick="editPost(${p.id}, \`${p.title.replace(/`/g,"\\`")}\`, \`${p.content.replace(/`/g,"\\`")}\`, '${p.category}')">تعديل</button>
             <button class="btn-red" onclick="deletePost(${p.id})">حذف</button>
