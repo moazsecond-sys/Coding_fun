@@ -159,7 +159,7 @@
           <h3 style="margin-bottom:12px">${p.title} <span class="category">${p.category}</span></h3>
           <p style="line-height: 1.8; margin: 10px 0;" id="content-${p.id}">${p.content}</p>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; flex-wrap:wrap; gap:10px">
-            <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG', {day:'numeric', month:'long'}) • 👁️ ${p.views || 0} قراءة</div>
+            <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG', {day:'numeric', month:'long', year:'numeric'})} • 👁️ ${p.views || 0} قراءة</div>
             <div>
               <button class="btn copy-btn" onclick="copyPost(${p.id}); event.stopPropagation()">📋 نسخ</button>
               <button class="btn share-btn" onclick="sharePost(\`${p.title}\`, \`${p.content}\`); event.stopPropagation()">📤 مشاركة</button>
