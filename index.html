@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ===== وضع النهار الافتراضي ===== */
     body { 
       font-family: 'Tajawal', sans-serif; 
       background: #f8f9fa; 
@@ -42,14 +41,14 @@
     .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
 
     .filter-buttons {
-      display: flex; gap: 8px; justify-content: center; 
-      flex-wrap: wrap; margin: 20px 0;
+      display: flex; gap: 12px; justify-content: center; 
+      flex-wrap: wrap; margin: 25px 0;
     }
     .filter-buttons button {
-      padding: 8px 14px; border: 1px solid #4ade80; 
+      padding: 10px 16px; border: 1px solid #4ade80; 
       background: white; color: #2d5a3d; 
-      border-radius: 20px; cursor: pointer; font-family: 'Tajawal';
-      transition: 0.2s;
+      border-radius: 25px; cursor: pointer; font-family: 'Tajawal';
+      font-size: 15px; transition: 0.2s;
     }
     .filter-buttons button.active, 
     .filter-buttons button:hover {
@@ -57,28 +56,27 @@
     }
     
     .btn {
-      border: none; padding: 6px 12px; border-radius: 8px; 
+      border: none; padding: 8px 14px; border-radius: 8px; 
       cursor: pointer; font-size: 14px; font-family: 'Tajawal';
       transition: 0.2s;
     }
-    .btn:hover { opacity: 0.8; }
+    .btn:hover { opacity: 0.8; transform: scale(1.05); }
     .share-btn { background: #25D366; color: white; }
     .copy-btn { background: #3b82f6; color: white; }
     
     #themeBtn {
-      padding: 8px 16px; border: none; border-radius: 20px;
+      padding: 10px 18px; border: none; border-radius: 25px;
       background: #f0f0f0; color: #333; cursor: pointer;
-      font-family: 'Tajawal';
+      font-family: 'Tajawal'; font-size: 15px;
     }
     #searchBox {
-      width: 80%; max-width: 400px; padding: 10px 15px; 
-      border-radius: 25px; border: 1px solid #4ade80; 
+      width: 85%; max-width: 420px; padding: 12px 18px; 
+      border-radius: 25px; border: 2px solid #4ade80; 
       font-family: 'Tajawal'; font-size: 16px; text-align: center;
-      outline: none;
+      outline: none; transition: 0.2s;
     }
-    #searchBox:focus { border-color: #2d5a3d; }
+    #searchBox:focus { border-color: #2d5a3d; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1); }
 
-    /* ===== وضع الليل ===== */
     body.dark {
       background: #0f0f0f;
       color: #e0e0e0;
@@ -107,7 +105,7 @@
     body.dark #searchBox {
       background: #1a1a1a;
       color: white;
-      border: 1px solid #4ade80;
+      border: 2px solid #4ade80;
     }
   </style>
 </head>
@@ -158,9 +156,9 @@
 
       container.innerHTML = posts.map(p => `
         <div class="post" onclick="addView(${p.id})">
-          <h3>${p.title} <span class="category">${p.category}</span></h3>
+          <h3 style="margin-bottom:12px">${p.title} <span class="category">${p.category}</span></h3>
           <p style="line-height: 1.8; margin: 10px 0;" id="content-${p.id}">${p.content}</p>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; flex-wrap:wrap; gap:10px">
             <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')} • 👁️ ${p.views || 0} قراءة</div>
             <div>
               <button class="btn copy-btn" onclick="copyPost(${p.id}); event.stopPropagation()">📋 نسخ</button>
@@ -206,7 +204,6 @@
       await sb.from('posts').update({ views: newViews }).eq('id', id);
       post.views = newViews;
       
-      // حدث العداد في الشاشة بدون اعادة تحميل
       const el = document.querySelector(`#content-${id}`).parentElement.querySelector('.date');
       el.innerHTML = `${new Date(post.created_at).toLocaleDateString('ar-EG')} • 👁️ ${newViews} قراءة`;
     }
