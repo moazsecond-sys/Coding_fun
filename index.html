@@ -13,9 +13,34 @@
     .date { color: #666; font-size: 13px; margin-top: 10px; }
     .admin-link { text-align: center; margin-top: 40px; }
     .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
+.filter-buttons {
+  display: flex; gap: 8px; justify-content: center; 
+  flex-wrap: wrap; margin: 20px 0;
+}
+.filter-buttons button {
+  padding: 8px 14px; border: 1px solid #4ade80; 
+  background: transparent; color: #4ade80; 
+  border-radius: 20px; cursor: pointer; font-family: 'Tajawal';
+}
+.filter-buttons button.active, 
+.filter-buttons button:hover {
+  background: #4ade80; color: #1a1a1a;
+}
+.share-btn {
+  background: #25D366; color: white; border: none;
+  padding: 6px 12px; border-radius: 8px; 
+  margin-top: 10px; cursor: pointer; font-size: 14px;
+}
   </style>
 </head>
 <body>
+<div class="filter-buttons">
+  <button onclick="filterPosts('all', this)" class="active">الكل</button>
+  <button onclick="filterPosts('آية', this)">آيات</button>
+  <button onclick="filterPosts('حديث', this)">أحاديث</button>
+  <button onclick="filterPosts('دعاء', this)">أدعية</button>
+  <button onclick="filterPosts('سؤال ديني', this)">أسئلة</button>
+</div>
   <h1>📖 المحتوى الديني</h1>
   <div class="container" id="postsContainer">جاري التحميل...</div>
   
@@ -27,25 +52,48 @@
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+let allPosts = [];
     async function loadPosts() {
-      const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-      const container = document.getElementById('postsContainer');
-      
-      if(!data || data.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#666;">لا يوجد محتوى بعد</p>';
-        return;
-      }
-      
-      container.innerHTML = data.map(p => `
-        <div class="post">
-          <h3>${p.title} <span class="category">- ${p.category}</span></h3>
-          <p style="line-height: 1.8; margin: 15px 0;">${p.content}</p>
-          <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
-        </div>
-      `).join('');
-    }
+  const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+  allPosts = data; // خزن كل المنشورات
+  displayPosts(allPosts); // اعرض الكل
+}
 
+function displayPosts(posts) {
+  const container = document.getElementById('postsContainer');
+  
+  if(!posts || posts.length === 0) {
+    container.innerHTML = '<p style="text-align:center; color:#666">لا يوجد منشورات بعد</p>';
+    return;
+  }
+
+  container.innerHTML = posts.map(p => `
+    <div class="post">
+      <h3>${p.title} <span class="category">${p.category}</span></h3>
+      <p style="line-height: 1.8; margin: 10px 0;">${p.content}</p>
+      <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG')}</div>
+      <button class="share-btn" onclick="sharePost(\`${p.title}\`, \`${p.content}\`)">📤 مشاركة</button>
+    </div>
+  `).join('');
+}
+
+function filterPosts(category, btn) {
+  document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  if(category === 'all') displayPosts(allPosts);
+  else displayPosts(allPosts.filter(p => p.category === category));
+}
+
+function sharePost(title, content) {
+  const text = `${title}\n\n${content}\n\nمن موقع المحتوى الديني`;
+  if(navigator.share) {
+    navigator.share({ title, text });
+  } else {
+    navigator.clipboard.writeText(text);
+    alert('تم نسخ المنشور 🌸');
+  }
+}
     loadPosts();
   </script>
 </body>
