@@ -107,6 +107,30 @@
       color: white;
       border: 2px solid #4ade80;
     }
+    .post-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.post-actions .btn {
+  flex: 0 1 auto;
+  min-width: 90px;
+}
+
+/* للموبايل الصغير */
+@media (max-width: 480px) {
+  .post-actions {
+    gap: 6px;
+  }
+  .post-actions .btn {
+    min-width: 80px;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
   </style>
 </head>
 <body>
