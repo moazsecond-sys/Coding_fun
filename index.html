@@ -60,7 +60,7 @@
       cursor: pointer; font-size: 14px; font-family: 'Tajawal';
       transition: 0.2s;
     }
-    .btn:hover { opacity: 0.8; transform: scale(1.05); }
+    .btn:hover { opacity: 0.8; transform: translateY(-2px); }
     .share-btn { background: #25D366; color: white; }
     .copy-btn { background: #3b82f6; color: white; }
     
@@ -77,6 +77,32 @@
     }
     #searchBox:focus { border-color: #2d5a3d; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1); }
 
+    /* خانة المنشور الجديدة */
+    .post-footer {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .post-meta {
+      font-size: 13px;
+      color: #666;
+    }
+    .post-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .post-actions .btn {
+      flex: 0 1 auto;
+      min-width: 90px;
+    }
+
+    /* الوضع الليلي */
     body.dark {
       background: #0f0f0f;
       color: #e0e0e0;
@@ -88,7 +114,8 @@
       box-shadow: none;
     }
     body.dark .category { color: #4ade80; }
-    body.dark .date { color: #999; }
+    body.dark .date, body.dark .post-meta { color: #999; }
+    body.dark .post-footer { border-top-color: #333; }
     body.dark .filter-buttons button {
       background: transparent;
       border-color: #4ade80;
@@ -107,30 +134,22 @@
       color: white;
       border: 2px solid #4ade80;
     }
-    .post-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-start;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
 
-.post-actions .btn {
-  flex: 0 1 auto;
-  min-width: 90px;
-}
-
-/* للموبايل الصغير */
-@media (max-width: 480px) {
-  .post-actions {
-    gap: 6px;
-  }
-  .post-actions .btn {
-    min-width: 80px;
-    font-size: 13px;
-    padding: 6px 10px;
-  }
-}
+    /* للموبايل الصغير */
+    @media (max-width: 480px) {
+      .post-actions {
+        gap: 6px;
+      }
+      .post-actions .btn {
+        min-width: 80px;
+        font-size: 13px;
+        padding: 6px 10px;
+      }
+      .post-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
@@ -182,11 +201,16 @@
         <div class="post" onclick="addView(${p.id})">
           <h3 style="margin-bottom:12px">${p.title} <span class="category">${p.category}</span></h3>
           <p style="line-height: 1.8; margin: 10px 0;" id="content-${p.id}">${p.content}</p>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px; flex-wrap:wrap; gap:10px">
-            <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG', {day:'numeric', month:'long', year:'numeric'})} • 👁️ ${p.views || 0} قراءة</div>
-            <div>
+          
+          <div class="post-footer">
+            <div class="post-meta">
+              📅 ${new Date(p.created_at).toLocaleDateString('ar-EG', {day:'numeric', month:'long', year:'numeric'})} 
+              - 👁️ ${p.views || 0} قراءة 
+              - 🏷️ ${p.category}
+            </div>
+            <div class="post-actions">
               <button class="btn copy-btn" onclick="copyPost(${p.id}); event.stopPropagation()">📋 نسخ</button>
-              <button class="btn share-btn" onclick="sharePost(\`${p.title}\`, \`${p.content}\`); event.stopPropagation()">📤 مشاركة</button>
+              <button class="btn share-btn" onclick="sharePost(\`${p.title.replace(/`/g, '\\`')}\`, \`${p.content.replace(/`/g, '\\`')}\`); event.stopPropagation()">📤 مشاركة</button>
             </div>
           </div>
         </div>
@@ -228,8 +252,10 @@
       await sb.from('posts').update({ views: newViews }).eq('id', id);
       post.views = newViews;
       
-      const el = document.querySelector(`#content-${id}`).parentElement.querySelector('.date');
-      el.innerHTML = `${new Date(post.created_at).toLocaleDateString('ar-EG')} • 👁️ ${newViews} قراءة`;
+      // تحديث العداد في نفس البوست
+      const postEl = document.querySelector(`#content-${id}`).closest('.post');
+      const metaEl = postEl.querySelector('.post-meta');
+      metaEl.innerHTML = metaEl.innerHTML.replace(/👁️ \d+ قراءة/, `👁️ ${newViews} قراءة`);
     }
 
     function copyPost(id) {
