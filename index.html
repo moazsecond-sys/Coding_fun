@@ -52,6 +52,7 @@ body.dark .filter-buttons button.active {
   background: #333; color: white; cursor: pointer;
   font-family: 'Tajawal';
 }
+    
   </style>
 </head>
 <body>
@@ -64,6 +65,14 @@ body.dark .filter-buttons button.active {
 </div>
   <div style="text-align:center; margin: 15px 0;">
   <button id="themeBtn" onclick="toggleTheme()">🌙 وضع ليلي</button>
+  </div>
+  <div style="text-align:center; margin: 20px 0;">
+  <input type="text" id="searchBox" placeholder="ابحث عن آية، حديث، دعاء..." 
+    onkeyup="searchPosts(this.value)"
+    style="width: 80%; max-width: 400px; padding: 10px 15px; 
+    border-radius: 25px; border: 1px solid #4ade80; 
+    background: #1a1a1a; color: white; font-family: 'Tajawal'; 
+    font-size: 16px; text-align: center;">
   </div>
   <h1>📖 المحتوى الديني</h1>
   <div class="container" id="postsContainer">جاري التحميل...</div>
@@ -87,9 +96,9 @@ function displayPosts(posts) {
   const container = document.getElementById('postsContainer');
   
   if(!posts || posts.length === 0) {
-    container.innerHTML = '<p style="text-align:center; color:#666">لا يوجد منشورات بعد</p>';
-    return;
-  }
+  container.innerHTML = '<p style="text-align:center; color:#666; padding:40px">لم نجد نتائج 🔍</p>';
+  return;
+}
 
   container.innerHTML = posts.map(p => `
     <div class="post">
@@ -108,7 +117,27 @@ function filterPosts(category, btn) {
   if(category === 'all') displayPosts(allPosts);
   else displayPosts(allPosts.filter(p => p.category === category));
 }
-
+function searchPosts(keyword) {
+  keyword = keyword.trim().toLowerCase();
+  
+  // لو فاضي ارجع كل المنشورات
+  if(keyword === '') {
+    displayPosts(allPosts);
+    return;
+  }
+  
+  // دور في العنوان + المحتوى + التصنيف
+  const results = allPosts.filter(p => 
+    p.title.toLowerCase().includes(keyword) ||
+    p.content.toLowerCase().includes(keyword) ||
+    p.category.toLowerCase().includes(keyword)
+  );
+  
+  displayPosts(results);
+  
+  // الغي تفعيل ازرار الفلترة وقت البحث
+  document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
+}
 function sharePost(title, content) {
   const text = `${title}\n\n${content}\n\nمن موقع المحتوى الديني`;
   if(navigator.share) {
