@@ -16,10 +16,16 @@
 const الزرار = document.getElementById('زرار_الملاحظة');
 
 // 2. افتح صندوق الزرار بالنقطة . وبرمجه
+let منور = false;
 الزرار.onclick = function(){
-  الزرار.style.backgroundColor = 'green';
-  الزرار.innerText = 'تمت الإضافة ✅';
-};
+  if( منور == false) 
+   الزرار.style.backgroundColor="green";
+   الزرار.innertext="تم التلوين والكتابة🍏";
+   منور=true;
+  else ( 
+   الزرار.style.backgroundColor="gray";
+   الزرار.innertext="وقت النوم";
+   منور = false;
   </script>
 </body>
 </html>
