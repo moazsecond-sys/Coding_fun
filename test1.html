@@ -120,7 +120,7 @@ async function addPost(){
   }
 
   const {error} = await sb.from('posts').insert([
-    { title: title, content: content, category: category, views: 0, notebook: notebook }
+    { title: title, content: content, category: category, views: 0}
   ]);
 
   if(error){
