@@ -6,5 +6,20 @@
 </head>
 <body>
   <div id="card">اهلا وسهلا 📇</div>
+  
+  <!-- الزرار الجديد بتاعنا -->
+  <button id="اضافة ملاحظة<"زرار_الملاحظة</button>
+  
+  <!-- كود الجافاسكربت هيجي هنا -->
+  <script>
+// 1. امسك الزرار من الصالة باسم الكرتونة
+const الزرار = document.getElementById('زرار_الملاحظة');
+
+// 2. افتح صندوق الزرار بالنقطة . وبرمجه
+الزرار.onclick = function(){
+  الزرار.style.backgroundColor = 'green';
+  الزرار.innerText = 'تمت الإضافة ✅';
+};
+  </script>
 </body>
 </html>
