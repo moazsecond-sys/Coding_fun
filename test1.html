@@ -18,14 +18,15 @@ const الزرار = document.getElementById('زرار_الملاحظة');
 // 2. افتح صندوق الزرار بالنقطة . وبرمجه
 let منور = false;
 الزرار.onclick = function(){
-  if( منور == false) 
+  if( منور == false) {
    الزرار.style.backgroundColor="green";
    الزرار.innerText="تم التلوين والكتابة🍏";
    منور=true;}
-  else ( منور == true)
+else {
    الزرار.style.backgroundColor="gray";
    الزرار.innerText="وقت النوم";
    منور = false;
+}};
   </script>
 </body>
 </html>
