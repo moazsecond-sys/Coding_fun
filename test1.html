@@ -2,7 +2,7 @@
 <html dir="rtl" lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>تجربة الأقسام</title>
+<title>تجربة البوستات</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 body{font-family:tahoma;padding:20px;background:#f5f5f5}
@@ -14,32 +14,31 @@ body{font-family:tahoma;padding:20px;background:#f5f5f5}
 </head>
 <body>
 
-<h2>اختبار الفلترة</h2>
-<input id="search" placeholder="ابحث..." oninput="searchProjects()" style="width:100%;padding:8px;margin:10px 0">
+<h2>اختبار بوستات posts</h2>
+<input id="search" placeholder="ابحث في العنوان..." oninput="searchPosts()" style="width:100%;padding:8px;margin:10px 0">
 
 <div>
   <button class="cat-btn active" data-cat="all">الكل</button>
-  <button class="cat-btn" data-cat="articles">📝 مقالات</button>
-  <button class="cat-btn" data-cat="design">🎨 تصميم</button>
-  <button class="cat-btn" data-cat="programming">💻 برمجة</button>
-  <button class="cat-btn" data-cat="general">🌍 عام</button>
+  <button class="cat-btn" data-cat="آية">📖 آية</button>
+  <button class="cat-btn" data-cat="حديث">📝 حديث</button>
+  <button class="cat-btn" data-cat="دعاء">🤲 دعاء</button>
 </div>
 
-<div id="projects"></div>
+<div id="posts"></div>
 
 <script>
-const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+
 let currentCategory = 'all';
-let allProjects = [];
+let allPosts = [];
 
 const catNames = {
-  'articles': 'مقالات',
-  'design': 'تصميم', 
-  'programming': 'برمجة',
-  'general': 'عام'
+  'آية': 'آية',
+  'حديث': 'حديث', 
+  'دعاء': 'دعاء'
 };
 
-loadProjects();
+loadPosts();
 
 // أزرار الأقسام
 document.querySelectorAll('.cat-btn').forEach(btn=>{
@@ -47,54 +46,58 @@ document.querySelectorAll('.cat-btn').forEach(btn=>{
     document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     currentCategory = btn.dataset.cat;
-    searchProjects();
+    searchPosts();
   }
 });
 
-async function loadProjects(){
-  const {data, error} = await sb.from('projects').select('*').order('id',{ascending:false});
+async function loadPosts(){
+  // بنجيب من جدول posts وبنرتب بالأحدث
+  const {data, error} = await sb.from('posts').select('id, title, content, category, notebook, views, created_at').order('id',{ascending:false});
   
   if(error){
-    document.getElementById('projects').innerHTML = 'خطأ: ' + error.message;
+    document.getElementById('posts').innerHTML = 'خطأ: ' + error.message;
+    console.log(error);
     return;
   }
   
-  allProjects = data || [];
-  console.log('البيانات:', allProjects); // عشان نشوف اسم العمود
-  searchProjects();
+  allPosts = data || [];
+  console.log('بيانات posts:', allPosts); 
+  searchPosts();
 }
 
-function searchProjects(){
+function searchPosts(){
   const term = document.getElementById('search').value.toLowerCase();
   
-  let filtered = allProjects;
+  let filtered = allPosts;
   if(currentCategory !== 'all') {
-    filtered = allProjects.filter(p => p.categories === currentCategory);
+    filtered = allPosts.filter(p => p.category === currentCategory);
   }
   
   if(term) {
     filtered = filtered.filter(p => 
-      p.title.toLowerCase().includes(term) || 
-      p.description.toLowerCase().includes(term)
+      (p.title || '').toLowerCase().includes(term) || 
+      (p.content || '').toLowerCase().includes(term)
     );
   }
   
-  displayProjects(filtered);
+  displayPosts(filtered);
 }
 
-function displayProjects(list){
-  const container = document.getElementById('projects');
+function displayPosts(list){
+  const container = document.getElementById('posts');
   
   if(!list.length) {
-    container.innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد مشاريع</p>';
+    container.innerHTML = '<p style="text-align:center;color:#666;padding:40px">لا توجد بوستات</p>';
     return;
   }
 
   container.innerHTML = list.map(p=>`
   <div class="card">
-    <span class="badge">${catNames[p.categories] || p.categories}</span>
+    <span class="badge">${catNames[p.category] || p.category}</span>
     <h3>${p.title}</h3>
-    <p>${p.description || 'بدون وصف'}</p>
+    <p>${p.content || 'بدون محتوى'}</p>
+    ${p.notebook ? `<p style="font-size:12px;color:#888">ملاحظة: ${p.notebook}</p>` : ''}
+    <p style="font-size:12px;color:#999">المشاهدات: ${p.views || 0}</p>
   </div>
   `).join('');
 }
