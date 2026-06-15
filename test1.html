@@ -102,5 +102,38 @@ function displayPosts(list){
   `).join('');
 }
 </script>
+  <h3 style="margin-top:40px">➕ ضيف بوست جديد للتجربة</h3>
+<input id="newTitle" placeholder="العنوان" style="width:100%;padding:8px;margin:5px 0">
+<textarea id="newContent" placeholder="المحتوى/الآية" style="width:100%;padding:8px;margin:5px 0;height:80px"></textarea>
+<input id="newCategory" placeholder="القسم: آية / حديث / دعاء" value="آية" style="width:100%;padding:8px;margin:5px 0">
+<button onclick="addPost()" style="padding:10px 20px;background:#28a745;color:#fff;border:none;border-radius:8px;cursor:pointer">إضافة</button>
+
+<script>
+async function addPost(){
+  const title = document.getElementById('newTitle').value;
+  const content = document.getElementById('newContent').value;
+  const category = document.getElementById('newCategory').value;
+  
+  if(!title || !content){
+    alert('اكتب عنوان ومحتوى يا معاذ 🫠');
+    return;
+  }
+
+  const {error} = await sb.from('posts').insert([
+    { title: title, content: content, category: category, views: 0 }
+  ]);
+
+  if(error){
+    alert('في خطأ: ' + error.message);
+    console.log(error);
+    return;
+  }
+
+  alert('تم الإضافة بنجاح ✅');
+  document.getElementById('newTitle').value = '';
+  document.getElementById('newContent').value = '';
+  loadPosts(); // نعيد تحميل عشان يظهر الجديد
+}
+</script>
 </body>
 </html>
