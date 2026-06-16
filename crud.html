@@ -2,90 +2,24 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Supabase CRUD + Auth</title>
+  <title>اختبار</title>
   <style>
-    body { font-family: Tahoma; padding: 20px; background: #f5f5f5; max-width: 800px; margin: auto; }
-    h1 { text-align: center; color: #333; }
-    button { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; margin: 3px; }
-    .btn-login { background: #5865F2; color: white; }
-    .form, .auth { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
-    .success { color: green; padding: 8px; background: #d4edda; border-radius: 5px; } 
-    .error { color: red; padding: 8px; background: #f8d7da; border-radius: 5px; }
-    .hidden { display: none; }
+    body { font-family: Tahoma; padding: 50px; text-align: center; }
+    button { padding: 15px 30px; font-size: 18px; background: #5865F2; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    .success { color: green; font-size: 20px; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>تجربة Supabase Auth</h1>
+  <h1>اختبار الأزرار</h1>
+  <button onclick="جرب()">دوس هنا</button>
+  <div id="نتيجة"></div>
 
-  <div class="auth" id="auth-box">
-    <h3>تسجيل دخول</h3>
-    <input type="email" id="email" placeholder="الإيميل">
-    <input type="password" id="password" placeholder="كلمة المرور 6 حروف">
-    <button class="btn-login" onclick="تسجيل_دخول()">دخول</button>
-    <button onclick="تسجيل_جديد()">تسجيل جديد</button>
-    <div id="رسالة_auth" style="margin-top:10px;"></div>
-  </div>
-
-  <div id="app" class="hidden">
-    <p>مرحباً: <span id="user-email"></span> <button onclick="تسجيل_خروج()">خروج</button></p>
-    <div id="النتيجة">تم الدخول بنجاح ✅</div>
-  </div>
-
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
-    // ⚠️ غير دول من Supabase → Settings → API
-    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-      async function تسجيل_جديد() {
-      const email = document.getElementById('email').value.trim()
-      const password = document.getElementById('password').value
-      const رسالة = document.getElementById('رسالة_auth')
-      
-      if(!email || password.length < 6) {
-        return رسالة.innerHTML = '<div class="error">اكتب إيميل + باسورد 6 حروف</div>'
-      }
-
-      let { error } = await supabase.auth.signUp({ email, password })
-      
-      if(error) return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
-      
-      رسالة.innerHTML = '<div class="success">✅ تم التسجيل. سجل دخول دلوقتي</div>'
+  <script>
+    alert('الملف اتحمل بنجاح ✅') // لو دي مظهرتش يبقى الملف بايظ
+    
+    function جرب() {
+      document.getElementById('نتيجة').innerHTML = '<div class="success">الأزرار شغالة 100% 🎉</div>'
     }
-
-    async function تسجيل_دخول() {
-      const email = document.getElementById('email').value.trim()
-      const password = document.getElementById('password').value
-      const رسالة = document.getElementById('رسالة_auth')
-      
-      let { error } = await supabase.auth.signInWithPassword({ email, password })
-      
-      if(error) return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
-      
-      رسالة.innerHTML = '<div class="success">✅ تم الدخول</div>'
-      setTimeout(تحقق_من_الجلسة, 500)
-    }
-
-    async function تسجيل_خروج() {
-      await supabase.auth.signOut()
-      location.reload()
-    }
-
-    async function تحقق_من_الجلسة() {
-      const { data: { session } = await supabase.auth.getSession() // اتصلح هنا القوس
-      if(session) {
-        document.getElementById('auth-box').classList.add('hidden')
-        document.getElementById('app').classList.remove('hidden')
-        document.getElementById('user-email').textContent = session.user.email
-      }
-    }
-
-    تحقق_من_الجلسة()
-    window.تسجيل_دخول = تسجيل_دخول
-    window.تسجيل_جديد = تسجيل_جديد
-    window.تسجيل_خروج = تسجيل_خروج
   </script>
 </body>
 </html>
