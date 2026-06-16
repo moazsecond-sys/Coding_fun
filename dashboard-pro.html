@@ -483,13 +483,35 @@ document.addEventListener('keydown', (e) => {
   }
 })
 
-// دخول تلقائي
-supabase.auth.getSession().then(({data}) => {
+
+// دخول تلقائي + لو مفيش سيشن ارجع للوجين
+supabase.auth.getSession().then(({data, error}) => {
+  if(error) {
+    console.error('إيرور السيشن:', error)
+  }
+  
   if(data.session) {
+    console.log('دخلت تلقائي بنجاح')
     document.getElementById('login').style.display='none'
     document.getElementById('crud').style.display='block'
     تحديث_الواجهة()
     عرض_البيانات()
+  } else {
+    console.log('مفيش سيشن - ارجع سجل دخول')
+    document.getElementById('login').style.display='block'
+    document.getElementById('crud').style.display='none'
+  }
+})
+
+// اسمع لو سجلت دخول/خروج
+supabase.auth.onAuthStateChange((event, session) => {
+  if(event === 'SIGNED_IN') {
+    document.getElementById('login').style.display='none'
+    document.getElementById('crud').style.display='block'
+    عرض_البيانات()
+  }
+  if(event === 'SIGNED_OUT') {
+    location.reload()
   }
 })
 </script>
