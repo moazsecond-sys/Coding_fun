@@ -89,14 +89,30 @@ window.تسجيل_جديد = async () => {
   else رسالة(msgLogin,'✅ تم التسجيل')
 }
 
-// تسجيل دخول
+// تسجيل دخول مع إظهار الخطأ
 window.تسجيل_دخول = async () => {
   const email = document.getElementById('email').value
   const password = document.getElementById('pass').value
-  if(!email ||!password){ رسالة(msgLogin,'اكتب الإيميل والباسورد','error'); return }
-  let { error } = await supabase.auth.signInWithPassword({email, password})
-  if(error) رسالة(msgLogin,'❌ '+error.message,'error')
-  else اعرضCRUD()
+  
+  if(!email || !password){ 
+    رسالة(msgLogin,'اكتب الإيميل والباسورد','error'); 
+    return 
+  }
+  
+  // سطر التشخيص
+  رسالة(msgLogin,'جاري المحاولة...', 'success')
+  
+  let { data, error } = await supabase.auth.signInWithPassword({email, password})
+  
+  if(error){
+    // هنا هنطبع الخطأ كامل عشان نعرف المشكلة
+    رسالة(msgLogin, '❌ الخطأ: ' + error.message + ' <br> الكود: ' + error.code, 'error')
+    alert('تفاصيل الخطأ: ' + error.message) // هيطلعلك تنبيه منبثق
+  }
+  else {
+    رسالة(msgLogin,'✅ تم الدخول بنجاح', 'success')
+    setTimeout(اعرضCRUD, 1000)
+  }
 }
 
 // تسجيل خروج
