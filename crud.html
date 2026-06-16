@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>CRUD كامل - Supabase</title>
+  <style>
+    body { font-family: Tahoma; padding: 20px; background: #f5f5f5; max-width: 700px; margin: auto; }
+    h1 { text-align: center; color: #333; }
+    button { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 3px; }
+    .btn-add { background: #3ecf8e; color: white; }
+    .btn-edit { background: #ffa500; color: white; }
+    .btn-delete { background: #ff4d4d; color: white; }
+    .btn-save { background: #007bff; color: white; }
+    .btn-cancel { background: #6c757d; color: white; }
+    
+    #النتيجة { margin-top: 20px; }
+    .item { border: 2px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 8px; background: white; }
+    .item input { width: 95%; padding: 6px; margin: 4px 0; }
+    
+    .form { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .msg { margin-top: 8px; font-weight: bold; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>CRUD كامل مع Supabase</h1>
+
+  <!-- 1. فورم النشر Insert -->
+  <div class="form">
+    <h3>نشر صف جديد</h3>
+    <input type="text" id="title" placeholder="العنوان">
+    <input type="text" id="content" placeholder="المحتوى">
+    <button class="btn-add" onclick="نشر_صف()">نشر</button>
+    <div id="رسالة_نشر" class="msg"></div>
+  </div>
+
+  <!-- 2. زرار القراءة Select -->
+  <div style="text-align: center;">
+    <button class="btn-add" onclick="قراءة_البيانات()">قراءة البيانات</button>
+  </div>
+  <div id="النتيجة">اضغط قراءة عشان تشوف البيانات...</div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+    // مسار الربط 1: Project URL
+    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co' // مسار الربط
+    // مسار الربط 2: anon key
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' // مسار الربط
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+    let وضع_التعديل = null // عشان نعرف بنعدل على انهي صف
+
+    // 1. قراءة Select
+    async function قراءة_البيانات() {
+      const div = document.getElementById('النتيجة')
+      div.innerHTML = 'جاري التحميل...'
+
+      try {
+        let { data, error } = await supabase
+          .from('test') // مسار الربط ← اسم الجدول
+          .select('id, title, content, created_at') // مسار الربط ← الأعمدة
+          .order('id', { ascending: false })
+
+        if (error) throw error
+
+        if(!data || data.length === 0) {
+          div.innerHTML = 'الجدول فاضي'
+          return
+        }
+
+        div.innerHTML = data.map(item => `
+          <div class="item" id="صف-${item.id}">
+            <b>ID:</b> ${item.id} <br>
+            <div id="عرض-${item.id}">
+              <b>Title:</b> <span>${item.title}</span> <br>
+              <b>Content:</b> <span>${item.content}</span> <br>
+              <b>Created:</b> ${new Date(item.created_at).toLocaleString('ar-EG')} <br>
+              <button class="btn-edit" onclick="تفعيل_التعديل(${item.id}, '${item.title}', '${item.content}')">تعديل</button>
+              <button class="btn-delete" onclick="حذف_صف(${item.id})">حذف</button>
+            </div>
+            <div id="تعديل-${item.id}" style="display:none;">
+              <input type="text" id="edit-title-${item.id}" value="${item.title}">
+              <input type="text" id="edit-content-${item.id}" value="${item.content}">
+              <button class="btn-save" onclick="حفظ_التعديل(${item.id})">حفظ</button>
+              <button class="btn-cancel" onclick="إلغاء_التعديل(${item.id})">إلغاء</button>
+            </div>
+          </div>
+        `).join('')
+
+      } catch(err) {
+        div.innerHTML = `<div class="error">❌ غلط: ${err.message}</div>`
+      }
+    }
+
+    // 2. نشر Insert
+    async function نشر_صف() {
+      const title = document.getElementById('title').value.trim()
+      const content = document.getElementById('content').value.trim()
+      const رسالة = document.getElementById('رسالة_نشر')
+
+      if(!title || !content) {
+        رسالة.innerHTML = '<div class="error">اكتب العنوان والمحتوى</div>'
+        return
+      }
+
+      try {
+        const { error } = await supabase
+          .from('test') // مسار الربط ← نفس الجدول
+          .insert([{ title: title, content: content }]) // مسار الربط ← نشر الداتا
+
+        if (error) throw error
+
+        رسالة.innerHTML = '<div class="success">✅ تم النشر بنجاح</div>'
+        document.getElementById('title').value = ''
+        document.getElementById('content').value = ''
+        setTimeout(قراءة_البيانات, 500)
+
+      } catch(err) {
+        رسالة.innerHTML = `<div class="error">❌ ${err.message}</div>`
+      }
+    }
+
+    // 3. تفعيل وضع التعديل Update
+    function تفعيل_التعديل(id, title, content) {
+      document.getElementById(`عرض-${id}`).style.display = 'none'
+      document.getElementById(`تعديل-${id}`).style.display = 'block'
+      وضع_التعديل = id
+    }
+
+    function إلغاء_التعديل(id) {
+      document.getElementById(`عرض-${id}`).style.display = 'block'
+      document.getElementById(`تعديل-${id}`).style.display = 'none'
+      وضع_التعديل = null
+    }
+
+    // 4. حفظ التعديل Update
+    async function حفظ_التعديل(id) {
+      const newTitle = document.getElementById(`edit-title-${id}`).value.trim()
+      const newContent = document.getElementById(`edit-content-${id}`).value.trim()
+
+      try {
+        const { error } = await supabase
+          .from('test') // مسار الربط ← نفس الجدول
+          .update({ title: newTitle, content: newContent }) // مسار الربط ← الداتا الجديدة
+          .eq('id', id) // مسار الربط ← بنحدد الصف بالـ id
+
+        if (error) throw error
+
+        إلغاء_التعديل(id)
+        قراءة_البيانات()
+
+      } catch(err) {
+        alert('غلط في التعديل: ' + err.message)
+      }
+    }
+
+    // 5. حذف Delete
+    async function حذف_صف(id) {
+      if(!confirm('متأكد عايز تحذف الصف ده؟')) return
+
+      try {
+        const { error } = await supabase
+          .from('test') // مسار الربط ← نفس الجدول
+          .delete() // مسار الربط ← عملية الحذف
+          .eq('id', id) // مسار الربط ← بنحدد الصف بالـ id
+
+        if (error) throw error
+        قراءة_البيانات()
+
+      } catch(err) {
+        alert('غلط في الحذف: ' + err.message)
+      }
+    }
+
+    window.قراءة_البيانات = قراءة_البيانات
+    window.نشر_صف = نشر_صف
+    window.تفعيل_التعديل = تفعيل_التعديل
+    window.إلغاء_التعديل = إلغاء_التعديل
+    window.حفظ_التعديل = حفظ_التعديل
+    window.حذف_صف = حذف_صف
+  </script>
+</body>
+</html>
