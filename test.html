@@ -2,12 +2,19 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة التحكم</title>
+<title>لوحة تحكم test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Tahoma;padding:20px;max-width:400px;margin:50px auto;text-align:center}
-input,button{padding:12px;margin:8px 0;width:100%;box-sizing:border-box;border-radius:8px;border:1px solid #ddd}
-button{background:#5865F2;color:white;border:none;cursor:pointer}
+body{font-family:Tahoma;padding:20px;max-width:600px;margin:20px auto;background:#f5f5f5}
+input,button,textarea{padding:12px;margin:8px 0;width:100%;box-sizing:border-box;border-radius:8px;border:1px solid #ddd;font-size:16px}
+button{background:#5865F2;color:white;border:none;cursor:pointer;font-weight:bold}
+button:hover{opacity:0.9}
+button.danger{background:#ED4245}
+button.edit{background:#FEE75C;color:#000}
+#login,#crud{padding:20px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 #crud{display:none}
+.item{padding:15px;margin:10px 0;background:#fafafa;border-radius:8px;border:1px solid #eee}
+.item button{width:auto;margin-left:5px}
 </style>
 </head>
 <body>
@@ -20,48 +27,109 @@ button{background:#5865F2;color:white;border:none;cursor:pointer}
 </div>
 
 <div id="crud">
-  <h2>أهلاً بيك ✅</h2>
-  <p>كده الاتصال بـ Supabase نجح</p>
+  <h2>لوحة تحكم جدول test ✅</h2>
   <button onclick="تسجيل_خروج()">خروج</button>
+  
+  <h3>إضافة سجل جديد</h3>
+  <input id="title" placeholder="اكتب العنوان هنا">
+  <button onclick="اضافة()">نشر</button>
+  
+  <h3>البيانات الموجودة</h3>
+  <div id="list">جاري التحميل...</div>
 </div>
 
 <script type="module">
-alert('1- الصفحة اشتغلت')
-
-// 1. نستورد Supabase من Skypack
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
 
-alert('2- المكتبة اتحملت')
-
-// 2. حط بياناتك هنا من Supabase > Project Settings > API
+// 1. حط بياناتك هنا
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-alert('3- الاتصال بـ Supabase نجح')
-
-// 3. دالة الدخول
+// 2. تسجيل الدخول
 window.تسجيل_دخول = async function() {
-  alert('4- دست دخول')
   const email = document.getElementById('email').value
   const pass = document.getElementById('pass').value
   
-  const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
+  const { error } = await supabase.auth.signInWithPassword({email, password: pass})
   
   if(error) {
     alert('خطأ: ' + error.message)
   } else {
-    alert('5- تم الدخول بنجاح!')
     document.getElementById('login').style.display = 'none'
     document.getElementById('crud').style.display = 'block'
+    عرض_البيانات()
   }
 }
 
+// 3. تسجيل الخروج
 window.تسجيل_خروج = async function() {
   await supabase.auth.signOut()
   location.reload()
 }
+
+// 4. READ - عرض البيانات
+async function عرض_البيانات() {
+  const { data, error } = await supabase.from('test').select('*').order('id', {ascending: false})
+  
+  if(error) return document.getElementById('list').innerHTML = 'خطأ: ' + error.message
+  
+  if(data.length === 0) return document.getElementById('list').innerHTML = 'مفيش بيانات بعد'
+  
+  document.getElementById('list').innerHTML = data.map(item => `
+    <div class="item">
+      <span id="text-${item.id}">${item.title}</span>
+      <br><br>
+      <button class="edit" onclick="تعديل(${item.id})">تعديل</button>
+      <button class="danger" onclick="حذف(${item.id})">حذف</button>
+    </div>
+  `).join('')
+}
+
+// 5. CREATE - إضافة
+window.اضافة = async function() {
+  const title = document.getElementById('title').value.trim()
+  if(!title) return alert('اكتب عنوان الأول')
+  
+  const { error } = await supabase.from('test').insert([{title}])
+  
+  if(error) alert('خطأ: ' + error.message)
+  else {
+    document.getElementById('title').value = ''
+    عرض_البيانات()
+  }
+}
+
+// 6. UPDATE - تعديل
+window.تعديل = async function(id) {
+  const newTitle = prompt('اكتب العنوان الجديد:')
+  if(!newTitle) return
+  
+  const { error } = await supabase.from('test').update({title: newTitle}).eq('id', id)
+  
+  if(error) alert('خطأ: ' + error.message)
+  else عرض_البيانات()
+}
+
+// 7. DELETE - حذف
+window.حذف = async function(id) {
+  if(!confirm('متأكد عايز تحذف؟')) return
+  
+  const { error } = await supabase.from('test').delete().eq('id', id)
+  
+  if(error) alert('خطأ: ' + error.message)
+  else عرض_البيانات()
+}
+
+// 8. لو اليوزر عامل تسجيل دخول قبل كده يدخله علطول
+supabase.auth.getSession().then(({data}) => {
+  if(data.session) {
+    document.getElementById('login').style.display = 'none'
+    document.getElementById('crud').style.display = 'block'
+    عرض_البيانات()
+  }
+})
 </script>
 </body>
 </html>
