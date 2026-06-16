@@ -165,18 +165,31 @@ window.تسجيل_خروج = async function(){await supabase.auth.signOut();loca
 
 // ===== READ =====
 async function عرض_البيانات() {
-  document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">جاري التحميل...</td></tr>'
+  const body = document.getElementById('tableBody')
+  body.innerHTML = '<tr><td colspan="4" class="loading">جاري التحميل...</td></tr>'
   
   try {
-    const result = await supabase.from('test').select('*')
-    console.log('النتيجة كاملة:', result)
+    // 1. نجرب نجيب اليوزر الحالي الأول
+    const { data: { user } = await supabase.auth.getUser()
+    console.log('اليوزر الحالي:', user?.email)
     
-    const { data, error, status } = result
+    // 2. نجرب الـ select
+    const { data, error, status, statusText } = await supabase.from('test').select('*')
     
-    if(error) throw error
+    // 3. نطبع كل حاجة في الأليرت عشان الموبايل مفيهوش Console سهل
+    alert(`Status: ${status} ${statusText}\nError: ${error ? error.code + ' - ' + error.message : 'مفيش'}\nData: ${data ? data.length + ' سجل' : 'null'}`)
+    
+    if(error) {
+      body.innerHTML = `<tr><td colspan="4" style="color:red;padding:20px">
+        <b>الكود:</b> ${error.code}<br>
+        <b>الرسالة:</b> ${error.message}<br>
+        <b>Status:</b> ${status}
+      </td></tr>`
+      return
+    }
     
     if(!data || data.length === 0) {
-      document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="color:orange">الجدول فاضي 📭</td></tr>'
+      body.innerHTML = '<tr><td colspan="4" style="color:orange">الجدول فاضي 📭 بس الاتصال نجح</td></tr>'
       return
     }
     
@@ -184,17 +197,10 @@ async function عرض_البيانات() {
     بحث()
     
   } catch(err) {
-    console.error('إيرور خطير:', err)
-    document.getElementById('tableBody').innerHTML = 
-      `<tr><td colspan="4" style="color:red;padding:20px">
-        <b>الإيرور اللي مخبي:</b><br>
-        ${err.message}<br><br>
-        <b>Status Code:</b> ${err.status || 'مفيش'}<br>
-        <b>Details:</b> ${err.details || 'مفيش'}
-      </td></tr>`
+    alert('إيرور كاتش: ' + err.message)
+    body.innerHTML = `<tr><td colspan="4" style="color:red">إيرور: ${err.message}</td></tr>`
   }
 }
-
 // ===== CREATE =====
 window.اضافة = async function() {
   const title = document.getElementById('title').value.trim()
