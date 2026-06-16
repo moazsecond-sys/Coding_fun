@@ -163,8 +163,32 @@ window.تسجيل_خروج = async function(){await supabase.auth.signOut();loca
 // ===== READ =====
 async function عرض_البيانات() {
   document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">جاري التحميل...</td></tr>'
-  const { data, error } = await supabase.from('test').select('*')
-  if(error) return document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" style="color:red">${error.message}</td></tr>`
+  
+  console.log('URL:', SUPABASE_URL) // عشان نتأكد من الـ URL
+  console.log('KEY موجود؟', SUPABASE_KEY ? 'أيوه' : 'لأ') // نتأكد إن المفتاح مش فاضي
+  
+  const { data, error, status } = await supabase.from('test').select('*')
+  
+  console.log('Status:', status) // 200 = نجح، 401 = مفتاح غلط، 404 = جدول مش موجود
+  console.log('Data:', data)     // المفروض مصفوفة فيها 4 سجلات زي الصور
+  console.log('Error:', error)   // ده أهم سطر
+  
+  if(error) {
+    document.getElementById('tableBody').innerHTML = 
+      `<tr><td colspan="4" style="color:red;padding:20px">
+        <b>إيرور:</b> ${error.message}<br>
+        <b>الكود:</b> ${error.code}<br>
+        <b>Status:</b> ${status}
+      </td></tr>`
+    return
+  }
+  
+  if(!data || data.length === 0) {
+    document.getElementById('tableBody').innerHTML = 
+      '<tr><td colspan="4" style="color:orange">الجدول فاضي مفيهوش داتا 📭</td></tr>'
+    return
+  }
+  
   allData = data
   بحث()
 }
