@@ -13,8 +13,10 @@
 <input id="pass" type="password" placeholder="الباسورد"><br>
 <button onclick="تسجيل_دخول()">دخول</button>
 
-<!-- غيرنا طريقة تحميل Supabase -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script type="module">
+import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
+window.supabase = { createClient }
+</script>
 
 <script>
 alert('2- مكتبة Supabase اتحملت')
