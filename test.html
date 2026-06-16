@@ -1,5 +1,63 @@
 <!DOCTYPE html>
-<html><body>
-<script>alert('شغال')</script>
-<h1>لو شفت دي يبقى كله تمام</h1>
-</body></html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة التحكم</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>body{font-family:Tahoma;padding:20px;max-width:600px;margin:auto}input,button,textarea{padding:10px;margin:5px;width:100%}button{background:#5865F2;color:white;border:none}.hidden{display:none}</style>
+</head>
+<body>
+
+<div id="login">
+  <h2>دخول</h2>
+  <input id="email" placeholder="الإيميل">
+  <input id="pass" type="password" placeholder="الباسورد">
+  <button onclick="تسجيل_دخول()">دخول</button>
+</div>
+
+<div id="crud" class="hidden">
+  <button onclick="تسجيل_خروج()">خروج</button>
+  <h2>إضافة منشور</h2>
+  <input id="title" placeholder="العنوان">
+  <textarea id="content" placeholder="المحتوى"></textarea>
+  <button onclick="اضافة()">إضافة</button>
+  <div id="القائمة"></div>
+</div>
+
+<script>
+alert('الصفحة اشتغلت') // لو ده ظهر يبقى كله تمام
+
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+window.تسجيل_دخول = async () => {
+  alert('دست دخول') // اختبار الزرار
+  let { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('email').value,
+    password: document.getElementById('pass').value
+  })
+  if(error) alert('خطأ: ' + error.message)
+  else {
+    document.getElementById('login').classList.add('hidden')
+    document.getElementById('crud').classList.remove('hidden')
+  }
+}
+
+window.تسجيل_خروج = async () => {
+  await supabase.auth.signOut()
+  location.reload()
+}
+
+window.اضافة = async () => {
+  const { data: { user } = await supabase.auth.getUser()
+  await supabase.from('test').insert([{
+    title: document.getElementById('title').value,
+    content: document.getElementById('content').value,
+    user_id: user.id
+  }])
+  alert('تمت الإضافة')
+}
+</script>
+</body>
+</html>
