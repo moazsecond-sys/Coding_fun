@@ -2,185 +2,257 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>CRUD كامل - Supabase</title>
+  <title>Supabase CRUD كامل</title>
   <style>
-    body { font-family: Tahoma; padding: 20px; background: #f5f5f5; max-width: 700px; margin: auto; }
+    body { font-family: Tahoma; padding: 20px; background: #f5f5f5; max-width: 800px; margin: auto; }
     h1 { text-align: center; color: #333; }
-    button { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 3px; }
+    button { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; margin: 3px; }
     .btn-add { background: #3ecf8e; color: white; }
     .btn-edit { background: #ffa500; color: white; }
     .btn-delete { background: #ff4d4d; color: white; }
     .btn-save { background: #007bff; color: white; }
-    .btn-cancel { background: #6c757d; color: white; }
+    .btn-login { background: #5865F2; color: white; }
     
-    #النتيجة { margin-top: 20px; }
+    .form, .auth { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
     .item { border: 2px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 8px; background: white; }
-    .item input { width: 95%; padding: 6px; margin: 4px 0; }
-    
-    .form { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-    .msg { margin-top: 8px; font-weight: bold; }
-    .success { color: green; }
-    .error { color: red; }
+    .item img { max-width: 150px; border-radius: 5px; margin-top: 8px; }
+    .success { color: green; font-weight: bold; } .error { color: red; font-weight: bold; }
+    .toolbar { display: flex; gap: 10px; margin-bottom: 15px; }
+    .toolbar input { flex: 1; }
+    .pagination { text-align: center; margin-top: 15px; }
+    .pagination button { background: #ddd; }
+    .pagination button.active { background: #3ecf8e; color: white; }
+    .hidden { display: none; }
+    .user-info { text-align: left; margin-bottom: 10px; }
   </style>
 </head>
 <body>
-  <h1>CRUD كامل مع Supabase</h1>
+  <h1>Supabase CRUD كامل + Auth + Storage</h1>
 
-  <!-- 1. فورم النشر Insert -->
-  <div class="form">
-    <h3>نشر صف جديد</h3>
-    <input type="text" id="title" placeholder="العنوان">
-    <input type="text" id="content" placeholder="المحتوى">
-    <button class="btn-add" onclick="نشر_صف()">نشر</button>
-    <div id="رسالة_نشر" class="msg"></div>
+  <!-- تسجيل الدخول -->
+  <div class="auth" id="auth-box">
+    <h3>تسجيل دخول</h3>
+    <input type="email" id="email" placeholder="الإيميل">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button class="btn-login" onclick="تسجيل_دخول()">دخول</button>
+    <button onclick="تسجيل_جديد()">تسجيل جديد</button>
+    <div id="رسالة_auth"></div>
   </div>
 
-  <!-- 2. زرار القراءة Select -->
-  <div style="text-align: center;">
-    <button class="btn-add" onclick="قراءة_البيانات()">قراءة البيانات</button>
+  <div id="app" class="hidden">
+    <div class="user-info">
+      مرحباً: <span id="user-email"></span>
+      <button onclick="تسجيل_خروج()">خروج</button>
+    </div>
+
+    <!-- نشر + رفع صورة -->
+    <div class="form">
+      <h3>نشر صف جديد</h3>
+      <input type="text" id="title" placeholder="العنوان">
+      <textarea id="content" placeholder="المحتوى" rows="3"></textarea>
+      <input type="file" id="image" accept="image/*">
+      <button class="btn-add" onclick="نشر_صف()">نشر</button>
+      <div id="رسالة_نشر"></div>
+    </div>
+
+    <!-- بحث + قراءة -->
+    <div class="toolbar">
+      <input type="text" id="بحث" placeholder="ابحث في العنوان..." onkeyup="بحث_فوري()">
+      <button class="btn-add" onclick="قراءة_البيانات()">تحديث</button>
+    </div>
+    <div id="النتيجة">جاري التحميل...</div>
+
+    <!-- ترقيم الصفحات -->
+    <div class="pagination" id="pagination"></div>
   </div>
-  <div id="النتيجة">اضغط قراءة عشان تشوف البيانات...</div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-    // مسار الربط 1: Project URL
-    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co' // مسار الربط
-    // مسار الربط 2: anon key
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' // مسار الربط
-
+    // مسار الربط
+    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-    let وضع_التعديل = null // عشان نعرف بنعدل على انهي صف
 
-    // 1. قراءة Select
+    let الصفحة_الحالية = 1
+    let العناصر_لكل_صفحة = 5
+    let إجمالي_الصفوف = 0
+    let كلمة_البحث = ''
+
+    // 1. Auth
+    async function تسجيل_دخول() {
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
+      let { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if(error) return document.getElementById('رسالة_auth').innerHTML = `<div class="error">${error.message}</div>`
+      تحقق_من_الجلسة()
+    }
+
+    async function تسجيل_جديد() {
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
+      let { error } = await supabase.auth.signUp({ email, password })
+      if(error) return alert(error.message)
+      alert('تم التسجيل، افتح الإيميل وفعل الحساب')
+    }
+
+    async function تسجيل_خروج() {
+      await supabase.auth.signOut()
+      location.reload()
+    }
+
+    async function تحقق_من_الجلسة() {
+      const { data: { session } = await supabase.auth.getSession()
+      if(session) {
+        document.getElementById('auth-box').classList.add('hidden')
+        document.getElementById('app').classList.remove('hidden')
+        document.getElementById('user-email').textContent = session.user.email
+        قراءة_البيانات()
+      }
+    }
+
+    // 2. قراءة Select + بحث + Pagination
     async function قراءة_البيانات() {
       const div = document.getElementById('النتيجة')
       div.innerHTML = 'جاري التحميل...'
 
-      try {
-        let { data, error } = await supabase
-          .from('test') // مسار الربط ← اسم الجدول
-          .select('id, title, content, created_at') // مسار الربط ← الأعمدة
-          .order('id', { ascending: false })
+      let query = supabase.from('test').select('*', { count: 'exact' }).order('id', { ascending: false })
+      
+      if(كلمة_البحث) query = query.ilike('title', `%${كلمة_البحث}%`)
+      
+      const من = (الصفحة_الحالية - 1) * العناصر_لكل_صفحة
+      query = query.range(من, من + العناصر_لكل_صفحة - 1)
 
-        if (error) throw error
-
-        if(!data || data.length === 0) {
-          div.innerHTML = 'الجدول فاضي'
-          return
-        }
-
-        div.innerHTML = data.map(item => `
-          <div class="item" id="صف-${item.id}">
-            <b>ID:</b> ${item.id} <br>
-            <div id="عرض-${item.id}">
-              <b>Title:</b> <span>${item.title}</span> <br>
-              <b>Content:</b> <span>${item.content}</span> <br>
-              <b>Created:</b> ${new Date(item.created_at).toLocaleString('ar-EG')} <br>
-              <button class="btn-edit" onclick="تفعيل_التعديل(${item.id}, '${item.title}', '${item.content}')">تعديل</button>
-              <button class="btn-delete" onclick="حذف_صف(${item.id})">حذف</button>
-            </div>
-            <div id="تعديل-${item.id}" style="display:none;">
-              <input type="text" id="edit-title-${item.id}" value="${item.title}">
-              <input type="text" id="edit-content-${item.id}" value="${item.content}">
-              <button class="btn-save" onclick="حفظ_التعديل(${item.id})">حفظ</button>
-              <button class="btn-cancel" onclick="إلغاء_التعديل(${item.id})">إلغاء</button>
-            </div>
-          </div>
-        `).join('')
-
-      } catch(err) {
-        div.innerHTML = `<div class="error">❌ غلط: ${err.message}</div>`
-      }
+      let { data, error, count } = await query
+      if (error) return div.innerHTML = `<div class="error">${error.message}</div>`
+      
+      إجمالي_الصفوف = count
+      عرض_البيانات(data)
+      عرض_الصفحات()
     }
 
-    // 2. نشر Insert
+    function عرض_البيانات(data) {
+      const div = document.getElementById('النتيجة')
+      if(!data || data.length === 0) return div.innerHTML = 'مفيش نتائج'
+      
+      div.innerHTML = data.map(item => `
+        <div class="item" id="صف-${item.id}">
+          <div id="عرض-${item.id}">
+            <b>ID:</b> ${item.id} <br>
+            <b>Title:</b> ${item.title} <br>
+            <b>Content:</b> ${item.content} <br>
+            ${item.image_url ? `<img src="${item.image_url}"> <br>` : ''}
+            <b>Created:</b> ${new Date(item.created_at).toLocaleString('ar-EG')} <br>
+            <button class="btn-edit" onclick="تعديل(${item.id})">تعديل</button>
+            <button class="btn-delete" onclick="حذف(${item.id}, '${item.image_url || ''}')">حذف</button>
+          </div>
+          <div id="تعديل-${item.id}" style="display:none;">
+            <input type="text" id="edit-title-${item.id}" value="${item.title}">
+            <textarea id="edit-content-${item.id}">${item.content}</textarea>
+            <button class="btn-save" onclick="حفظ(${item.id})">حفظ</button>
+            <button onclick="إلغاء(${item.id})">إلغاء</button>
+          </div>
+        </div>
+      `).join('')
+    }
+
+    // 3. نشر Insert + رفع صورة Storage
     async function نشر_صف() {
       const title = document.getElementById('title').value.trim()
       const content = document.getElementById('content').value.trim()
+      const file = document.getElementById('image').files[0]
       const رسالة = document.getElementById('رسالة_نشر')
+      
+      if(!title || !content) return رسالة.innerHTML = '<div class="error">اكتب البيانات</div>'
+      رسالة.innerHTML = 'جاري الرفع...'
 
-      if(!title || !content) {
-        رسالة.innerHTML = '<div class="error">اكتب العنوان والمحتوى</div>'
-        return
+      let image_url = null
+      if(file) {
+        const اسم_الملف = `${Date.now()}_${file.name}`
+        let { error: uploadError } = await supabase.storage.from('images').upload(اسم_الملف, file)
+        if(uploadError) return رسالة.innerHTML = `<div class="error">غلط رفع الصورة: ${uploadError.message}</div>`
+        
+        const { data } = supabase.storage.from('images').getPublicUrl(اسم_الملف)
+        image_url = data.publicUrl
       }
 
-      try {
-        const { error } = await supabase
-          .from('test') // مسار الربط ← نفس الجدول
-          .insert([{ title: title, content: content }]) // مسار الربط ← نشر الداتا
-
-        if (error) throw error
-
-        رسالة.innerHTML = '<div class="success">✅ تم النشر بنجاح</div>'
-        document.getElementById('title').value = ''
-        document.getElementById('content').value = ''
-        setTimeout(قراءة_البيانات, 500)
-
-      } catch(err) {
-        رسالة.innerHTML = `<div class="error">❌ ${err.message}</div>`
-      }
+      let { error } = await supabase.from('test').insert([{ title, content, image_url }])
+      if (error) return رسالة.innerHTML = `<div class="error">${error.message}</div>`
+      
+      رسالة.innerHTML = '<div class="success">✅ تم النشر</div>'
+      document.getElementById('title').value = ''
+      document.getElementById('content').value = ''
+      document.getElementById('image').value = ''
+      الصفحة_الحالية = 1
+      قراءة_البيانات()
     }
 
-    // 3. تفعيل وضع التعديل Update
-    function تفعيل_التعديل(id, title, content) {
+    // 4. تعديل Update
+    function تعديل(id) {
       document.getElementById(`عرض-${id}`).style.display = 'none'
       document.getElementById(`تعديل-${id}`).style.display = 'block'
-      وضع_التعديل = id
     }
-
-    function إلغاء_التعديل(id) {
+    function إلغاء(id) {
       document.getElementById(`عرض-${id}`).style.display = 'block'
       document.getElementById(`تعديل-${id}`).style.display = 'none'
-      وضع_التعديل = null
+    }
+    async function حفظ(id) {
+      const title = document.getElementById(`edit-title-${id}`).value
+      const content = document.getElementById(`edit-content-${id}`).value
+      let { error } = await supabase.from('test').update({ title, content }).eq('id', id)
+      if (error) return alert(error.message)
+      قراءة_البيانات()
     }
 
-    // 4. حفظ التعديل Update
-    async function حفظ_التعديل(id) {
-      const newTitle = document.getElementById(`edit-title-${id}`).value.trim()
-      const newContent = document.getElementById(`edit-content-${id}`).value.trim()
-
-      try {
-        const { error } = await supabase
-          .from('test') // مسار الربط ← نفس الجدول
-          .update({ title: newTitle, content: newContent }) // مسار الربط ← الداتا الجديدة
-          .eq('id', id) // مسار الربط ← بنحدد الصف بالـ id
-
-        if (error) throw error
-
-        إلغاء_التعديل(id)
-        قراءة_البيانات()
-
-      } catch(err) {
-        alert('غلط في التعديل: ' + err.message)
+    // 5. حذف Delete + حذف الصورة
+    async function حذف(id, image_url) {
+      if(!confirm('تحذف الصف ده؟')) return
+      
+      if(image_url) {
+        const اسم_الملف = image_url.split('/').pop()
+        await supabase.storage.from('images').remove([اسم_الملف])
       }
+      
+      let { error } = await supabase.from('test').delete().eq('id', id)
+      if (error) return alert(error.message)
+      قراءة_البيانات()
     }
 
-    // 5. حذف Delete
-    async function حذف_صف(id) {
-      if(!confirm('متأكد عايز تحذف الصف ده؟')) return
+    // 6. بحث فوري
+    function بحث_فوري() {
+      كلمة_البحث = document.getElementById('بحث').value
+      الصفحة_الحالية = 1
+      قراءة_البيانات()
+    }
 
-      try {
-        const { error } = await supabase
-          .from('test') // مسار الربط ← نفس الجدول
-          .delete() // مسار الربط ← عملية الحذف
-          .eq('id', id) // مسار الربط ← بنحدد الصف بالـ id
-
-        if (error) throw error
-        قراءة_البيانات()
-
-      } catch(err) {
-        alert('غلط في الحذف: ' + err.message)
+    // 7. ترقيم الصفحات
+    function عرض_الصفحات() {
+      const total = Math.ceil(إجمالي_الصفوف / العناصر_لكل_صفحة)
+      let html = ''
+      for(let i = 1; i <= total; i++) {
+        html += `<button class="${i === الصفحة_الحالية ? 'active' : ''}" onclick="تغيير_صفحة(${i})">${i}</button>`
       }
+      document.getElementById('pagination').innerHTML = html
+    }
+    function تغيير_صفحة(n) {
+      الصفحة_الحالية = n
+      قراءة_البيانات()
     }
 
-    window.قراءة_البيانات = قراءة_البيانات
+    // تهيئة
+    تحقق_من_الجلسة()
+    window.تسجيل_دخول = تسجيل_دخول
+    window.تسجيل_جديد = تسجيل_جديد
+    window.تسجيل_خروج = تسجيل_خروج
     window.نشر_صف = نشر_صف
-    window.تفعيل_التعديل = تفعيل_التعديل
-    window.إلغاء_التعديل = إلغاء_التعديل
-    window.حفظ_التعديل = حفظ_التعديل
-    window.حذف_صف = حذف_صف
+    window.قراءة_البيانات = قراءة_البيانات
+    window.تعديل = تعديل
+    window.إلغاء = إلغاء
+    window.حفظ = حفظ
+    window.حذف = حذف
+    window.بحث_فوري = بحث_فوري
+    window.تغيير_صفحة = تغيير_صفحة
   </script>
 </body>
 </html>
