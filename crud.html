@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>Supabase CRUD كامل</title>
+  <title>Supabase CRUD + Auth</title>
   <style>
     body { font-family: Tahoma; padding: 20px; background: #f5f5f5; max-width: 800px; margin: auto; }
     h1 { text-align: center; color: #333; }
@@ -17,27 +17,23 @@
     input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
     .item { border: 2px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 8px; background: white; }
     .item img { max-width: 150px; border-radius: 5px; margin-top: 8px; }
-    .success { color: green; font-weight: bold; } .error { color: red; font-weight: bold; }
-    .toolbar { display: flex; gap: 10px; margin-bottom: 15px; }
-    .toolbar input { flex: 1; }
-    .pagination { text-align: center; margin-top: 15px; }
-    .pagination button { background: #ddd; }
-    .pagination button.active { background: #3ecf8e; color: white; }
+    .success { color: green; font-weight: bold; padding: 8px; background: #d4edda; border-radius: 5px; } 
+    .error { color: red; font-weight: bold; padding: 8px; background: #f8d7da; border-radius: 5px; }
     .hidden { display: none; }
-    .user-info { text-align: left; margin-bottom: 10px; }
+    .user-info { text-align: left; margin-bottom: 10px; background: white; padding: 10px; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <h1>Supabase CRUD كامل + Auth + Storage</h1>
+  <h1>Supabase CRUD + Auth</h1>
 
   <!-- تسجيل الدخول -->
   <div class="auth" id="auth-box">
     <h3>تسجيل دخول</h3>
     <input type="email" id="email" placeholder="الإيميل">
-    <input type="password" id="password" placeholder="كلمة المرور">
+    <input type="password" id="password" placeholder="كلمة المرور 6 حروف">
     <button class="btn-login" onclick="تسجيل_دخول()">دخول</button>
     <button onclick="تسجيل_جديد()">تسجيل جديد</button>
-    <div id="رسالة_auth"></div>
+    <div id="رسالة_auth" style="margin-top:10px;"></div>
   </div>
 
   <div id="app" class="hidden">
@@ -46,55 +42,64 @@
       <button onclick="تسجيل_خروج()">خروج</button>
     </div>
 
-    <!-- نشر + رفع صورة -->
+    <!-- نشر -->
     <div class="form">
       <h3>نشر صف جديد</h3>
       <input type="text" id="title" placeholder="العنوان">
       <textarea id="content" placeholder="المحتوى" rows="3"></textarea>
       <input type="file" id="image" accept="image/*">
       <button class="btn-add" onclick="نشر_صف()">نشر</button>
-      <div id="رسالة_نشر"></div>
+      <div id="رسالة_نشر" style="margin-top:10px;"></div>
     </div>
 
-    <!-- بحث + قراءة -->
-    <div class="toolbar">
-      <input type="text" id="بحث" placeholder="ابحث في العنوان..." onkeyup="بحث_فوري()">
-      <button class="btn-add" onclick="قراءة_البيانات()">تحديث</button>
+    <div style="text-align: center;">
+      <button class="btn-add" onclick="قراءة_البيانات()">تحديث البيانات</button>
     </div>
-    <div id="النتيجة">جاري التحميل...</div>
-
-    <!-- ترقيم الصفحات -->
-    <div class="pagination" id="pagination"></div>
+    <div id="النتيجة">سجل دخول عشان تشوف البيانات...</div>
   </div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-    // مسار الربط
+    // مسار الربط - غيرهم
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    let الصفحة_الحالية = 1
-    let العناصر_لكل_صفحة = 5
-    let إجمالي_الصفوف = 0
-    let كلمة_البحث = ''
-
-    // 1. Auth
-    async function تسجيل_دخول() {
-      const email = document.getElementById('email').value
+    // 1. تسجيل جديد
+    async function تسجيل_جديد() {
+      const email = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value
-      let { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if(error) return document.getElementById('رسالة_auth').innerHTML = `<div class="error">${error.message}</div>`
-      تحقق_من_الجلسة()
+      const رسالة = document.getElementById('رسالة_auth')
+      
+      if(!email || password.length < 6) {
+        return رسالة.innerHTML = '<div class="error">اكتب إيميل صحيح + باسورد 6 حروف</div>'
+      }
+
+      let { data, error } = await supabase.auth.signUp({ email, password })
+      
+      if(error) return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
+      
+      if(data.user && !data.session) {
+        رسالة.innerHTML = '<div class="success">✅ تم التسجيل. افتح الإيميل وفعل الحساب، أو اقفل Confirm Email من Supabase</div>'
+      } else {
+        رسالة.innerHTML = '<div class="success">✅ تم التسجيل وتسجيل الدخول</div>'
+        تحقق_من_الجلسة()
+      }
     }
 
-    async function تسجيل_جديد() {
-      const email = document.getElementById('email').value
+    // 2. تسجيل دخول
+    async function تسجيل_دخول() {
+      const email = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value
-      let { error } = await supabase.auth.signUp({ email, password })
-      if(error) return alert(error.message)
-      alert('تم التسجيل، افتح الإيميل وفعل الحساب')
+      const رسالة = document.getElementById('رسالة_auth')
+      
+      let { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      
+      if(error) return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
+      
+      رسالة.innerHTML = '<div class="success">✅ تم الدخول</div>'
+      setTimeout(تحقق_من_الجلسة, 500)
     }
 
     async function تسجيل_خروج() {
@@ -102,6 +107,7 @@
       location.reload()
     }
 
+    // 3. تحقق من الجلسة
     async function تحقق_من_الجلسة() {
       const { data: { session } = await supabase.auth.getSession()
       if(session) {
@@ -112,29 +118,18 @@
       }
     }
 
-    // 2. قراءة Select + بحث + Pagination
+    // 4. قراءة البيانات
     async function قراءة_البيانات() {
       const div = document.getElementById('النتيجة')
       div.innerHTML = 'جاري التحميل...'
 
-      let query = supabase.from('test').select('*', { count: 'exact' }).order('id', { ascending: false })
-      
-      if(كلمة_البحث) query = query.ilike('title', `%${كلمة_البحث}%`)
-      
-      const من = (الصفحة_الحالية - 1) * العناصر_لكل_صفحة
-      query = query.range(من, من + العناصر_لكل_صفحة - 1)
+      let { data, error } = await supabase
+        .from('test')
+        .select('id, title, content, image_url, created_at')
+        .order('id', { ascending: false })
 
-      let { data, error, count } = await query
       if (error) return div.innerHTML = `<div class="error">${error.message}</div>`
-      
-      إجمالي_الصفوف = count
-      عرض_البيانات(data)
-      عرض_الصفحات()
-    }
-
-    function عرض_البيانات(data) {
-      const div = document.getElementById('النتيجة')
-      if(!data || data.length === 0) return div.innerHTML = 'مفيش نتائج'
+      if(!data || data.length === 0) return div.innerHTML = 'مفيش بيانات لسه، انشر أول صف'
       
       div.innerHTML = data.map(item => `
         <div class="item" id="صف-${item.id}">
@@ -157,38 +152,45 @@
       `).join('')
     }
 
-    // 3. نشر Insert + رفع صورة Storage
+    // 5. نشر + رفع صورة + تسجيل user_id
     async function نشر_صف() {
       const title = document.getElementById('title').value.trim()
       const content = document.getElementById('content').value.trim()
       const file = document.getElementById('image').files[0]
       const رسالة = document.getElementById('رسالة_نشر')
       
-      if(!title || !content) return رسالة.innerHTML = '<div class="error">اكتب البيانات</div>'
+      if(!title || !content) return رسالة.innerHTML = '<div class="error">اكتب العنوان والمحتوى</div>'
       رسالة.innerHTML = 'جاري الرفع...'
+
+      const { data: { user } = await supabase.auth.getUser()
+      if(!user) return رسالة.innerHTML = '<div class="error">لازم تسجل دخول أول</div>'
 
       let image_url = null
       if(file) {
-        const اسم_الملف = `${Date.now()}_${file.name}`
+        const اسم_الملف = `${user.id}_${Date.now()}_${file.name}`
         let { error: uploadError } = await supabase.storage.from('images').upload(اسم_الملف, file)
         if(uploadError) return رسالة.innerHTML = `<div class="error">غلط رفع الصورة: ${uploadError.message}</div>`
-        
         const { data } = supabase.storage.from('images').getPublicUrl(اسم_الملف)
         image_url = data.publicUrl
       }
 
-      let { error } = await supabase.from('test').insert([{ title, content, image_url }])
+      let { error } = await supabase.from('test').insert([{ 
+        title, 
+        content, 
+        image_url,
+        user_id: user.id  // مهم للـ RLS
+      }])
+      
       if (error) return رسالة.innerHTML = `<div class="error">${error.message}</div>`
       
-      رسالة.innerHTML = '<div class="success">✅ تم النشر</div>'
+      رسالة.innerHTML = '<div class="success">✅ تم النشر بنجاح</div>'
       document.getElementById('title').value = ''
       document.getElementById('content').value = ''
       document.getElementById('image').value = ''
-      الصفحة_الحالية = 1
       قراءة_البيانات()
     }
 
-    // 4. تعديل Update
+    // 6. تعديل
     function تعديل(id) {
       document.getElementById(`عرض-${id}`).style.display = 'none'
       document.getElementById(`تعديل-${id}`).style.display = 'block'
@@ -205,38 +207,15 @@
       قراءة_البيانات()
     }
 
-    // 5. حذف Delete + حذف الصورة
+    // 7. حذف
     async function حذف(id, image_url) {
       if(!confirm('تحذف الصف ده؟')) return
-      
       if(image_url) {
         const اسم_الملف = image_url.split('/').pop()
         await supabase.storage.from('images').remove([اسم_الملف])
       }
-      
       let { error } = await supabase.from('test').delete().eq('id', id)
       if (error) return alert(error.message)
-      قراءة_البيانات()
-    }
-
-    // 6. بحث فوري
-    function بحث_فوري() {
-      كلمة_البحث = document.getElementById('بحث').value
-      الصفحة_الحالية = 1
-      قراءة_البيانات()
-    }
-
-    // 7. ترقيم الصفحات
-    function عرض_الصفحات() {
-      const total = Math.ceil(إجمالي_الصفوف / العناصر_لكل_صفحة)
-      let html = ''
-      for(let i = 1; i <= total; i++) {
-        html += `<button class="${i === الصفحة_الحالية ? 'active' : ''}" onclick="تغيير_صفحة(${i})">${i}</button>`
-      }
-      document.getElementById('pagination').innerHTML = html
-    }
-    function تغيير_صفحة(n) {
-      الصفحة_الحالية = n
       قراءة_البيانات()
     }
 
@@ -251,8 +230,6 @@
     window.إلغاء = إلغاء
     window.حفظ = حفظ
     window.حذف = حذف
-    window.بحث_فوري = بحث_فوري
-    window.تغيير_صفحة = تغيير_صفحة
   </script>
 </body>
 </html>
