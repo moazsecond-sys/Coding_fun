@@ -84,6 +84,7 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 <div id="toast" class="toast"></div>
 <button onclick="دخول_طوارئ()" style="background:red;color:white;padding:10px;margin:10px 0;width:100%">
 🚨 دخول طوارئ - استخدمه مرة واحدة بس</button>
+<div id="errorBox" style="background:#ffeeee;color:red;padding:10px;margin:10px 0;border:2px solid red;display:none;font-size:14px;text-align:center"></div>
 
 <div id="login" class="box">
   <h2>🔐 تسجيل دخول</h2>
@@ -523,26 +524,42 @@ supabase.auth.onAuthStateChange((event, session) => {
   }
 })
 async function دخول_طوارئ() {
-  const email = prompt('اكتب إيميلك بتاع Supabase:')
-  const password = prompt('اكتب الباسورد:')
+  const box = document.getElementById('errorBox')
+  box.style.display = 'block'
+  box.innerText = '1. الزرار اشتغل ✅'
   
-  if(!email || !password) return
-  
-  console.log('بحاول أسجل دخول...')
-  
-  const {data, error} = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password
-  })
-  
-  if(error) {
-    alert('❌ فشل الدخول: ' + error.message)
-    console.error(error)
-  } else {
-    alert('✅ دخلت! الصفحة هتعمل ريلود دلوقتي')
-    location.reload()
+  try {
+    const email = prompt('اكتب إيميلك بتاع Supabase:')
+    box.innerText += '\n2. كتبت الإيميل ✅'
+    
+    const password = prompt('اكتب الباسورد:')
+    box.innerText += '\n3. كتبت الباسورد ✅'
+    
+    if(!email || !password) {
+      box.innerText += '\n❌ لغيت العملية'
+      return
+    }
+    
+    box.innerText += '\n4. بحاول أسجل دخول...'
+    
+    const {data, error} = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password
+    })
+    
+    if(error) {
+      box.innerText += '\n❌ فشل: ' + error.message
+      alert('فشل: ' + error.message)
+    } else {
+      box.innerText += '\n✅ نجح! بعمل ريلود...'
+      alert('دخلت! الصفحة هتحدث')
+      location.reload()
+    }
+  } catch(e) {
+    box.innerText += '\n💥 إيرور قاتل: ' + e.message
+    alert('إيرور: ' + e.message)
   }
-                            }
+}}
 </script>
 </body>
 </html>
