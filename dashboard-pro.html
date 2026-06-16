@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة تحكم برو ماكس</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --bg:#f0f2f5; --card:#fff; --text:#333; --border:#ddd; --primary:#5865F2; --hover:#f5f7ff
+}
+body.dark{
+  --bg:#1e1e2e; --card:#2a2a3e; --text:#e0e0e0; --border:#444; --primary:#7289da; --hover:#35354a
+}
+*{box-sizing:border-box}
+body{font-family:Tahoma;padding:15px;max-width:1200px;margin:20px auto;background:var(--bg);color:var(--text);transition:0.3s}
+.box{padding:20px;background:var(--card);border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin-bottom:15px}
+input,button,select{padding:12px;margin:6px 0;width:100%;border-radius:8px;border:1px solid var(--border);font-size:16px;background:var(--card);color:var(--text)}
+button{background:var(--primary);color:white;border:none;cursor:pointer;font-weight:bold;transition:0.2s}
+button:hover{opacity:0.9}
+button:disabled{background:#ccc;cursor:not-allowed}
+.btn-danger{background:#ED4245}
+.btn-edit{background:#FEE75C;color:#000}
+.btn-success{background:#57F287;color:#000}
+.btn-small{width:auto;padding:6px 12px;margin:2px;font-size:13px}
+#crud{display:none}
+.top-bar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center}
+.top-bar input,.top-bar select{flex:1;min-width:150px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:15px}
+.stat-card{background:var(--card);padding:15px;border-radius:8px;text-align:center;border:1px solid var(--border)}
+.stat-num{font-size:28px;font-weight:bold;color:var(--primary)}
+.loading{text-align:center;padding:20px;color:#666}
+
+/* جدول */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;max-height:500px}
+table{width:100%;border-collapse:collapse;text-align:right;min-width:700px}
+thead th{position:sticky;top:0;z-index:2;background:var(--primary);color:white;padding:14px;border:1px solid var(--border);cursor:pointer}
+thead th:hover{opacity:0.9}
+th.sort-asc::after{content:" ▲"} th.sort-desc::after{content:" ▼"}
+tbody td{padding:12px;border:1px solid var(--border)}
+tbody tr:nth-child(even){background:var(--hover)}
+tbody tr.selected{background:#fff3cd!important}
+th:first-child, td:first-child{position:sticky;right:0;z-index:1;background:inherit;width:50px;text-align:center}
+th:last-child, td:last-child{position:sticky;left:0;z-index:1;background:inherit;box-shadow:-2px 0 5px rgba(0,0,0,0.05)}
+thead th:first-child{z-index:3} thead th:last-child{z-index:3}
+.actions{white-space:nowrap;text-align:center;min-width:180px}
+
+/* كروت */
+.cards-wrap{display:none;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
+.card{border:1px solid var(--border);border-radius:12px;padding:15px;background:var(--card);box-shadow:0 2px 5px rgba(0,0,0,0.05);transition:0.2s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+.card.selected{border-color:var(--primary);background:var(--hover)}
+.card-check{position:absolute;top:10px;left:10px}
+.card-id{font-size:12px;color:#999;margin-bottom:8px}
+.card-title{font-size:18px;font-weight:bold;margin-bottom:12px;color:var(--text)}
+.card-actions{text-align:center;border-top:1px solid var(--border);padding-top:10px;margin-top:10px}
+
+/* موبايل */
+@media screen and (max-width: 768px) {
+  thead{display:none}
+  table, tbody, tr, td{display:block;width:100%}
+  tr{margin-bottom:15px;border:1px solid var(--border);border-radius:10px;padding:10px;position:relative}
+  td{border:none;border-bottom:1px solid var(--border);padding:10px 5px;text-align:right;position:relative;padding-right:50%}
+  td::before{content: attr(data-label);position:absolute;right:10px;top:10px;font-weight:bold;color:var(--primary)}
+  td:first-child, td:last-child{position:static;box-shadow:none;padding-right:5px;text-align:center}
+  td:last-child{border-bottom:none}
+ .table-wrap{overflow-x:hidden;max-height:none}
+</style>
+</head>
+<body>
+
+<div id="login" class="box">
+  <h2>🔐 تسجيل دخول</h2>
+  <input id="email" type="email" placeholder="الإيميل">
+  <input id="pass" type="password" placeholder="كلمة السر">
+  <button onclick="تسجيل_دخول()">دخول</button>
+</div>
+
+<div id="crud">
+  <div class="box" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+    <h2>🚀 لوحة تحكم برو ماكس</h2>
+    <div>
+      <button class="btn-small" onclick="تبديل_الثيم()">🌙 ثيم</button>
+      <button onclick="تسجيل_خروج()">خروج</button>
+    </div>
+  </div>
+
+  <!-- إحصائيات -->
+  <div class="stats" id="statsBox"></div>
+
+  <div class="box">
+    <h3>➕ إضافة جديد</h3>
+    <input id="title" placeholder="العنوان + Enter" onkeypress="if(event.key=='Enter') اضافة()">
+    <button id="btnAdd" onclick="اضافة()">نشر</button>
+  </div>
+
+  <div class="box">
+    <h3>📊 البيانات</h3>
+    <div class="top-bar">
+      <input id="search" placeholder="ابحث في الكل..." onkeyup="بحث()">
+      <select id="sortSelect" onchange="ترتيب_من_سلكت()">
+        <option value="id-desc">ID تنازلي</option>
+        <option value="id-asc">ID تصاعدي</option>
+        <option value="title-asc">العنوان أ-ي</option>
+        <option value="title-desc">العنوان ي-أ</option>
+      </select>
+      <button class="btn-success" onclick="تصدير_اكسل()">📥 Excel</button>
+      <button class="btn-success" onclick="تبديل_العرض()">🔄 تبديل العرض</button>
+      <button class="btn-danger" id="btnDeleteSelected" onclick="حذف_المحدد()" style="display:none">🗑️ حذف المحدد</button>
+      <span id="count">0 سجل</span>
+    </div>
+
+    <div id="tableView" class="table-wrap">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="checkAll" onchange="تحديد_الكل()"></th>
+            <th onclick="ترتيب_عمود('id')">ID</th>
+            <th onclick="ترتيب_عمود('title')">العنوان</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"><tr><td colspan="4" class="loading">جاري التحميل...</td></tr></tbody>
+      </table>
+    </div>
+
+    <div id="cardsView" class="cards-wrap"></div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+let allData = [], filteredData = []
+let selectedIds = new Set()
+
+// ===== إعدادات محفوظة =====
+let viewMode = localStorage.getItem('view_mode') || 'table'
+let sortColumn = localStorage.getItem('sort_col') || 'id'
+let sortAsc = localStorage.getItem('sort_asc') === 'true'
+
+// ===== ثيم داكن =====
+if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark')
+
+// ===== تسجيل دخول =====
+window.تسجيل_دخول = async function() {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('email').value,
+    password: document.getElementById('pass').value
+  })
+  if(error) alert('خطأ: ' + error.message)
+  else {
+    document.getElementById('login').style.display='none'
+    document.getElementById('crud').style.display='block'
+    تحديث_الواجهة()
+    عرض_البيانات()
+  }
+}
+window.تسجيل_خروج = async function(){await supabase.auth.signOut();location.reload()}
+
+// ===== READ =====
+async function عرض_البيانات() {
+  document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">جاري التحميل...</td></tr>'
+  const { data, error } = await supabase.from('test').select('*')
+  if(error) return document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" style="color:red">${error.message}</td></tr>`
+  allData = data
+  بحث()
+}
+
+// ===== CREATE =====
+window.اضافة = async function() {
+  const title = document.getElementById('title').value.trim()
+  if(!title) return alert('اكتب عنوان')
+  const btn = document.getElementById('btnAdd'); btn.disabled=true
+  const { error } = await supabase.from('test').insert([{title}])
+  btn.disabled=false
+  if(error) alert(error.message); else {document.getElementById('title').value='';عرض_البيانات()}
+}
+
+// ===== UPDATE =====
+window.تعديل = async function(id, oldTitle) {
+  const newTitle = prompt('العنوان الجديد:', oldTitle)
+  if(!newTitle || newTitle === oldTitle) return
+  const { error } = await supabase.from('test').update({title: newTitle}).eq('id', id)
+  if(error) alert(error.message); else عرض_البيانات()
+}
+
+// ===== DELETE =====
+window.حذف = async function(id) {
+  if(!confirm('حذف سجل رقم ' + id + '؟')) return
+  const { error } = await supabase.from('test').delete().eq('id', id)
+  if(error) alert(error.message); else عرض_البيانات()
+}
+
+// ===== بحث + ترتيب =====
+window.بحث = function() {
+  const val = document.getElementById('search').value.toLowerCase()
+  filteredData = allData.filter(item =>
+    String(item.id).includes(val) || item.title.toLowerCase().includes(val)
+  )
+  ترتيب_وعرض()
+}
+
+window.ترتيب_عمود = function(col) {
+  if(sortColumn === col) sortAsc =!sortAsc
+  else {sortColumn = col; sortAsc = true}
+  localStorage.setItem('sort_col', sortColumn)
+  localStorage.setItem('sort_asc', sortAsc)
+  document.getElementById('sortSelect').value = `${col}-${sortAsc?'asc':'desc'}`
+  ترتيب_وعرض()
+}
+
+window.ترتيب_من_سلكت = function() {
+  const [col, dir] = document.getElementById('sortSelect').value.split('-')
+  sortColumn = col; sortAsc = dir === 'asc'
+  localStorage.setItem('sort_col', sortColumn)
+  localStorage.setItem('sort_asc', sortAsc)
+  ترتيب_وعرض()
+}
+
+// ===== تبديل العرض =====
+window.تبديل_العرض = function() {
+  viewMode = viewMode === 'table'? 'cards' : 'table'
+  localStorage.setItem('view_mode', viewMode)
+  تحديث_الواجهة()
+  ترتيب_وعرض()
+}
+
+// ===== ثيم =====
+window.تبديل_الثيم = function() {
+  document.body.classList.toggle('dark')
+  localStorage.setItem('theme', document.body.classList.contains('dark')?'dark':'light')
+}
+
+// ===== تحديد وحذف جماعي =====
+window.تحديد_الكل = function() {
+  const check = document.getElementById('checkAll').checked
+  selectedIds.clear()
+  if(check) filteredData.forEach(item => selectedIds.add(item.id))
+  ترتيب_وعرض()
+  تحديث_زرار_الحذف()
+}
+
+window.تحديد_سجل = function(id) {
+  if(selectedIds.has(id)) selectedIds.delete(id)
+  else selectedIds.add(id)
+  document.getElementById('checkAll').checked = selectedIds.size === filteredData.length
+  ترتيب_وعرض()
+  تحديث_زرار_الحذف()
+}
+
+window.حذف_المحدد = async function() {
+  if(!confirm(`حذف ${selectedIds.size} سجل؟`)) return
+  const { error } = await supabase.from('test').delete().in('id', [...selectedIds])
+  if(error) alert(error.message)
+  else {selectedIds.clear(); عرض_البيانات()}
+}
+
+function تحديث_زرار_الحذف() {
+  document.getElementById('btnDeleteSelected').style.display = selectedIds.size > 0? 'inline-block' : 'none'
+}
+
+// ===== تصدير Excel =====
+window.تصدير_اكسل = function() {
+  let csv = 'ID,العنوان\n'
+  filteredData.forEach(item => csv += `${item.id},"${item.title}"\n`)
+  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = `data_${new Date().toLocaleDateString('ar-EG')}.csv`
+  link.click()
+}
+
+// ===== إحصائيات =====
+function عرض_احصائيات() {
+  document.getElementById('statsBox').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${allData.length}</div><div>إجمالي السجلات</div></div>
+    <div class="stat-card"><div class="stat-num">${filteredData.length}</div><div>النتائج الحالية</div></div>
+    <div class="stat-card"><div class="stat-num">${selectedIds.size}</div><div>محدد</div></div>
+  `
+}
+
+// ===== تحديث الواجهة =====
+function تحديث_الواجهة() {
+  document.querySelector('.btn-success:last-of-type').textContent = viewMode === 'table'? '🔄 عرض ككروت' : '📊 عرض كجدول'
+  document.getElementById('sortSelect').value = `${sortColumn}-${sortAsc?'asc':'desc'}`
+}
+
+// ===== العرض =====
+function ترتيب_وعرض() {
+  // ترتيب
+  filteredData.sort((a,b) => {
+    let valA = a[sortColumn], valB = b[sortColumn]
+    if(typeof valA === 'string') valA = valA.toLowerCase()
+    if(typeof valB === 'string') valB = valB.toLowerCase()
+    return sortAsc? (valA>valB?1:-1) : (valA<valB?1:-1)
+  })
+
+  // أسهم الترتيب
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc','sort-desc'))
+  const th = document.querySelector(`th[onclick="ترتيب_عمود('${sortColumn}')"]`)
+  if(th) th.classList.add(sortAsc? 'sort-asc' : 'sort-desc')
+
+  document.getElementById('count').textContent = `${filteredData.length} من ${allData.length} سجل`
+  عرض_احصائيات()
+
+  if(viewMode === 'table') {
+    document.getElementById('tableView').style.display = 'block'
+    document.getElementById('cardsView').style.display = 'none'
+    document.getElementById('tableBody').innerHTML = filteredData.map(item => `
+      <tr class="${selectedIds.has(item.id)?'selected':''}">
+        <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
+        <td>${item.id}</td>
+        <td>${item.title}</td>
+        <td class="actions">
+          <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
+          <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
+        </td>
+      </tr>
+    `).join('')
+  } else {
+    document.getElementById('tableView').style.display = 'none'
+    document.getElementById('cardsView').style.display = 'grid'
+    document.getElementById('cardsView').innerHTML = filteredData.map(item => `
+      <div class="card ${selectedIds.has(item.id)?'selected':''}">
+        <input type="checkbox" class="card-check" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})">
+        <div class="card-id">ID: ${item.id}</div>
+        <div class="card-title">${item.title}</div>
+        <div class="card-actions">
+          <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
+          <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
+        </div>
+      </div>
+    `).join('')
+  }
+}
+
+// ===== دخول تلقائي =====
+supabase.auth.getSession().then(({data}) => {
+  if(data.session) {
+    document.getElementById('login').style.display='none'
+    document.getElementById('crud').style.display='block'
+    تحديث_الواجهة()
+    عرض_البيانات()
+  }
+})
+</script>
+</body>
+</html>
