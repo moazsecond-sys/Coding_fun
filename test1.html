@@ -1,41 +1,65 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>صفحتي</title>
+  <title>تمرين Supabase ملف واحد</title>
+  <style>
+    body { font-family: Tahoma; padding: 20px; background: #f5f5f5; text-align: center; }
+    button { padding: 12px 25px; font-size: 16px; cursor: pointer; background: #3ecf8e; color: white; border: none; border-radius: 8px; }
+    #النتيجة { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; text-align: right; }
+    .item { border: 2px solid #ddd; padding: 10px; margin: 8px 0; border-radius: 5px; }
+    .error { color: red; font-weight: bold; }
+  </style>
 </head>
 <body>
-<style>
-  body {
-  min-height: 100vh;
-  background-attachment: fixed;
-  margin: 0;}
-</style>
-  <div id="card">اهلا وسهلا 📇</div>
-  
-  <!-- الزرار الجديد بتاعنا -->
-<button id="زرار_الملاحظة">زرار الإضافة</button>
-  
-  <!-- كود الجافاسكربت هيجي هنا -->
-  <script>
-// 1. امسك الزرار من الصالة باسم الكرتونة
-const الزرار = document.getElementById('زرار_الملاحظة');
+  <h1>جيب البيانات من Supabase</h1>
+  <button onclick="جيب_البيانات()">اضغط هنا</button>
+  <div id="النتيجة">اضغط الزرار عشان نجيب البيانات...</div>
 
-// 2. افتح صندوق الزرار بالنقطة . وبرمجه
-let منور = false;
-الزرار.onclick = function(){
-  if( منور == false) {
-   الزرار.style.backgroundColor="green";
-   الزرار.innerText="تم التلوين والكتابة🍏";
-    document.body.style.backgroundImage="linear-gradient(to bottom,yellow,white)";  
-   منور=true;}
-else {
-   الزرار.style.backgroundColor="gray";
-   الزرار.innerText="وقت النوم";
-  document.body.style.backgroundImage="linear-gradient(to bottom,black,#2c3e50)";
-   منور = false;
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-}};
+    // مسار الربط 1: حط رابط المشروع بتاعك هنا
+    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co' //  
+    
+    // مسار الربط 2: حط الـ anon key بتاعك هنا  
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' 
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    async function جيب_البيانات() {
+      const div = document.getElementById('النتيجة')
+      div.innerHTML = 'جاري التحميل...'
+
+      try {
+        // مسار الربط 3: اسم الجدول + الأعمدة مصححة
+        let { data, error } = await supabase
+          .from('test') // مسار الربط ← اسم الجدول صح
+          .select('id, title, content, created_at') // مسار الربط ← شيلت النجمة والمسافة والفاصلة الأخيرة
+
+        if (error) throw error
+
+        if(!data || data.length === 0) {
+          div.innerHTML = 'الجدول فاضي، ضيف صفوف في Supabase'
+          return
+        }
+
+        div.innerHTML = data.map(item => `
+          <div class="item">
+            <b>ID:</b> ${item.id} <br>
+            <b>Title:</b> ${item.title} <br>
+            <b>Content:</b> ${item.content} <br>
+            <b>Created:</b> ${item.created_at}
+          </div>
+        `).join('')
+
+      } catch(err) {
+        div.innerHTML = `<div class="error">❌ غلط في مسار الربط: ${err.message}</div>`
+        console.error(err)
+      }
+    }
+
+    window.جيب_البيانات = جيب_البيانات
   </script>
 </body>
 </html>
