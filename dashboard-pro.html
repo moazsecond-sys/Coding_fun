@@ -485,19 +485,25 @@ document.addEventListener('keydown', (e) => {
 
 
 // دخول تلقائي + لو مفيش سيشن ارجع للوجين
+// دخول تلقائي - النسخة الثرثارة
+console.log('1. بدأت أشيك على السيشن...')
+
 supabase.auth.getSession().then(({data, error}) => {
+  console.log('2. نتيجة الشيك:', data, error)
+  
   if(error) {
-    console.error('إيرور السيشن:', error)
+    console.error('❌ في إيرور:', error.message)
+    alert('إيرور سيشن: ' + error.message)
   }
   
   if(data.session) {
-    console.log('دخلت تلقائي بنجاح')
+    console.log('✅ لقيت سيشن، هدخلك...')
     document.getElementById('login').style.display='none'
     document.getElementById('crud').style.display='block'
     تحديث_الواجهة()
     عرض_البيانات()
   } else {
-    console.log('مفيش سيشن - ارجع سجل دخول')
+    console.log('⚠️ مفيش سيشن، هخليك في اللوجين')
     document.getElementById('login').style.display='block'
     document.getElementById('crud').style.display='none'
   }
