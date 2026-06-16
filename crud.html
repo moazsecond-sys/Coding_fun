@@ -12,13 +12,12 @@
     .btn-delete { background: #ff4d4d; color: white; }
     .btn-save { background: #007bff; color: white; }
     .btn-login { background: #5865F2; color: white; }
-    
-    .form, .auth { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .form, .auth { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
     .item { border: 2px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 8px; background: white; }
-    .item img { max-width: 150px; border-radius: 5px; margin-top: 8px; }
-    .success { color: green; font-weight: bold; padding: 8px; background: #d4edda; border-radius: 5px; } 
-    .error { color: red; font-weight: bold; padding: 8px; background: #f8d7da; border-radius: 5px; }
+    .item img { max-width: 150px; border-radius: 5px; }
+    .success { color: green; padding: 8px; background: #d4edda; border-radius: 5px; } 
+    .error { color: red; padding: 8px; background: #f8d7da; border-radius: 5px; }
     .hidden { display: none; }
     .user-info { text-align: left; margin-bottom: 10px; background: white; padding: 10px; border-radius: 8px; }
   </style>
@@ -26,7 +25,6 @@
 <body>
   <h1>Supabase CRUD + Auth</h1>
 
-  <!-- تسجيل الدخول -->
   <div class="auth" id="auth-box">
     <h3>تسجيل دخول</h3>
     <input type="email" id="email" placeholder="الإيميل">
@@ -42,7 +40,6 @@
       <button onclick="تسجيل_خروج()">خروج</button>
     </div>
 
-    <!-- نشر -->
     <div class="form">
       <h3>نشر صف جديد</h3>
       <input type="text" id="title" placeholder="العنوان">
@@ -61,32 +58,32 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-    // مسار الربط - غيرهم
+    // ⚠️ غير السطرين دول بس - انسخهم من Supabase → Project Settings → API
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-
-    async function تسجيل_دخول() {
-  const email = document.getElementById('email').value.trim()
-  const password = document.getElementById('password').value
-  const رسالة = document.getElementById('رسالة_auth')
-  
-  alert('1. بدأت تسجيل دخول: ' + email) // سطر تجربة
-  
-  let { data, error } = await supabase.auth.signInWithPassword({ email, password })
-  
-  if(error) {
-    alert('2. غلط: ' + error.message) // هيطلعلك الغلط هنا
-    return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
-  }
-  
-  alert('3. تم الدخول بنجاح') // لو وصل هنا يبقى المشكلة في الجلسة
-  رسالة.innerHTML = '<div class="success">✅ تم الدخول</div>'
-  setTimeout(تحقق_من_الجلسة, 500)
-}
+    
+    if(SUPABASE_URL.includes('xxxx') || SUPABASE_KEY.includes('xxxx')) {
+      alert('⚠️ نسيت تغير SUPABASE_URL أو SUPABASE_KEY في الكود!')
     }
 
-    // 2. تسجيل دخول
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    async function تسجيل_جديد() {
+      const email = document.getElementById('email').value.trim()
+      const password = document.getElementById('password').value
+      const رسالة = document.getElementById('رسالة_auth')
+      
+      if(!email || password.length < 6) {
+        return رسالة.innerHTML = '<div class="error">اكتب إيميل صحيح + باسورد 6 حروف</div>'
+      }
+
+      let { data, error } = await supabase.auth.signUp({ email, password })
+      
+      if(error) return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
+      
+      رسالة.innerHTML = '<div class="success">✅ تم التسجيل. سجل دخول دلوقتي</div>'
+    }
+
     async function تسجيل_دخول() {
       const email = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value
@@ -105,7 +102,6 @@
       location.reload()
     }
 
-    // 3. تحقق من الجلسة
     async function تحقق_من_الجلسة() {
       const { data: { session } = await supabase.auth.getSession()
       if(session) {
@@ -116,118 +112,52 @@
       }
     }
 
-    // 4. قراءة البيانات
     async function قراءة_البيانات() {
       const div = document.getElementById('النتيجة')
       div.innerHTML = 'جاري التحميل...'
 
-      let { data, error } = await supabase
-        .from('test')
-        .select('id, title, content, image_url, created_at')
-        .order('id', { ascending: false })
+      let { data, error } = await supabase.from('test').select('*').order('id', { ascending: false })
 
       if (error) return div.innerHTML = `<div class="error">${error.message}</div>`
-      if(!data || data.length === 0) return div.innerHTML = 'مفيش بيانات لسه، انشر أول صف'
+      if(!data || data.length === 0) return div.innerHTML = 'مفيش بيانات لسه'
       
       div.innerHTML = data.map(item => `
-        <div class="item" id="صف-${item.id}">
-          <div id="عرض-${item.id}">
-            <b>ID:</b> ${item.id} <br>
-            <b>Title:</b> ${item.title} <br>
-            <b>Content:</b> ${item.content} <br>
-            ${item.image_url ? `<img src="${item.image_url}"> <br>` : ''}
-            <b>Created:</b> ${new Date(item.created_at).toLocaleString('ar-EG')} <br>
-            <button class="btn-edit" onclick="تعديل(${item.id})">تعديل</button>
-            <button class="btn-delete" onclick="حذف(${item.id}, '${item.image_url || ''}')">حذف</button>
-          </div>
-          <div id="تعديل-${item.id}" style="display:none;">
-            <input type="text" id="edit-title-${item.id}" value="${item.title}">
-            <textarea id="edit-content-${item.id}">${item.content}</textarea>
-            <button class="btn-save" onclick="حفظ(${item.id})">حفظ</button>
-            <button onclick="إلغاء(${item.id})">إلغاء</button>
-          </div>
+        <div class="item">
+          <b>ID:</b> ${item.id} <br>
+          <b>Title:</b> ${item.title} <br>
+          <b>Content:</b> ${item.content}
         </div>
       `).join('')
     }
 
-    // 5. نشر + رفع صورة + تسجيل user_id
     async function نشر_صف() {
       const title = document.getElementById('title').value.trim()
       const content = document.getElementById('content').value.trim()
-      const file = document.getElementById('image').files[0]
       const رسالة = document.getElementById('رسالة_نشر')
       
       if(!title || !content) return رسالة.innerHTML = '<div class="error">اكتب العنوان والمحتوى</div>'
-      رسالة.innerHTML = 'جاري الرفع...'
 
       const { data: { user } = await supabase.auth.getUser()
       if(!user) return رسالة.innerHTML = '<div class="error">لازم تسجل دخول أول</div>'
 
-      let image_url = null
-      if(file) {
-        const اسم_الملف = `${user.id}_${Date.now()}_${file.name}`
-        let { error: uploadError } = await supabase.storage.from('images').upload(اسم_الملف, file)
-        if(uploadError) return رسالة.innerHTML = `<div class="error">غلط رفع الصورة: ${uploadError.message}</div>`
-        const { data } = supabase.storage.from('images').getPublicUrl(اسم_الملف)
-        image_url = data.publicUrl
-      }
-
       let { error } = await supabase.from('test').insert([{ 
-        title, 
-        content, 
-        image_url,
-        user_id: user.id  // مهم للـ RLS
+        title, content, user_id: user.id
       }])
       
       if (error) return رسالة.innerHTML = `<div class="error">${error.message}</div>`
       
-      رسالة.innerHTML = '<div class="success">✅ تم النشر بنجاح</div>'
+      رسالة.innerHTML = '<div class="success">✅ تم النشر</div>'
       document.getElementById('title').value = ''
       document.getElementById('content').value = ''
-      document.getElementById('image').value = ''
       قراءة_البيانات()
     }
 
-    // 6. تعديل
-    function تعديل(id) {
-      document.getElementById(`عرض-${id}`).style.display = 'none'
-      document.getElementById(`تعديل-${id}`).style.display = 'block'
-    }
-    function إلغاء(id) {
-      document.getElementById(`عرض-${id}`).style.display = 'block'
-      document.getElementById(`تعديل-${id}`).style.display = 'none'
-    }
-    async function حفظ(id) {
-      const title = document.getElementById(`edit-title-${id}`).value
-      const content = document.getElementById(`edit-content-${id}`).value
-      let { error } = await supabase.from('test').update({ title, content }).eq('id', id)
-      if (error) return alert(error.message)
-      قراءة_البيانات()
-    }
-
-    // 7. حذف
-    async function حذف(id, image_url) {
-      if(!confirm('تحذف الصف ده؟')) return
-      if(image_url) {
-        const اسم_الملف = image_url.split('/').pop()
-        await supabase.storage.from('images').remove([اسم_الملف])
-      }
-      let { error } = await supabase.from('test').delete().eq('id', id)
-      if (error) return alert(error.message)
-      قراءة_البيانات()
-    }
-
-    // تهيئة
     تحقق_من_الجلسة()
     window.تسجيل_دخول = تسجيل_دخول
     window.تسجيل_جديد = تسجيل_جديد
     window.تسجيل_خروج = تسجيل_خروج
     window.نشر_صف = نشر_صف
     window.قراءة_البيانات = قراءة_البيانات
-    window.تعديل = تعديل
-    window.إلغاء = إلغاء
-    window.حفظ = حفظ
-    window.حذف = حذف
   </script>
 </body>
 </html>
