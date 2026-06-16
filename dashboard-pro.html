@@ -171,35 +171,21 @@ window.تسجيل_خروج = async function(){await supabase.auth.signOut();loca
 
 async function عرض_البيانات() {
   const body = document.getElementById('tableBody')
-  body.innerHTML = '<tr><td colspan="4" class="loading">جاري التحميل...</td></tr>'
+  body.innerHTML = '<tr><td colspan="4">بكشف المشكلة...</td></tr>'
   
-  try {
-    // هات الداتا على طول بدون ما تشيك على اليوزر عشان ميوقفش الدخول
-    const { data, error, status } = await supabase.from('test').select('*')
-    
-    // اطبع في الكونسول بس عشان ميوقفش الصفحة
-    console.log('Status:', status, 'Error:', error, 'Data count:', data?.length)
-    
-    if(error) {
-      body.innerHTML = `<tr><td colspan="4" style="color:red;padding:15px">
-        <b>إيرور ${status}:</b> ${error.message}<br>
-        <small>الكود: ${error.code}</small>
-      </td></tr>`
-      return
-    }
-    
-    if(!data || data.length === 0) {
-      body.innerHTML = '<tr><td colspan="4" style="color:orange">الجدول فاضي 📭</td></tr>'
-      return
-    }
-    
-    allData = data
-    بحث() // دي اللي بتعرض الجدول
-    
-  } catch(err) {
-    console.error('كاتش:', err)
-    body.innerHTML = `<tr><td colspan="4" style="color:red">إيرور: ${err.message}</td></tr>`
-  }
+  // نجرب 3 حاجات في نفس الوقت
+  const [all, count] = await Promise.all([
+    supabase.from('test').select('*'),
+    supabase.from('test').select('*', {count: 'exact', head: true})
+  ])
+  
+  alert(
+    `1- Status: ${all.status}\n` +
+    `2- Error: ${all.error ? all.error.message : 'مفيش'}\n` +
+    `3- Data length: ${all.data?.length}\n` +
+    `4- Count from DB: ${count.count}\n` +
+    `5- URL: ${supabase.supabaseUrl}`
+  )
 }
 // ===== CREATE =====
 window.اضافة = async function() {
