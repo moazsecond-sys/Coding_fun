@@ -2,97 +2,137 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة تحكم test</title>
+<title>لوحة تحكم كاملة</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Tahoma;padding:20px;max-width:600px;margin:20px auto;background:#f5f5f5}
-input,button,textarea{padding:12px;margin:8px 0;width:100%;box-sizing:border-box;border-radius:8px;border:1px solid #ddd;font-size:16px}
-button{background:#5865F2;color:white;border:none;cursor:pointer;font-weight:bold}
+*{box-sizing:border-box}
+body{font-family:Tahoma;padding:15px;max-width:700px;margin:20px auto;background:#f0f2f5}
+.box{padding:20px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin-bottom:15px}
+input,button{padding:12px;margin:6px 0;width:100%;border-radius:8px;border:1px solid #ddd;font-size:16px}
+button{background:#5865F2;color:white;border:none;cursor:pointer;font-weight:bold;transition:0.2s}
 button:hover{opacity:0.9}
-button.danger{background:#ED4245}
-button.edit{background:#FEE75C;color:#000}
-#login,#crud{padding:20px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+button:disabled{background:#ccc;cursor:not-allowed}
+.btn-danger{background:#ED4245}
+.btn-edit{background:#FEE75C;color:#000}
+.btn-small{width:auto;padding:8px 15px;margin-left:5px;font-size:14px}
 #crud{display:none}
-.item{padding:15px;margin:10px 0;background:#fafafa;border-radius:8px;border:1px solid #eee}
-.item button{width:auto;margin-left:5px}
+.item{padding:15px;margin:10px 0;background:#fafafa;border-radius:8px;border:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+.item span{flex:1;word-break:break-word}
+.top-bar{display:flex;gap:10px;margin-bottom:15px}
+.top-bar input{flex:1;margin:0}
+.loading{text-align:center;padding:20px;color:#666}
+h2,h3{margin-top:0;color:#333}
 </style>
 </head>
 <body>
 
-<div id="login">
-  <h2>تسجيل دخول</h2>
+<!-- شاشة الدخول -->
+<div id="login" class="box">
+  <h2>🔐 تسجيل دخول</h2>
   <input id="email" type="email" placeholder="الإيميل">
   <input id="pass" type="password" placeholder="كلمة السر">
   <button onclick="تسجيل_دخول()">دخول</button>
 </div>
 
+<!-- لوحة التحكم -->
 <div id="crud">
-  <h2>لوحة تحكم جدول test ✅</h2>
-  <button onclick="تسجيل_خروج()">خروج</button>
+  <div class="box">
+    <h2>✅ لوحة تحكم جدول test</h2>
+    <button onclick="تسجيل_خروج()">خروج</button>
+  </div>
   
-  <h3>إضافة سجل جديد</h3>
-  <input id="title" placeholder="اكتب العنوان هنا">
-  <button onclick="اضافة()">نشر</button>
+  <!-- إضافة جديد -->
+  <div class="box">
+    <h3>➕ إضافة سجل جديد</h3>
+    <input id="title" placeholder="اكتب العنوان هنا واضغط Enter" onkeypress="if(event.key=='Enter') اضافة()">
+    <button id="btnAdd" onclick="اضافة()">نشر</button>
+  </div>
   
-  <h3>البيانات الموجودة</h3>
-  <div id="list">جاري التحميل...</div>
+  <!-- البحث والترتيب -->
+  <div class="box">
+    <h3>🔍 البيانات الموجودة</h3>
+    <div class="top-bar">
+      <input id="search" placeholder="ابحث في العناوين..." onkeyup="بحث()">
+      <button class="btn-small" onclick="ترتيب()">ترتيب ↓↑</button>
+    </div>
+    <div id="list" class="loading">جاري التحميل...</div>
+  </div>
 </div>
 
 <script type="module">
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
 
-// 1. حط بياناتك هنا
+// ===== 1. حط بياناتك هنا =====
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+let allData = []
+let ascOrder = false
 
-// 2. تسجيل الدخول
+// ===== 2. تسجيل الدخول =====
 window.تسجيل_دخول = async function() {
-  const email = document.getElementById('email').value
+  const email = document.getElementById('email').value.trim()
   const pass = document.getElementById('pass').value
+  
+  if(!email || !pass) return alert('اكتب الإيميل والباسورد')
   
   const { error } = await supabase.auth.signInWithPassword({email, password: pass})
   
-  if(error) {
-    alert('خطأ: ' + error.message)
-  } else {
+  if(error) alert('خطأ: ' + error.message)
+  else {
     document.getElementById('login').style.display = 'none'
     document.getElementById('crud').style.display = 'block'
     عرض_البيانات()
   }
 }
 
-// 3. تسجيل الخروج
+// ===== 3. تسجيل الخروج =====
 window.تسجيل_خروج = async function() {
   await supabase.auth.signOut()
   location.reload()
 }
 
-// 4. READ - عرض البيانات
+// ===== 4. READ - عرض البيانات =====
 async function عرض_البيانات() {
+  document.getElementById('list').innerHTML = '<div class="loading">جاري التحميل...</div>'
+  
   const { data, error } = await supabase.from('test').select('*').order('id', {ascending: false})
   
   if(error) return document.getElementById('list').innerHTML = 'خطأ: ' + error.message
   
-  if(data.length === 0) return document.getElementById('list').innerHTML = 'مفيش بيانات بعد'
+  allData = data
+  if(data.length === 0) return document.getElementById('list').innerHTML = 'مفيش بيانات بعد 📭'
   
+  عرض_القائمة(data)
+}
+
+// عرض القائمة في الـ HTML
+function عرض_القائمة(data) {
   document.getElementById('list').innerHTML = data.map(item => `
-    <div class="item">
-      <span id="text-${item.id}">${item.title}</span>
-      <br><br>
-      <button class="edit" onclick="تعديل(${item.id})">تعديل</button>
-      <button class="danger" onclick="حذف(${item.id})">حذف</button>
+    <div class="item" data-text="${item.title.toLowerCase()}">
+      <span>${item.title}</span>
+      <div>
+        <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
+        <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
+      </div>
     </div>
   `).join('')
 }
 
-// 5. CREATE - إضافة
+// ===== 5. CREATE - إضافة =====
 window.اضافة = async function() {
   const title = document.getElementById('title').value.trim()
   if(!title) return alert('اكتب عنوان الأول')
   
+  const btn = document.getElementById('btnAdd')
+  btn.disabled = true
+  btn.textContent = 'جاري النشر...'
+  
   const { error } = await supabase.from('test').insert([{title}])
+  
+  btn.disabled = false
+  btn.textContent = 'نشر'
   
   if(error) alert('خطأ: ' + error.message)
   else {
@@ -101,10 +141,10 @@ window.اضافة = async function() {
   }
 }
 
-// 6. UPDATE - تعديل
-window.تعديل = async function(id) {
-  const newTitle = prompt('اكتب العنوان الجديد:')
-  if(!newTitle) return
+// ===== 6. UPDATE - تعديل =====
+window.تعديل = async function(id, oldTitle) {
+  const newTitle = prompt('اكتب العنوان الجديد:', oldTitle)
+  if(!newTitle || newTitle === oldTitle) return
   
   const { error } = await supabase.from('test').update({title: newTitle}).eq('id', id)
   
@@ -112,9 +152,9 @@ window.تعديل = async function(id) {
   else عرض_البيانات()
 }
 
-// 7. DELETE - حذف
+// ===== 7. DELETE - حذف =====
 window.حذف = async function(id) {
-  if(!confirm('متأكد عايز تحذف؟')) return
+  if(!confirm('⚠️ متأكد عايز تحذف السجل ده؟')) return
   
   const { error } = await supabase.from('test').delete().eq('id', id)
   
@@ -122,7 +162,24 @@ window.حذف = async function(id) {
   else عرض_البيانات()
 }
 
-// 8. لو اليوزر عامل تسجيل دخول قبل كده يدخله علطول
+// ===== 8. بحث فوري =====
+window.بحث = function() {
+  const val = document.getElementById('search').value.toLowerCase()
+  const filtered = allData.filter(item => item.title.toLowerCase().includes(val))
+  عرض_القائمة(filtered)
+}
+
+// ===== 9. ترتيب تصاعدي/تنازلي =====
+window.ترتيب = function() {
+  ascOrder = !ascOrder
+  const sorted = [...allData].sort((a,b) => 
+    ascOrder ? a.title.localeCompare(b.title, 'ar') : b.title.localeCompare(a.title, 'ar')
+  )
+  عرض_القائمة(sorted)
+  event.target.textContent = ascOrder ? 'ترتيب ↑↓' : 'ترتيب ↓↑'
+}
+
+// ===== 10. دخول تلقائي لو مسجل قبل كده =====
 supabase.auth.getSession().then(({data}) => {
   if(data.session) {
     document.getElementById('login').style.display = 'none'
