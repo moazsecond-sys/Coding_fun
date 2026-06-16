@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>اختبار</title>
-  <style>
-    body { font-family: Tahoma; padding: 50px; text-align: center; }
-    button { padding: 15px 30px; font-size: 18px; background: #5865F2; color: white; border: none; border-radius: 8px; cursor: pointer; }
-    .success { color: green; font-size: 20px; margin-top: 20px; }
-  </style>
+<head><meta charset="UTF-8"><title>Auth Test</title>
+<style>body{font-family:Tahoma;padding:30px;background:#f5f5f5}input,button{padding:10px;margin:5px;border-radius:5px}button{background:#5865F2;color:white;border:none;cursor:pointer}</style>
 </head>
 <body>
-  <h1>اختبار الأزرار</h1>
-  <button onclick="جرب()">دوس هنا</button>
-  <div id="نتيجة"></div>
+<h2>تجربة تسجيل</h2>
+<input id="email" type="email" placeholder="الإيميل"><br>
+<input id="pass" type="password" placeholder="باسورد 6 حروف"><br>
+<button onclick="جديد()">تسجيل جديد</button>
+<button onclick="دخول()">دخول</button>
+<div id="msg" style="margin-top:15px"></div>
 
-  <script>
-    alert('الملف اتحمل بنجاح ✅') // لو دي مظهرتش يبقى الملف بايظ
-    
-    function جرب() {
-      document.getElementById('نتيجة').innerHTML = '<div class="success">الأزرار شغالة 100% 🎉</div>'
-    }
-  </script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+// ⚠️ غير دول بس من Supabase Settings → API
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+window.جديد = async () => {
+  const { error } = await supabase.auth.signUp({
+    email: document.getElementById('email').value,
+    password: document.getElementById('pass').value
+  })
+  document.getElementById('msg').innerHTML = error ? `<span style="color:red">❌ ${error.message}</span>` : '<span style="color:green">✅ تم التسجيل</span>'
+}
+
+window.دخول = async () => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('email').value,
+    password: document.getElementById('pass').value
+  })
+  document.getElementById('msg').innerHTML = error ? `<span style="color:red">❌ ${error.message}</span>` : '<span style="color:green">✅ تم الدخول</span>'
+}
+</script>
 </body>
 </html>
