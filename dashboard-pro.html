@@ -164,33 +164,32 @@ window.تسجيل_خروج = async function(){await supabase.auth.signOut();loca
 async function عرض_البيانات() {
   document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">جاري التحميل...</td></tr>'
   
-  console.log('URL:', SUPABASE_URL) // عشان نتأكد من الـ URL
-  console.log('KEY موجود؟', SUPABASE_KEY ? 'أيوه' : 'لأ') // نتأكد إن المفتاح مش فاضي
-  
-  const { data, error, status } = await supabase.from('test').select('*')
-  
-  console.log('Status:', status) // 200 = نجح، 401 = مفتاح غلط، 404 = جدول مش موجود
-  console.log('Data:', data)     // المفروض مصفوفة فيها 4 سجلات زي الصور
-  console.log('Error:', error)   // ده أهم سطر
-  
-  if(error) {
+  try {
+    const result = await supabase.from('test').select('*')
+    console.log('النتيجة كاملة:', result)
+    
+    const { data, error, status } = result
+    
+    if(error) throw error
+    
+    if(!data || data.length === 0) {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="color:orange">الجدول فاضي 📭</td></tr>'
+      return
+    }
+    
+    allData = data
+    بحث()
+    
+  } catch(err) {
+    console.error('إيرور خطير:', err)
     document.getElementById('tableBody').innerHTML = 
       `<tr><td colspan="4" style="color:red;padding:20px">
-        <b>إيرور:</b> ${error.message}<br>
-        <b>الكود:</b> ${error.code}<br>
-        <b>Status:</b> ${status}
+        <b>الإيرور اللي مخبي:</b><br>
+        ${err.message}<br><br>
+        <b>Status Code:</b> ${err.status || 'مفيش'}<br>
+        <b>Details:</b> ${err.details || 'مفيش'}
       </td></tr>`
-    return
   }
-  
-  if(!data || data.length === 0) {
-    document.getElementById('tableBody').innerHTML = 
-      '<tr><td colspan="4" style="color:orange">الجدول فاضي مفيهوش داتا 📭</td></tr>'
-    return
-  }
-  
-  allData = data
-  بحث()
 }
 
 // ===== CREATE =====
