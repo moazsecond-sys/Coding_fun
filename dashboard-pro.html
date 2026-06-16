@@ -494,25 +494,21 @@ document.addEventListener('keydown', (e) => {
 // دخول تلقائي - النسخة الثرثارة
 console.log('1. بدأت أشيك على السيشن...')
 
-supabase.auth.getSession().then(({data, error}) => {
-  console.log('2. نتيجة الشيك:', data, error)
-  
+// امسح الكود القديم كله وحط ده
+supabase.auth.getSession().then(({data: {session}, error}) => {
   if(error) {
-    console.error('❌ في إيرور:', error.message)
     alert('إيرور سيشن: ' + error.message)
+    return
   }
   
-  if(data.session) {
-    console.log('✅ لقيت سيشن، هدخلك...')
-    document.getElementById('login').style.display='none'
-    document.getElementById('crud').style.display='block'
-    تحديث_الواجهة()
+  if(session) {
+    alert('✅ لقيت سيشن! هعرض البيانات')
     عرض_البيانات()
   } else {
-    console.log('⚠️ مفيش سيشن، هخليك في اللوجين')
-    document.getElementById('login').style.display='block'
-    document.getElementById('crud').style.display='none'
+    alert('❌ مفيش سيشن... سجل دخول')
   }
+}).catch(err => {
+  alert('إيرور قاتل: ' + err.message)
 })
 
 // اسمع لو سجلت دخول/خروج
