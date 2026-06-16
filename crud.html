@@ -7,23 +7,16 @@
     body { font-family: Tahoma; padding: 20px; background: #f5f5f5; max-width: 800px; margin: auto; }
     h1 { text-align: center; color: #333; }
     button { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; margin: 3px; }
-    .btn-add { background: #3ecf8e; color: white; }
-    .btn-edit { background: #ffa500; color: white; }
-    .btn-delete { background: #ff4d4d; color: white; }
-    .btn-save { background: #007bff; color: white; }
     .btn-login { background: #5865F2; color: white; }
     .form, .auth { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
     input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
-    .item { border: 2px solid #ddd; padding: 12px; margin: 10px 0; border-radius: 8px; background: white; }
-    .item img { max-width: 150px; border-radius: 5px; }
     .success { color: green; padding: 8px; background: #d4edda; border-radius: 5px; } 
     .error { color: red; padding: 8px; background: #f8d7da; border-radius: 5px; }
     .hidden { display: none; }
-    .user-info { text-align: left; margin-bottom: 10px; background: white; padding: 10px; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <h1>Supabase CRUD + Auth</h1>
+  <h1>تجربة Supabase Auth</h1>
 
   <div class="auth" id="auth-box">
     <h3>تسجيل دخول</h3>
@@ -35,49 +28,27 @@
   </div>
 
   <div id="app" class="hidden">
-    <div class="user-info">
-      مرحباً: <span id="user-email"></span>
-      <button onclick="تسجيل_خروج()">خروج</button>
-    </div>
-
-    <div class="form">
-      <h3>نشر صف جديد</h3>
-      <input type="text" id="title" placeholder="العنوان">
-      <textarea id="content" placeholder="المحتوى" rows="3"></textarea>
-      <input type="file" id="image" accept="image/*">
-      <button class="btn-add" onclick="نشر_صف()">نشر</button>
-      <div id="رسالة_نشر" style="margin-top:10px;"></div>
-    </div>
-
-    <div style="text-align: center;">
-      <button class="btn-add" onclick="قراءة_البيانات()">تحديث البيانات</button>
-    </div>
-    <div id="النتيجة">سجل دخول عشان تشوف البيانات...</div>
+    <p>مرحباً: <span id="user-email"></span> <button onclick="تسجيل_خروج()">خروج</button></p>
+    <div id="النتيجة">تم الدخول بنجاح ✅</div>
   </div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-    // ⚠️ غير السطرين دول بس - انسخهم من Supabase → Project Settings → API
+    // ⚠️ غير دول من Supabase → Settings → API
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-    
-    if(SUPABASE_URL.includes('xxxx') || SUPABASE_KEY.includes('xxxx')) {
-      alert('⚠️ نسيت تغير SUPABASE_URL أو SUPABASE_KEY في الكود!')
-    }
-
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-
-    async function تسجيل_جديد() {
+      async function تسجيل_جديد() {
       const email = document.getElementById('email').value.trim()
       const password = document.getElementById('password').value
       const رسالة = document.getElementById('رسالة_auth')
       
       if(!email || password.length < 6) {
-        return رسالة.innerHTML = '<div class="error">اكتب إيميل صحيح + باسورد 6 حروف</div>'
+        return رسالة.innerHTML = '<div class="error">اكتب إيميل + باسورد 6 حروف</div>'
       }
 
-      let { data, error } = await supabase.auth.signUp({ email, password })
+      let { error } = await supabase.auth.signUp({ email, password })
       
       if(error) return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
       
@@ -89,7 +60,7 @@
       const password = document.getElementById('password').value
       const رسالة = document.getElementById('رسالة_auth')
       
-      let { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      let { error } = await supabase.auth.signInWithPassword({ email, password })
       
       if(error) return رسالة.innerHTML = `<div class="error">❌ ${error.message}</div>`
       
@@ -103,61 +74,18 @@
     }
 
     async function تحقق_من_الجلسة() {
-      const { data: { session } = await supabase.auth.getSession()
+      const { data: { session } = await supabase.auth.getSession() // اتصلح هنا القوس
       if(session) {
         document.getElementById('auth-box').classList.add('hidden')
         document.getElementById('app').classList.remove('hidden')
         document.getElementById('user-email').textContent = session.user.email
-        قراءة_البيانات()
       }
-    }
-
-    async function قراءة_البيانات() {
-      const div = document.getElementById('النتيجة')
-      div.innerHTML = 'جاري التحميل...'
-
-      let { data, error } = await supabase.from('test').select('*').order('id', { ascending: false })
-
-      if (error) return div.innerHTML = `<div class="error">${error.message}</div>`
-      if(!data || data.length === 0) return div.innerHTML = 'مفيش بيانات لسه'
-      
-      div.innerHTML = data.map(item => `
-        <div class="item">
-          <b>ID:</b> ${item.id} <br>
-          <b>Title:</b> ${item.title} <br>
-          <b>Content:</b> ${item.content}
-        </div>
-      `).join('')
-    }
-
-    async function نشر_صف() {
-      const title = document.getElementById('title').value.trim()
-      const content = document.getElementById('content').value.trim()
-      const رسالة = document.getElementById('رسالة_نشر')
-      
-      if(!title || !content) return رسالة.innerHTML = '<div class="error">اكتب العنوان والمحتوى</div>'
-
-      const { data: { user } = await supabase.auth.getUser()
-      if(!user) return رسالة.innerHTML = '<div class="error">لازم تسجل دخول أول</div>'
-
-      let { error } = await supabase.from('test').insert([{ 
-        title, content, user_id: user.id
-      }])
-      
-      if (error) return رسالة.innerHTML = `<div class="error">${error.message}</div>`
-      
-      رسالة.innerHTML = '<div class="success">✅ تم النشر</div>'
-      document.getElementById('title').value = ''
-      document.getElementById('content').value = ''
-      قراءة_البيانات()
     }
 
     تحقق_من_الجلسة()
     window.تسجيل_دخول = تسجيل_دخول
     window.تسجيل_جديد = تسجيل_جديد
     window.تسجيل_خروج = تسجيل_خروج
-    window.نشر_صف = نشر_صف
-    window.قراءة_البيانات = قراءة_البيانات
   </script>
 </body>
 </html>
