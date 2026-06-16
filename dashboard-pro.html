@@ -147,19 +147,25 @@ let sortAsc = localStorage.getItem('sort_asc') === 'true'
 // ===== ثيم داكن =====
 if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark')
 
-// ===== تسجيل دخول =====
 window.تسجيل_دخول = async function() {
-  const { error } = await supabase.auth.signInWithPassword({
-    email: document.getElementById('email').value,
-    password: document.getElementById('pass').value
-  })
-  if(error) alert('خطأ: ' + error.message)
-  else {
-    document.getElementById('login').style.display='none'
-    document.getElementById('crud').style.display='block'
-    تحديث_الواجهة()
-    عرض_البيانات()
+  const email = document.getElementById('email').value.trim()
+  const pass = document.getElementById('pass').value
+  
+  alert('بحاول ادخل بـ: ' + email) // 1. اتأكد الإيميل صح
+  
+  const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
+  
+  if(error) {
+    alert('كود الإيرور: ' + error.status + '\nالرسالة: ' + error.message) // 2. ده الزتونة
+    console.error('تفاصيل كاملة:', error)
+    return
   }
+  
+  alert('نجح! مرحباً ' + data.user.email) // 3. لو نجح
+  document.getElementById('login').style.display='none'
+  document.getElementById('crud').style.display='block'
+  تحديث_الواجهة()
+  عرض_البيانات()
 }
 window.تسجيل_خروج = async function(){await supabase.auth.signOut();location.reload()}
 
