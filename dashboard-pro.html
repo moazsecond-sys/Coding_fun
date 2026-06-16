@@ -2,33 +2,39 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة تحكم برو ماكس</title>
+<title>لوحة تحكم برو ماكس ألترا</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 :root{
-  --bg:#f0f2f5; --card:#fff; --text:#333; --border:#ddd; --primary:#5865F2; --hover:#f5f7ff
+  --bg:#f0f2f5; --card:#fff; --text:#333; --border:#ddd; --primary:#5865F2; --hover:#f5f7ff; --success:#57F287
 }
 body.dark{
-  --bg:#1e1e2e; --card:#2a2a3e; --text:#e0e0e0; --border:#444; --primary:#7289da; --hover:#35354a
+  --bg:#1e1e2e; --card:#2a2a3e; --text:#e0e0e0; --border:#444; --primary:#7289da; --hover:#35354a; --success:#3BA55D
 }
 *{box-sizing:border-box}
-body{font-family:Tahoma;padding:15px;max-width:1200px;margin:20px auto;background:var(--bg);color:var(--text);transition:0.3s}
+body{font-family:'Segoe UI',Tahoma;padding:15px;max-width:1200px;margin:20px auto;background:var(--bg);color:var(--text);transition:0.3s}
 .box{padding:20px;background:var(--card);border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin-bottom:15px}
 input,button,select{padding:12px;margin:6px 0;width:100%;border-radius:8px;border:1px solid var(--border);font-size:16px;background:var(--card);color:var(--text)}
 button{background:var(--primary);color:white;border:none;cursor:pointer;font-weight:bold;transition:0.2s}
-button:hover{opacity:0.9}
-button:disabled{background:#ccc;cursor:not-allowed}
+button:hover{opacity:0.9;transform:translateY(-1px)}
+button:disabled{background:#ccc;cursor:not-allowed;transform:none}
 .btn-danger{background:#ED4245}
 .btn-edit{background:#FEE75C;color:#000}
-.btn-success{background:#57F287;color:#000}
+.btn-success{background:var(--success);color:#000}
 .btn-small{width:auto;padding:6px 12px;margin:2px;font-size:13px}
 #crud{display:none}
 .top-bar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center}
 .top-bar input,.top-bar select{flex:1;min-width:150px;margin:0}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:15px}
-.stat-card{background:var(--card);padding:15px;border-radius:8px;text-align:center;border:1px solid var(--border)}
+.stat-card{background:var(--card);padding:15px;border-radius:8px;text-align:center;border:1px solid var(--border);transition:0.2s}
+.stat-card:hover{transform:translateY(-3px)}
 .stat-num{font-size:28px;font-weight:bold;color:var(--primary)}
-.loading{text-align:center;padding:20px;color:#666}
+.loading{text-align:center;padding:40px;color:#666;font-size:18px}
+
+/* Toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--card);padding:15px 25px;border-radius:8px;box-shadow:0 5px 20px rgba(0,0,0,0.2);border-right:4px solid var(--success);z-index:9999;display:none}
+.toast.show{display:block;animation:slideDown 0.3s}
+@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}
 
 /* جدول */
 .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;max-height:500px}
@@ -39,15 +45,22 @@ th.sort-asc::after{content:" ▲"} th.sort-desc::after{content:" ▼"}
 tbody td{padding:12px;border:1px solid var(--border)}
 tbody tr:nth-child(even){background:var(--hover)}
 tbody tr.selected{background:#fff3cd!important}
+tbody tr:hover{background:var(--hover)}
 th:first-child, td:first-child{position:sticky;right:0;z-index:1;background:inherit;width:50px;text-align:center}
 th:last-child, td:last-child{position:sticky;left:0;z-index:1;background:inherit;box-shadow:-2px 0 5px rgba(0,0,0,0.05)}
 thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 .actions{white-space:nowrap;text-align:center;min-width:180px}
 
+/* Pagination */
+.pagination{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:15px;flex-wrap:wrap}
+.pagination button{min-width:40px;width:auto;padding:8px 12px}
+.pagination button.active{background:var(--success);color:#000}
+.pagination-info{color:#666;font-size:14px}
+
 /* كروت */
 .cards-wrap{display:none;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
 .card{border:1px solid var(--border);border-radius:12px;padding:15px;background:var(--card);box-shadow:0 2px 5px rgba(0,0,0,0.05);transition:0.2s;position:relative}
-.card:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+.card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,0.15)}
 .card.selected{border-color:var(--primary);background:var(--hover)}
 .card-check{position:absolute;top:10px;left:10px}
 .card-id{font-size:12px;color:#999;margin-bottom:8px}
@@ -68,23 +81,25 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 </head>
 <body>
 
+<div id="toast" class="toast"></div>
+
 <div id="login" class="box">
   <h2>🔐 تسجيل دخول</h2>
   <input id="email" type="email" placeholder="الإيميل">
-  <input id="pass" type="password" placeholder="كلمة السر">
+  <input id="pass" type="password" placeholder="كلمة السر" onkeypress="if(event.key=='Enter') تسجيل_دخول()">
   <button onclick="تسجيل_دخول()">دخول</button>
 </div>
 
 <div id="crud">
   <div class="box" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-    <h2>🚀 لوحة تحكم برو ماكس</h2>
+    <h2>🚀 لوحة تحكم برو ماكس ألترا</h2>
     <div>
       <button class="btn-small" onclick="تبديل_الثيم()">🌙 ثيم</button>
+      <button class="btn-small" onclick="عرض_البيانات()">🔄 تحديث</button>
       <button onclick="تسجيل_خروج()">خروج</button>
     </div>
   </div>
 
-  <!-- إحصائيات -->
   <div class="stats" id="statsBox"></div>
 
   <div class="box">
@@ -96,15 +111,20 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
   <div class="box">
     <h3>📊 البيانات</h3>
     <div class="top-bar">
-      <input id="search" placeholder="ابحث في الكل..." onkeyup="بحث()">
+      <input id="search" placeholder="ابحث في الكل... Ctrl+F" onkeyup="بحث()">
       <select id="sortSelect" onchange="ترتيب_من_سلكت()">
         <option value="id-desc">ID تنازلي</option>
         <option value="id-asc">ID تصاعدي</option>
         <option value="title-asc">العنوان أ-ي</option>
         <option value="title-desc">العنوان ي-أ</option>
       </select>
+      <select id="perPage" onchange="تغيير_عدد_الصفحات()">
+        <option value="10">10 في الصفحة</option>
+        <option value="25">25 في الصفحة</option>
+        <option value="50">50 في الصفحة</option>
+      </select>
       <button class="btn-success" onclick="تصدير_اكسل()">📥 Excel</button>
-      <button class="btn-success" onclick="تبديل_العرض()">🔄 تبديل العرض</button>
+      <button class="btn-success" onclick="تبديل_العرض()">🔄 عرض</button>
       <button class="btn-danger" id="btnDeleteSelected" onclick="حذف_المحدد()" style="display:none">🗑️ حذف المحدد</button>
       <span id="count">0 سجل</span>
     </div>
@@ -119,11 +139,13 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
             <th>إجراءات</th>
           </tr>
         </thead>
-        <tbody id="tableBody"><tr><td colspan="4" class="loading">جاري التحميل...</td></tr></tbody>
+        <tbody id="tableBody"><tr><td colspan="4" class="loading">⏳ جاري التحميل...</td></tr></tbody>
       </table>
     </div>
 
     <div id="cardsView" class="cards-wrap"></div>
+
+    <div id="paginationBox" class="pagination"></div>
   </div>
 </div>
 
@@ -131,116 +153,107 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2.45.4'
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-alert('المفتاح واصل: ' + (SUPABASE_KEY.length > 10 ? 'أيوه طوله ' + SUPABASE_KEY.length : 'لأ فاضي'))
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-console.log('طول المفتاح:', SUPABASE_KEY.length)
-console.log('أول 20 حرف:', SUPABASE_KEY.substring(0,20))
 
 let allData = [], filteredData = []
 let selectedIds = new Set()
-
-// ===== إعدادات محفوظة =====
 let viewMode = localStorage.getItem('view_mode') || 'table'
 let sortColumn = localStorage.getItem('sort_col') || 'id'
 let sortAsc = localStorage.getItem('sort_asc') === 'true'
+let currentPage = 1
+let perPage = parseInt(localStorage.getItem('per_page')) || 10
 
-// ===== ثيم داكن =====
 if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark')
+document.getElementById('perPage').value = perPage
 
-window.تسجيل_الدخول = async function() {
-  const btn = document.querySelector('#login button') || document.querySelector('#login input[type=submit]')
+function showToast(msg, type='success') {
+  const toast = document.getElementById('toast')
+  toast.textContent = msg
+  toast.style.borderRightColor = type==='success'? 'var(--success)' : '#ED4245'
+  toast.classList.add('show')
+  setTimeout(() => toast.classList.remove('show'), 3000)
+}
+
+window.تسجيل_دخول = async function() {
+  const btn = document.querySelector('#login button')
   const email = document.getElementById('email').value.trim()
   const pass = document.getElementById('pass').value
-  
-  // قفل الزرار عشان ميضغطش مرتين
-  if(btn) {
-    btn.disabled = true
-    btn.textContent = 'بندخل...'
-  }
-  
+  if(!email ||!pass) return showToast('اكتب الإيميل والباسورد', 'error')
+
+  btn.disabled = true
+  btn.textContent = 'بندخل...'
+
   try {
     const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
-    
     if(error) throw error
-    
-    // إخفاء شاشة الدخول + إظهار لوحة التحكم
-    const loginDiv = document.getElementById('login')
-    const crudDiv = document.getElementById('crud')
-    
-    if(loginDiv) loginDiv.style.display = 'none'
-    if(crudDiv) crudDiv.style.display = 'block'
-    
-    // تحديث الواجهة بأمان - لو ضربت متوقفش الكود
-    try {
-      تحديث_الواجهة()
-    } catch(e) {
-      console.error('إيرور تحديث الواجهة:', e)
-    }
-    
-    // هات الداتا
+    document.getElementById('login').style.display='none'
+    document.getElementById('crud').style.display='block'
+    تحديث_الواجهة()
     await عرض_البيانات()
-    
+    showToast('مرحباً بيك! ✅')
   } catch(error) {
-    alert('فشل الدخول: ' + error.message)
-    console.error('تفاصيل:', error)
+    showToast('فشل الدخول: ' + error.message, 'error')
   } finally {
-    // رجع الزرار زي ما كان
-    if(btn) {
-      btn.disabled = false
-      btn.textContent = 'دخول'
-    }
+    btn.disabled = false
+    btn.textContent = 'دخول'
   }
 }
-window.تسجيل_خروج = async function(){await supabase.auth.signOut();location.reload()}
+
+window.تسجيل_خروج = async function(){
+  await supabase.auth.signOut()
+  location.reload()
+}
 
 async function عرض_البيانات() {
-  document.getElementById('tableBody').innerHTML = '<tr><td colspan="4">بجرب الاتصال...</td></tr>'
-  
-  const { data, error, status } = await supabase.from('test').select('*')
-  
-  alert(
-    `URL المشروع: ${supabase.supabaseUrl}\n` +
-    `Status: ${status}\n` +
-    `Error: ${error ? error.code + ' - ' + error.message : 'مفيش'}\n` +
-    `عدد السجلات: ${data?.length}`
-  )
-  
-  if(data && data.length > 0) {
-    document.getElementById('tableBody').innerHTML = 
-      data.map(r => `<tr><td>${r.id}</td><td>${r.عنوان}</td></tr>`).join('')
+  document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">⏳ بجلب البيانات...</td></tr>'
+  const { data, error } = await supabase.from('test').select('*')
+  if(error) {
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="loading">❌ إيرور: ${error.message}</td></tr>`
+    return
   }
-}
-// ===== CREATE =====
-window.اضافة = async function() {
-  const title = document.getElementById('title').value.trim()
-  if(!title) return alert('اكتب عنوان')
-  const btn = document.getElementById('btnAdd'); btn.disabled=true
-  const { error } = await supabase.from('test').insert([{title}])
-  btn.disabled=false
-  if(error) alert(error.message); else {document.getElementById('title').value='';عرض_البيانات()}
+  allData = data || []
+  filteredData = [...allData]
+  currentPage = 1
+  ترتيب_وعرض()
+  showToast('تم تحديث البيانات 🔄')
 }
 
-// ===== UPDATE =====
+window.اضافة = async function() {
+  const title = document.getElementById('title').value.trim()
+  if(!title) return showToast('اكتب عنوان', 'error')
+  const btn = document.getElementById('btnAdd')
+  btn.disabled=true
+  const { error } = await supabase.from('test').insert([{title}])
+  btn.disabled=false
+  if(error) showToast(error.message, 'error')
+  else {
+    document.getElementById('title').value=''
+    عرض_البيانات()
+    showToast('تم النشر بنجاح ✅')
+  }
+}
+
 window.تعديل = async function(id, oldTitle) {
   const newTitle = prompt('العنوان الجديد:', oldTitle)
   if(!newTitle || newTitle === oldTitle) return
   const { error } = await supabase.from('test').update({title: newTitle}).eq('id', id)
-  if(error) alert(error.message); else عرض_البيانات()
+  if(error) showToast(error.message, 'error')
+  else {عرض_البيانات(); showToast('تم التعديل ✅')}
 }
 
-// ===== DELETE =====
 window.حذف = async function(id) {
   if(!confirm('حذف سجل رقم ' + id + '؟')) return
   const { error } = await supabase.from('test').delete().eq('id', id)
-  if(error) alert(error.message); else عرض_البيانات()
+  if(error) showToast(error.message, 'error')
+  else {عرض_البيانات(); showToast('تم الحذف 🗑️')}
 }
 
-// ===== بحث + ترتيب =====
 window.بحث = function() {
   const val = document.getElementById('search').value.toLowerCase()
   filteredData = allData.filter(item =>
     String(item.id).includes(val) || item.title.toLowerCase().includes(val)
   )
+  currentPage = 1
   ترتيب_وعرض()
 }
 
@@ -261,7 +274,6 @@ window.ترتيب_من_سلكت = function() {
   ترتيب_وعرض()
 }
 
-// ===== تبديل العرض =====
 window.تبديل_العرض = function() {
   viewMode = viewMode === 'table'? 'cards' : 'table'
   localStorage.setItem('view_mode', viewMode)
@@ -269,17 +281,22 @@ window.تبديل_العرض = function() {
   ترتيب_وعرض()
 }
 
-// ===== ثيم =====
+window.تغيير_عدد_الصفحات = function() {
+  perPage = parseInt(document.getElementById('perPage').value)
+  localStorage.setItem('per_page', perPage)
+  currentPage = 1
+  ترتيب_وعرض()
+}
+
 window.تبديل_الثيم = function() {
   document.body.classList.toggle('dark')
   localStorage.setItem('theme', document.body.classList.contains('dark')?'dark':'light')
 }
 
-// ===== تحديد وحذف جماعي =====
 window.تحديد_الكل = function() {
   const check = document.getElementById('checkAll').checked
   selectedIds.clear()
-  if(check) filteredData.forEach(item => selectedIds.add(item.id))
+  if(check) getCurrentPageData().forEach(item => selectedIds.add(item.id))
   ترتيب_وعرض()
   تحديث_زرار_الحذف()
 }
@@ -287,7 +304,8 @@ window.تحديد_الكل = function() {
 window.تحديد_سجل = function(id) {
   if(selectedIds.has(id)) selectedIds.delete(id)
   else selectedIds.add(id)
-  document.getElementById('checkAll').checked = selectedIds.size === filteredData.length
+  const pageData = getCurrentPageData()
+  document.getElementById('checkAll').checked = pageData.length > 0 && pageData.every(item => selectedIds.has(item.id))
   ترتيب_وعرض()
   تحديث_زرار_الحذف()
 }
@@ -295,15 +313,14 @@ window.تحديد_سجل = function(id) {
 window.حذف_المحدد = async function() {
   if(!confirm(`حذف ${selectedIds.size} سجل؟`)) return
   const { error } = await supabase.from('test').delete().in('id', [...selectedIds])
-  if(error) alert(error.message)
-  else {selectedIds.clear(); عرض_البيانات()}
+  if(error) showToast(error.message, 'error')
+  else {selectedIds.clear(); عرض_البيانات(); showToast('تم حذف المحدد 🗑️')}
 }
 
 function تحديث_زرار_الحذف() {
   document.getElementById('btnDeleteSelected').style.display = selectedIds.size > 0? 'inline-block' : 'none'
 }
 
-// ===== تصدير Excel =====
 window.تصدير_اكسل = function() {
   let csv = 'ID,العنوان\n'
   filteredData.forEach(item => csv += `${item.id},"${item.title}"\n`)
@@ -312,33 +329,58 @@ window.تصدير_اكسل = function() {
   link.href = URL.createObjectURL(blob)
   link.download = `data_${new Date().toLocaleDateString('ar-EG')}.csv`
   link.click()
+  showToast('تم التصدير 📥')
 }
 
-// ===== إحصائيات =====
 function عرض_احصائيات() {
   document.getElementById('statsBox').innerHTML = `
     <div class="stat-card"><div class="stat-num">${allData.length}</div><div>إجمالي السجلات</div></div>
     <div class="stat-card"><div class="stat-num">${filteredData.length}</div><div>النتائج الحالية</div></div>
     <div class="stat-card"><div class="stat-num">${selectedIds.size}</div><div>محدد</div></div>
+    <div class="stat-card"><div class="stat-num">${Math.ceil(filteredData.length/perPage)}</div><div>عدد الصفحات</div></div>
   `
 }
 
-// ===== تحديث الواجهة =====
-function تحديث_الواجهة() {
-  // تحديث العداد
-  const countEl = document.querySelector('.count') // أو id="count"
-  if(countEl) countEl.textContent = '4 سجل'
-  
-  // تحديث اسم اليوزر 
-  const userEl = document.getElementById('userEmail')
-  if(userEl) userEl.textContent = 'مرحبا'
-  
-  // ممنوع: tableBody
-  // ممنوع: crud.innerHTML
+function getCurrentPageData() {
+  const start = (currentPage - 1) * perPage
+  const end = start + perPage
+  return filteredData.slice(start, end)
 }
-// ===== العرض =====
+
+function عرض_Pagination() {
+  const totalPages = Math.ceil(filteredData.length / perPage)
+  let html = `<div class="pagination-info">صفحة ${currentPage} من ${totalPages}</div>`
+
+  if(totalPages > 1) {
+    if(currentPage > 1) html += `<button onclick="تغيير_صفحة(${currentPage-1})">◀ السابق</button>`
+
+    let startPage = Math.max(1, currentPage - 2)
+    let endPage = Math.min(totalPages, currentPage + 2)
+
+    for(let i=startPage; i<=endPage; i++) {
+      html += `<button class="${i===currentPage?'active':''}" onclick="تغيير_صفحة(${i})">${i}</button>`
+    }
+
+    if(currentPage < totalPages) html += `<button onclick="تغيير_صفحة(${currentPage+1})">التالي ▶</button>`
+  }
+
+  document.getElementById('paginationBox').innerHTML = html
+}
+
+window.تغيير_صفحة = function(page) {
+  currentPage = page
+  ترتيب_وعرض()
+}
+
+function تحديث_الواجهة() {
+  try {
+    عرض_احصائيات()
+  } catch(e) {
+    console.error('إيرور الواجهة:', e)
+  }
+}
+
 function ترتيب_وعرض() {
-  // ترتيب
   filteredData.sort((a,b) => {
     let valA = a[sortColumn], valB = b[sortColumn]
     if(typeof valA === 'string') valA = valA.toLowerCase()
@@ -346,32 +388,34 @@ function ترتيب_وعرض() {
     return sortAsc? (valA>valB?1:-1) : (valA<valB?1:-1)
   })
 
-  // أسهم الترتيب
   document.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc','sort-desc'))
   const th = document.querySelector(`th[onclick="ترتيب_عمود('${sortColumn}')"]`)
   if(th) th.classList.add(sortAsc? 'sort-asc' : 'sort-desc')
 
   document.getElementById('count').textContent = `${filteredData.length} من ${allData.length} سجل`
   عرض_احصائيات()
+  عرض_Pagination()
+
+  const pageData = getCurrentPageData()
 
   if(viewMode === 'table') {
     document.getElementById('tableView').style.display = 'block'
     document.getElementById('cardsView').style.display = 'none'
-    document.getElementById('tableBody').innerHTML = filteredData.map(item => `
+    document.getElementById('tableBody').innerHTML = pageData.map(item => `
       <tr class="${selectedIds.has(item.id)?'selected':''}">
         <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
-        <td>${item.id}</td>
-        <td>${item.title}</td>
-        <td class="actions">
+        <td data-label="ID">${item.id}</td>
+        <td data-label="العنوان">${item.title}</td>
+        <td class="actions" data-label="إجراءات">
           <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
           <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
         </td>
       </tr>
-    `).join('')
+    `).join('') || '<tr><td colspan="4" class="loading">لا توجد بيانات</td></tr>'
   } else {
     document.getElementById('tableView').style.display = 'none'
     document.getElementById('cardsView').style.display = 'grid'
-    document.getElementById('cardsView').innerHTML = filteredData.map(item => `
+    document.getElementById('cardsView').innerHTML = pageData.map(item => `
       <div class="card ${selectedIds.has(item.id)?'selected':''}">
         <input type="checkbox" class="card-check" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})">
         <div class="card-id">ID: ${item.id}</div>
@@ -381,11 +425,23 @@ function ترتيب_وعرض() {
           <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
         </div>
       </div>
-    `).join('')
+    `).join('') || '<div class="loading" style="grid-column:1/-1">لا توجد بيانات</div>'
   }
 }
 
-// ===== دخول تلقائي =====
+// اختصارات كيبورد
+document.addEventListener('keydown', (e) => {
+  if(e.ctrlKey && e.key === 'a' && document.getElementById('crud').style.display!== 'none') {
+    e.preventDefault()
+    document.getElementById('checkAll').click()
+  }
+  if(e.ctrlKey && e.key === 'f' && document.getElementById('crud').style.display!== 'none') {
+    e.preventDefault()
+    document.getElementById('search').focus()
+  }
+})
+
+// دخول تلقائي
 supabase.auth.getSession().then(({data}) => {
   if(data.session) {
     document.getElementById('login').style.display='none'
