@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRUD</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body{font-family:Tahoma;background:#f5f5f5;padding:20px;max-width:800px;margin:auto}
+  h2{color:#5865F2}
+  input,button,textarea{padding:10px;margin:5px;border-radius:5px;border:1px solid #ddd;width:100%;box-sizing:border-box}
+  button{background:#5865F2;color:white;border:none;cursor:pointer}
+  .card{background:white;padding:15px;margin:10px 0;border-radius:8px}
+  .msg{padding:10px;margin:10px 0;border-radius:5px;display:none}
+  .error{background:#f8d7da;color:#721c24}
+  .success{background:#d4edda;color:#155724}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<div id="loginPage" class="card">
+  <h2>تسجيل الدخول</h2>
+  <input id="email" type="email" placeholder="الإيميل">
+  <input id="pass" type="password" placeholder="الباسورد">
+  <button onclick="تسجيل_دخول()">دخول</button>
+  <div id="msgLogin" class="msg"></div>
+</div>
+
+<div id="crudPage" class="hidden">
+  <button onclick="تسجيل_خروج()" style="float:left">خروج</button>
+  <h2>المنشورات</h2>
+  <input id="title" placeholder="العنوان">
+  <textarea id="content" placeholder="المحتوى"></textarea>
+  <button onclick="اضافة()">إضافة</button>
+  <div id="القائمة">جاري التحميل...</div>
+  <div id="msgCrud" class="msg"></div>
+</div>
+
+<script>
+// ⚠️ حط الرابط والمفتاح بتوعك هنا بالظبط
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+
+// تشخيص: لو Supabase محملش هيطلع تنبيه
+if(typeof supabase === 'undefined'){
+  alert('خطأ: مكتبة Supabase متحملتش. اتأكد من النت')
+} else {
+  alert('Supabase محمل بنجاح ✅')
+}
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+function رسالة(id, النص, نوع='success'){
+  const el = document.getElementById(id)
+  el.className = 'msg ' + نوع
+  el.innerHTML = النص
+  el.style.display = 'block'
+  setTimeout(()=>el.style.display='none', 4000)
+}
+
+window.تسجيل_دخول = async () => {
+  alert('1- الزرار اشتغل') // تشخيص
+  const email = document.getElementById('email').value
+  const password = document.getElementById('pass').value
+  
+  if(!email || !password){
+    رسالة('msgLogin','اكتب الإيميل والباسورد','error')
+    return
+  }
+  
+  رسالة('msgLogin','2- جاري الاتصال بـ Supabase...','success')
+  
+  try{
+    let { data, error } = await supabaseClient.auth.signInWithPassword({email, password})
+    
+    if(error){
+      alert('3- الخطأ: ' + error.message) // هيطلعلك السبب
+      رسالة('msgLogin','❌ ' + error.message,'error')
+    } else {
+      alert('3- تم الدخول بنجاح')
+      document.getElementById('loginPage').classList.add('hidden')
+      document.getElementById('crudPage').classList.remove('hidden')
+      عرض()
+    }
+  } catch(e){
+    alert('خطأ في الكود: ' + e.message)
+  }
+}
+
+window.تسجيل_خروج = async () => {
+  await supabaseClient.auth.signOut()
+  document.getElementById('crudPage').classList.add('hidden')
+  document.getElementById('loginPage').classList.remove('hidden')
+}
+
+async function عرض(){
+  let { data, error } = await supabaseClient.from('test').select('*').order('id', {ascending:false})
+  if(error){
+    document.getElementById('القائمة').innerHTML = 'خطأ: ' + error.message
+    return
+  }
+  document.getElementById('القائمة').innerHTML = data.map(p => 
+    `<div class="card"><h4>${p.title}</h4><p>${p.content}</p></div>`
+  ).join('')
+}
+
+window.اضافة = async () => {
+  const title = document.getElementById('title').value
+  const content = document.getElementById('content').value
+  const { data: { user } = await supabaseClient.auth.getUser()
+  
+  await supabaseClient.from('test').insert([{title, content, user_id: user.id}])
+  document.getElementById('title').value = ''
+  document.getElementById('content').value = ''
+  عرض()
+}
+</script>
+</body>
+</html>
