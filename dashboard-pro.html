@@ -170,22 +170,21 @@ window.تسجيل_دخول = async function() {
 window.تسجيل_خروج = async function(){await supabase.auth.signOut();location.reload()}
 
 async function عرض_البيانات() {
-  const body = document.getElementById('tableBody')
-  body.innerHTML = '<tr><td colspan="4">بكشف المشكلة...</td></tr>'
+  document.getElementById('tableBody').innerHTML = '<tr><td colspan="4">بجرب الاتصال...</td></tr>'
   
-  // نجرب 3 حاجات في نفس الوقت
-  const [all, count] = await Promise.all([
-    supabase.from('test').select('*'),
-    supabase.from('test').select('*', {count: 'exact', head: true})
-  ])
+  const { data, error, status } = await supabase.from('test').select('*')
   
   alert(
-    `1- Status: ${all.status}\n` +
-    `2- Error: ${all.error ? all.error.message : 'مفيش'}\n` +
-    `3- Data length: ${all.data?.length}\n` +
-    `4- Count from DB: ${count.count}\n` +
-    `5- URL: ${supabase.supabaseUrl}`
+    `URL المشروع: ${supabase.supabaseUrl}\n` +
+    `Status: ${status}\n` +
+    `Error: ${error ? error.code + ' - ' + error.message : 'مفيش'}\n` +
+    `عدد السجلات: ${data?.length}`
   )
+  
+  if(data && data.length > 0) {
+    document.getElementById('tableBody').innerHTML = 
+      data.map(r => `<tr><td>${r.id}</td><td>${r.عنوان}</td></tr>`).join('')
+  }
 }
 // ===== CREATE =====
 window.اضافة = async function() {
