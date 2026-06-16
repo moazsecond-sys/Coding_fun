@@ -205,17 +205,31 @@ window.تسجيل_خروج = async function(){
 }
 
 async function عرض_البيانات() {
+  // اعرض رسالة تحميل
   document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">⏳ بجلب البيانات...</td></tr>'
+  
+  // هات الداتا من Supabase
   const { data, error } = await supabase.from('test').select('*')
+  
+  // لو في إيرور
   if(error) {
     document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="loading">❌ إيرور: ${error.message}</td></tr>`
+    console.error('إيرور Supabase:', error)
+    showToast('فشل جلب البيانات', 'error')
     return
   }
+  
+  // خزن الداتا
   allData = data || []
   filteredData = [...allData]
   currentPage = 1
+  
+  console.log('الداتا جت:', allData.length, 'سجل')
+  
+  // نادي فانكشن الرسم
   ترتيب_وعرض()
-  showToast('تم تحديث البيانات 🔄')
+  
+  showToast('تم جلب البيانات ✅')
 }
 
 window.اضافة = async function() {
@@ -381,52 +395,80 @@ function تحديث_الواجهة() {
 }
 
 function ترتيب_وعرض() {
-  filteredData.sort((a,b) => {
-    let valA = a[sortColumn], valB = b[sortColumn]
-    if(typeof valA === 'string') valA = valA.toLowerCase()
-    if(typeof valB === 'string') valB = valB.toLowerCase()
-    return sortAsc? (valA>valB?1:-1) : (valA<valB?1:-1)
-  })
+  try {
+    filteredData.sort((a,b) => {
+      let valA = a[sortColumn], valB = b[sortColumn]
+      if(typeof valA === 'string') valA = valA.toLowerCase()
+      if(typeof valB === 'string') valB = valB.toLowerCase()
+      return sortAsc? (valA>valB?1:-1) : (valA<valB?1:-1)
+    })
 
-  document.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc','sort-desc'))
-  const th = document.querySelector(`th[onclick="ترتيب_عمود('${sortColumn}')"]`)
-  if(th) th.classList.add(sortAsc? 'sort-asc' : 'sort-desc')
+    document.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc','sort-desc'))
+    const th = document.querySelector(`th[onclick="ترتيب_عمود('${sortColumn}')"]`)
+    if(th) th.classList.add(sortAsc? 'sort-asc' : 'sort-desc')
 
-  document.getElementById('count').textContent = `${filteredData.length} من ${allData.length} سجل`
-  عرض_احصائيات()
-  عرض_Pagination()
+    document.getElementById('count').textContent = `${filteredData.length} من ${allData.length} سجل`
+    عرض_احصائيات()
+    عرض_Pagination()
 
-  const pageData = getCurrentPageData()
+    const pageData = getCurrentPageData()
+    console.log('برسم:', pageData.length, 'سجل')
 
-  if(viewMode === 'table') {
-    document.getElementById('tableView').style.display = 'block'
-    document.getElementById('cardsView').style.display = 'none'
-    document.getElementById('tableBody').innerHTML = pageData.map(item => `
-      <tr class="${selectedIds.has(item.id)?'selected':''}">
-        <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
-        <td data-label="ID">${item.id}</td>
-        <td data-label="العنوان">${item.title}</td>
-        <td class="actions" data-label="إجراءات">
-          <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
-          <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
-        </td>
-      </tr>
-    `).join('') || '<tr><td colspan="4" class="loading">لا توجد بيانات</td></tr>'
-  } else {
-    document.getElementById('tableView').style.display = 'none'
-    document.getElementById('cardsView').style.display = 'grid'
-    document.getElementById('cardsView').innerHTML = pageData.map(item => `
-      <div class="card ${selectedIds.has(item.id)?'selected':''}">
-        <input type="checkbox" class="card-check" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})">
-        <div class="card-id">ID: ${item.id}</div>
-        <div class="card-title">${item.title}</div>
-        <div class="card-actions">
-          <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
-          <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
-        </div>
-      </div>
-    `).join('') || '<div class="loading" style="grid-column:1/-1">لا توجد بيانات</div>'
+    if(pageData.length === 0) {
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">مفيش بيانات لعرضها</td></tr>'
+      document.getElementById('cardsView').innerHTML = '<div class="loading" style="grid-column:1/-1">مفيش بيانات</div>'
+      return
+    }
+
+    if(viewMode === 'table') {
+      document.getElementById('tableView').style.display = 'block'
+      document.getElementById('cardsView').style.display = 'none'
+      let rows = ''
+      pageData.forEach(item => {
+        rows += `
+          <tr class="${selectedIds.has(item.id)?'selected':''}">
+            <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
+            <td data-label="ID">${item.id}</td>
+            <td data-label="العنوان">${item.title}</td>
+            <td class="actions" data-label="إجراءات">
+              <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
+              <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
+            </td>
+          </tr>
+        `
+      })
+      document.getElementById('tableBody').innerHTML = rows
+    }
+    else {
+      document.getElementById('tableView').style.display = 'none'
+      document.getElementById('cardsView').style.display = 'grid'
+      let cards = ''
+      pageData.forEach(item => {
+        cards += `
+          <div class="card ${selectedIds.has(item.id)?'selected':''}">
+            <input type="checkbox" class="card-check" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})">
+            <div class="card-id">ID: ${item.id}</div>
+            <div class="card-title">${item.title}</div>
+            <div class="card-actions">
+              <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
+              <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
+            </div>
+          </div>
+        `
+      })
+      document.getElementById('cardsView').innerHTML = cards
+    }
+
+  } catch(e) {
+    console.error('إيرور في الرسم:', e)
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="loading">❌ إيرور رسم: ${e.message}</td></tr>`
   }
+}
+
+function getCurrentPageData() {
+  const start = (currentPage - 1) * perPage
+  const end = start + perPage
+  return filteredData.slice(start, end)
 }
 
 // اختصارات كيبورد
