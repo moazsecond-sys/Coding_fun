@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>دخول</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -14,28 +13,28 @@
 <input id="pass" type="password" placeholder="الباسورد"><br>
 <button onclick="تسجيل_دخول()">دخول</button>
 
-<script>
-alert('2- وصلنا للجافاسكربت')
+<!-- غيرنا طريقة تحميل Supabase -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-// حط بياناتك هنا - انسخهم من Supabase > Project Settings > API
+<script>
+alert('2- مكتبة Supabase اتحملت')
+
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 
-alert('3- قبل الاتصال')
-
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-alert('4- بعد الاتصال - كده تمام')
+alert('3- الاتصال نجح')
 
 window.تسجيل_دخول = async function() {
-  alert('5- دست دخول')
+  alert('4- دست دخول')
   const email = document.getElementById('email').value
   const pass = document.getElementById('pass').value
   
   const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
   
   if(error) alert('خطأ: ' + error.message)
-  else alert('تم الدخول بنجاح!')
+  else alert('تم الدخول!')
 }
 </script>
 </body>
