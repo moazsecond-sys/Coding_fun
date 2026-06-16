@@ -1,7 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>دخول</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 <body>
-<script>alert('لو شفت دي يبقى كله تمام 100%')</script>
-<h1>لو شفت السطر ده يبقى HTML شغال</h1>
+
+<script>alert('1- الصفحة اشتغلت')</script>
+
+<h2>تسجيل دخول</h2>
+<input id="email" type="email" placeholder="الإيميل"><br>
+<input id="pass" type="password" placeholder="الباسورد"><br>
+<button onclick="تسجيل_دخول()">دخول</button>
+
+<script>
+alert('2- وصلنا للجافاسكربت')
+
+// حط بياناتك هنا - انسخهم من Supabase > Project Settings > API
+const SUPABASE_URL = 'https://xxxxx.supabase.co'
+const SUPABASE_KEY = 'eyJhbGcixxxxx'
+
+alert('3- قبل الاتصال')
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+alert('4- بعد الاتصال - كده تمام')
+
+window.تسجيل_دخول = async function() {
+  alert('5- دست دخول')
+  const email = document.getElementById('email').value
+  const pass = document.getElementById('pass').value
+  
+  const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
+  
+  if(error) alert('خطأ: ' + error.message)
+  else alert('تم الدخول بنجاح!')
+}
+</script>
 </body>
 </html>
