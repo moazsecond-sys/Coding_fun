@@ -2,68 +2,60 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة التحكم</title>
+<title>دخول</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>body{font-family:Tahoma;padding:20px;max-width:600px;margin:auto}input,button,textarea{padding:10px;margin:5px;width:100%}button{background:#5865F2;color:white;border:none}.hidden{display:none}</style>
+<style>
+body{font-family:Tahoma;padding:20px;max-width:400px;margin:50px auto;text-align:center}
+input,button{padding:12px;margin:8px 0;width:100%;box-sizing:border-box;border-radius:8px;border:1px solid #ddd}
+button{background:#5865F2;color:white;border:none;font-size:16px}
+#crud{display:none}
+</style>
 </head>
 <body>
 
 <div id="login">
-  <h2>دخول</h2>
-  <input id="email" placeholder="الإيميل">
-  <input id="pass" type="password" placeholder="الباسورد">
+  <h2>تسجيل دخول</h2>
+  <input id="email" type="email" placeholder="الإيميل">
+  <input id="pass" type="password" placeholder="كلمة السر">
   <button onclick="تسجيل_دخول()">دخول</button>
 </div>
 
-<div id="crud" class="hidden">
+<div id="crud">
+  <h2>نجح الدخول ✅</h2>
   <button onclick="تسجيل_خروج()">خروج</button>
-  <h2>إضافة منشور</h2>
-  <input id="title" placeholder="العنوان">
-  <textarea id="content" placeholder="المحتوى"></textarea>
-  <button onclick="اضافة()">إضافة</button>
-  <div id="القائمة"></div>
 </div>
 
 <script>
-alert('الصفحة اشتغلت') // لو ده ظهر يبقى كله تمام
-
+// 1. حط بياناتك هنا
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-window.تسجيل_دخول = async () => {
-  alert('1- الزرار اشتغل') 
+// 2. ده أول سطر هيتنفذ - لو مظهرش يبقى الكود بايظ
+alert('الصفحة اشتغلت')
+
+// 3. الاتصال
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+window.تسجيل_دخول = async function() {
+  alert('دست على الزرار')
   
   const email = document.getElementById('email').value
-  const password = document.getElementById('pass').value
+  const pass = document.getElementById('pass').value
   
-  alert('2- الإيميل: ' + email) // اتأكد انه بيقرا الإيميل صح
-  
-  let { data, error } = await supabase.auth.signInWithPassword({email, password})
+  const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
   
   if(error) {
-    alert('3- الخطأ الكامل: ' + error.message) // ده أهم سطر
-    console.log(error) // افتح Console هتلاقي التفاصيل
+    alert('خطأ: ' + error.message)
   } else {
-    alert('4- تم الدخول بنجاح!')
-    document.getElementById('login').classList.add('hidden')
-    document.getElementById('crud').classList.remove('hidden')
+    alert('تم الدخول!')
+    document.getElementById('login').style.display = 'none'
+    document.getElementById('crud').style.display = 'block'
   }
 }
 
-window.تسجيل_خروج = async () => {
+window.تسجيل_خروج = async function() {
   await supabase.auth.signOut()
   location.reload()
-}
-
-window.اضافة = async () => {
-  const { data: { user } = await supabase.auth.getUser()
-  await supabase.from('test').insert([{
-    title: document.getElementById('title').value,
-    content: document.getElementById('content').value,
-    user_id: user.id
-  }])
-  alert('تمت الإضافة')
 }
 </script>
 </body>
