@@ -89,11 +89,12 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 🚨 دخول طوارئ - استخدمه مرة واحدة بس</button>
 <div id="errorBox" style="background:#ffeeee;color:red;padding:10px;margin:10px 0;border:2px solid red;display:none;font-size:14px;text-align:center"></div>
 
-<div id="login" class="box">
+<<div id="login" class="box">
   <h2>🔐 تسجيل دخول</h2>
-  <input id="email" type="email" placeholder="الإيميل">
-  <input id="pass" type="password" placeholder="كلمة السر" onkeypress="if(event.key=='Enter') تسجيل_دخول()">
-  <button onclick="تسجيل_دخول()">دخول</button>
+  <p style="margin-bottom:15px">سجل دخول بحساب GitHub بتاعك</p>
+  <button onclick="تسجيل_بجيت_هب()" style="background:#24292e;color:white;padding:15px;width:100%;border:none;border-radius:8px;font-size:16px;cursor:pointer">
+    🐙 دخول بـ GitHub
+  </button>
 </div>
 
 <div id="crud">
@@ -182,26 +183,22 @@ function showToast(msg, type='success') {
 
 window.تسجيل_دخول = async function() {
   const btn = document.querySelector('#login button')
-  const email = document.getElementById('email').value.trim()
-  const pass = document.getElementById('pass').value
-  if(!email ||!pass) return showToast('اكتب الإيميل والباسورد', 'error')
-
   btn.disabled = true
-  btn.textContent = 'بندخل...'
+  btn.textContent = 'بوديك GitHub...'
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
+    const {error} = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: 'https://moazsecond-sys.github.io/'
+      }
+    })
     if(error) throw error
-    document.getElementById('login').style.display='none'
-    document.getElementById('crud').style.display='block'
-    تحديث_الواجهة()
-    await عرض_البيانات()
-    showToast('مرحباً بيك! ✅')
+    // هنا الكود بيقف عشان الصفحة هتتعمل Reload تلقائي
   } catch(error) {
     showToast('فشل الدخول: ' + error.message, 'error')
-  } finally {
     btn.disabled = false
-    btn.textContent = 'دخول'
+    btn.textContent = 'دخول بـ GitHub 🐙'
   }
 }
 
