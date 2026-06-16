@@ -325,26 +325,17 @@ function عرض_احصائيات() {
 
 // ===== تحديث الواجهة =====
 function تحديث_الواجهة() {
-  try {
-    // 1. تحديث اسم اليوزر - لو العنصر مش موجود عادي مش هنعمل حاجة
-    const userEmail = document.getElementById('userEmail')
-    if(userEmail) userEmail.textContent = supabase.auth.getUser()?.email || ''
-    
-    // 2. تحديث التاريخ - لو العنصر مش موجود عادي
-    const today = document.getElementById('today')
-    if(today) today.textContent = new Date().toLocaleDateString('ar-EG')
-    
-    // 3. ممنوع تلمس tableBody هنا خالص
-    // ممنوع: document.getElementById('tableBody').innerHTML = ...
-    // ممنوع: document.getElementById('crud').style.display = 'none'
-    
-    console.log('الواجهة اتحدثت بنجاح')
-    
-  } catch(e) {
-    console.error('إيرور الواجهة:', e)
-  }
+  // تحديث العداد
+  const countEl = document.querySelector('.count') // أو id="count"
+  if(countEl) countEl.textContent = '4 سجل'
+  
+  // تحديث اسم اليوزر 
+  const userEl = document.getElementById('userEmail')
+  if(userEl) userEl.textContent = 'مرحبا'
+  
+  // ممنوع: tableBody
+  // ممنوع: crud.innerHTML
 }
-
 // ===== العرض =====
 function ترتيب_وعرض() {
   // ترتيب
