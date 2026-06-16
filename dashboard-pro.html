@@ -147,30 +147,49 @@ let sortAsc = localStorage.getItem('sort_asc') === 'true'
 // ===== ثيم داكن =====
 if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark')
 
-window.تسجيل_دخول = async function() {
+window.تسجيل_الدخول = async function() {
+  const btn = document.querySelector('#login button') || document.querySelector('#login input[type=submit]')
   const email = document.getElementById('email').value.trim()
   const pass = document.getElementById('pass').value
   
-  alert('بحاول ادخل بـ: ' + email) // 1. اتأكد الإيميل صح
-  
-  const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
-  
-  if(error) {
-    alert('كود الإيرور: ' + error.status + '\nالرسالة: ' + error.message) // 2. ده الزتونة
-    console.error('تفاصيل كاملة:', error)
-    return
+  // قفل الزرار عشان ميضغطش مرتين
+  if(btn) {
+    btn.disabled = true
+    btn.textContent = 'بندخل...'
   }
   
-  alert('نجح! مرحباً ' + data.user.email)
-document.getElementById('login').style.display='none'
-document.getElementById('crud').style.display='block'
-try {
-  تحديث_الواجهة()
-} catch(e) {
-  console.error('إيرور تحديث الواجهة:', e)
-  alert('تحديث الواجهة فشل بس هنكمل: ' + e.message)
-}
-عرض_البيانات()
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
+    
+    if(error) throw error
+    
+    // إخفاء شاشة الدخول + إظهار لوحة التحكم
+    const loginDiv = document.getElementById('login')
+    const crudDiv = document.getElementById('crud')
+    
+    if(loginDiv) loginDiv.style.display = 'none'
+    if(crudDiv) crudDiv.style.display = 'block'
+    
+    // تحديث الواجهة بأمان - لو ضربت متوقفش الكود
+    try {
+      تحديث_الواجهة()
+    } catch(e) {
+      console.error('إيرور تحديث الواجهة:', e)
+    }
+    
+    // هات الداتا
+    await عرض_البيانات()
+    
+  } catch(error) {
+    alert('فشل الدخول: ' + error.message)
+    console.error('تفاصيل:', error)
+  } finally {
+    // رجع الزرار زي ما كان
+    if(btn) {
+      btn.disabled = false
+      btn.textContent = 'دخول'
+    }
+  }
 }
 window.تسجيل_خروج = async function(){await supabase.auth.signOut();location.reload()}
 
