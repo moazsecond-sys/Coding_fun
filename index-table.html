@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>جدول ديسكتوب</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box}
+body{font-family:Tahoma;padding:15px;max-width:1000px;margin:20px auto;background:#f0f2f5}
+.box{padding:20px;background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin-bottom:15px}
+input,button{padding:12px;margin:6px 0;width:100%;border-radius:8px;border:1px solid #ddd;font-size:16px}
+button{background:#5865F2;color:white;border:none;cursor:pointer;font-weight:bold}
+button:disabled{background:#ccc}
+.btn-danger{background:#ED4245}
+.btn-edit{background:#FEE75C;color:#000}
+.btn-small{width:auto;padding:6px 12px;margin:2px;font-size:13px}
+#crud{display:none}
+.top-bar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center}
+.top-bar input{flex:1;min-width:200px;margin:0}
+.table-wrap{overflow-x:auto;border:1px solid #ddd;border-radius:8px;max-height:500px}
+table{width:100%;border-collapse:collapse;text-align:right;min-width:600px}
+thead th{position:sticky;top:0;z-index:2;background:#5865F2;color:white;padding:14px;border:1px solid #ddd;cursor:pointer}
+thead th:hover{background:#4752C4}
+th.sort-asc::after{content:" ▲"} th.sort-desc::after{content:" ▼"}
+tbody td{padding:12px;border:1px solid #eee}
+tbody tr:nth-child(even){background:#fafafa}
+tbody tr:hover{background:#f5f7ff}
+th:last-child, td:last-child{position:sticky;left:0;z-index:1;background:inherit;box-shadow:-2px 0 5px rgba(0,0,0,0.05)}
+thead th:last-child{z-index:3;background:#5865F2}
+.actions{white-space:nowrap;text-align:center;min-width:160px}
+.loading{text-align:center;padding:20px;color:#666}
+</style>
+</head>
+<body>
+<div id="login" class="box">
+  <h2>🔐 تسجيل دخول</h2>
+  <input id="email" type="email" placeholder="الإيميل">
+  <input id="pass" type="password" placeholder="كلمة السر">
+  <button onclick="تسجيل_دخول()">دخول</button>
+</div>
+
+<div id="crud">
+  <div class="box"><h2>✅ جدول ديسكتوب</h2><button onclick="تسجيل_خروج()">خروج</button></div>
+  <div class="box">
+    <h3>➕ إضافة جديد</h3>
+    <input id="title" placeholder="العنوان + Enter" onkeypress="if(event.key=='Enter') اضافة()">
+    <button id="btnAdd" onclick="اضافة()">نشر</button>
+  </div>
+  <div class="box">
+    <h3>📊 البيانات</h3>
+    <div class="top-bar">
+      <input id="search" placeholder="ابحث..." onkeyup="بحث()">
+      <span id="count">0 سجل</span>
+    </div>
+    <div class="table-wrap">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th onclick="ترتيب_عمود('id')">ID</th>
+            <th onclick="ترتيب_عمود('title')">العنوان</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"><tr><td colspan="3" class="loading">جاري التحميل...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+let allData = [], sortColumn = 'id', sortAsc = false
+
+window.تسجيل_دخول = async function() {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('email').value,
+    password: document.getElementById('pass').value
+  })
+  if(error) alert('خطأ: ' + error.message)
+  else {document.getElementById('login').style.display='none';document.getElementById('crud').style.display='block';عرض_البيانات()}
+}
+
+window.تسجيل_خروج = async function(){await supabase.auth.signOut();location.reload()}
+
+async function عرض_البيانات() {
+  const { data, error } = await supabase.from('test').select('*')
+  if(error) return document.getElementById('tableBody').innerHTML = `<tr><td colspan="3" style="color:red">${error.message}</td></tr>`
+  allData = data; document.getElementById('count').textContent = `${data.length} سجل`
+  if(data.length === 0) return document.getElementById('tableBody').innerHTML = '<tr><td colspan="3" class="loading">مفيش بيانات 📭</td></tr>'
+  ترتيب_وعرض()
+}
+
+window.اضافة = async function() {
+  const title = document.getElementById('title').value.trim()
+  if(!title) return alert('اكتب عنوان')
+  const btn = document.getElementById('btnAdd'); btn.disabled=true; btn.textContent='جاري النشر...'
+  const { error } = await supabase.from('test').insert([{title}])
+  btn.disabled=false; btn.textContent='نشر'
+  if(error) alert(error.message); else {document.getElementById('title').value='';عرض_البيانات()}
+}
+
+window.تعديل = async function(id, oldTitle) {
+  const newTitle = prompt('العنوان الجديد:', oldTitle)
+  if(!newTitle || newTitle === oldTitle) return
+  const { error } = await supabase.from('test').update({title: newTitle}).eq('id', id)
+  if(error) alert(error.message); else عرض_البيانات()
+}
+
+window.حذف = async function(id) {
+  if(!confirm('حذف سجل رقم ' + id + '؟')) return
+  const { error } = await supabase.from('test').delete().eq('id', id)
+  if(error) alert(error.message); else عرض_البيانات()
+}
+
+window.بحث = ترتيب_وعرض
+
+window.ترتيب_عمود = function(col) {
+  if(sortColumn === col) sortAsc =!sortAsc
+  else {sortColumn = col; sortAsc = true}
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc','sort-desc'))
+  event.target.classList.add(sortAsc? 'sort-asc' : 'sort-desc')
+  ترتيب_وعرض()
+}
+
+function ترتيب_وعرض() {
+  const searchVal = document.getElementById('search').value.toLowerCase()
+  let filtered = allData.filter(item => String(item.id).includes(searchVal) || item.title.toLowerCase().includes(searchVal))
+  filtered.sort((a,b) => {
+    let valA = a[sortColumn], valB = b[sortColumn]
+    if(typeof valA === 'string') valA = valA.toLowerCase()
+    if(typeof valB === 'string') valB = valB.toLowerCase()
+    return sortAsc? (valA>valB?1:-1) : (valA<valB?1:-1)
+  })
+  document.getElementById('count').textContent = `${filtered.length} من ${allData.length} سجل`
+  document.getElementById('tableBody').innerHTML = filtered.map(item => `
+    <tr>
+      <td>${item.id}</td>
+      <td>${item.title}</td>
+      <td class="actions">
+        <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
+        <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
+      </td>
+    </tr>
+  `).join('')
+}
+
+supabase.auth.getSession().then(({data}) => {
+  if(data.session) {document.getElementById('login').style.display='none';document.getElementById('crud').style.display='block';عرض_البيانات()}
+})
+</script>
+</body>
+</html>
