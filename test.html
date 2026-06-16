@@ -2,32 +2,46 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>دخول</title>
+<title>لوحة التحكم</title>
+<style>
+body{font-family:Tahoma;padding:20px;max-width:400px;margin:50px auto;text-align:center}
+input,button{padding:12px;margin:8px 0;width:100%;box-sizing:border-box;border-radius:8px;border:1px solid #ddd}
+button{background:#5865F2;color:white;border:none;cursor:pointer}
+#crud{display:none}
+</style>
 </head>
 <body>
 
-<script>alert('1- الصفحة اشتغلت')</script>
+<div id="login">
+  <h2>تسجيل دخول</h2>
+  <input id="email" type="email" placeholder="الإيميل">
+  <input id="pass" type="password" placeholder="كلمة السر">
+  <button onclick="تسجيل_دخول()">دخول</button>
+</div>
 
-<h2>تسجيل دخول</h2>
-<input id="email" type="email" placeholder="الإيميل"><br>
-<input id="pass" type="password" placeholder="الباسورد"><br>
-<button onclick="تسجيل_دخول()">دخول</button>
+<div id="crud">
+  <h2>أهلاً بيك ✅</h2>
+  <p>كده الاتصال بـ Supabase نجح</p>
+  <button onclick="تسجيل_خروج()">خروج</button>
+</div>
 
 <script type="module">
+alert('1- الصفحة اشتغلت')
+
+// 1. نستورد Supabase من Skypack
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2'
-window.supabase = { createClient }
-</script>
 
-<script>
-alert('2- مكتبة Supabase اتحملت')
+alert('2- المكتبة اتحملت')
 
+// 2. حط بياناتك هنا من Supabase > Project Settings > API
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-alert('3- الاتصال نجح')
+alert('3- الاتصال بـ Supabase نجح')
 
+// 3. دالة الدخول
 window.تسجيل_دخول = async function() {
   alert('4- دست دخول')
   const email = document.getElementById('email').value
@@ -35,8 +49,18 @@ window.تسجيل_دخول = async function() {
   
   const { data, error } = await supabase.auth.signInWithPassword({email, password: pass})
   
-  if(error) alert('خطأ: ' + error.message)
-  else alert('تم الدخول!')
+  if(error) {
+    alert('خطأ: ' + error.message)
+  } else {
+    alert('5- تم الدخول بنجاح!')
+    document.getElementById('login').style.display = 'none'
+    document.getElementById('crud').style.display = 'block'
+  }
+}
+
+window.تسجيل_خروج = async function() {
+  await supabase.auth.signOut()
+  location.reload()
 }
 </script>
 </body>
