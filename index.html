@@ -36,22 +36,21 @@
     }
     
     .category { color: #2d5a3d; font-weight: bold; font-size: 14px; }
-    .date { color: #666; font-size: 13px; }
     .admin-link { text-align: center; margin-top: 40px; }
     .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
 
-    .filter-buttons {
+    .controls {
       display: flex; gap: 12px; justify-content: center; 
       flex-wrap: wrap; margin: 25px 0;
     }
-    .filter-buttons button {
+    .controls button, .controls select {
       padding: 10px 16px; border: 1px solid #4ade80; 
       background: white; color: #2d5a3d; 
       border-radius: 25px; cursor: pointer; font-family: 'Tajawal';
       font-size: 15px; transition: 0.2s;
     }
-    .filter-buttons button.active, 
-    .filter-buttons button:hover {
+    .controls button.active, 
+    .controls button:hover {
       background: #4ade80; color: white;
     }
     
@@ -63,6 +62,7 @@
     .btn:hover { opacity: 0.8; transform: translateY(-2px); }
     .share-btn { background: #25D366; color: white; }
     .copy-btn { background: #3b82f6; color: white; }
+    .reset-btn { background: #ef4444; color: white; }
     
     #themeBtn {
       padding: 10px 18px; border: none; border-radius: 25px;
@@ -77,7 +77,6 @@
     }
     #searchBox:focus { border-color: #2d5a3d; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1); }
 
-    /* خانة المنشور الجديدة */
     .post-footer {
       margin-top: 15px;
       padding-top: 12px;
@@ -97,68 +96,86 @@
       gap: 8px;
       flex-wrap: wrap;
     }
-    .post-actions .btn {
-      flex: 0 1 auto;
-      min-width: 90px;
+
+    .pagination {
+      display: flex; gap: 10px; justify-content: center;
+      margin: 30px 0; flex-wrap: wrap; align-items: center;
+    }
+    .pagination button {
+      padding: 10px 16px; border: 2px solid #4ade80;
+      background: white; color: #2d5a3d; border-radius: 12px;
+      cursor: pointer; font-family: 'Tajawal'; font-weight: bold;
+      transition: 0.2s;
+    }
+    .pagination button:disabled {
+      opacity: 0.4; cursor: not-allowed;
+    }
+    .pagination button.active {
+      background: #4ade80; color: white;
+    }
+    .page-info {
+      text-align: center; color: #2d5a3d; margin: 10px 0; font-size: 15px; font-weight: bold;
+    }
+    .jump-input {
+      width: 70px; padding: 8px; border-radius: 8px; border: 2px solid #4ade80;
+      text-align: center; font-family: 'Tajawal';
     }
 
-    /* الوضع الليلي */
     body.dark {
-      background: #0f0f0f;
-      color: #e0e0e0;
+      background: #0f0f0f; color: #e0e0e0;
     }
-    body.dark h1 { color: #4ade80; }
-    body.dark .post {
-      background: #1e1e1e;
-      border-color: #333;
-      box-shadow: none;
-    }
+    body.dark h1, body.dark .page-info { color: #4ade80; }
+    body.dark .post { background: #1e1e1e; border-color: #333; }
     body.dark .category { color: #4ade80; }
     body.dark .date, body.dark .post-meta { color: #999; }
     body.dark .post-footer { border-top-color: #333; }
-    body.dark .filter-buttons button {
-      background: transparent;
-      border-color: #4ade80;
-      color: #4ade80;
+    body.dark .controls button, body.dark .controls select {
+      background: transparent; border-color: #4ade80; color: #4ade80;
     }
-    body.dark .filter-buttons button.active {
-      background: #4ade80;
-      color: #0f0f0f;
+    body.dark .controls button.active {
+      background: #4ade80; color: #0f0f0f;
     }
-    body.dark #themeBtn {
-      background: #333;
-      color: white;
+    body.dark .pagination button {
+      background: #1e1e1e; border-color: #4ade80; color: #4ade80;
     }
-    body.dark #searchBox {
-      background: #1a1a1a;
-      color: white;
-      border: 2px solid #4ade80;
+    body.dark .pagination button.active {
+      background: #4ade80; color: #0f0f0f;
     }
+    body.dark .jump-input {
+      background: #1e1e1e; color: white; border-color: #4ade80;
+    }
+    body.dark #themeBtn { background: #333; color: white; }
+    body.dark #searchBox { background: #1a1a1a; color: white; border: 2px solid #4ade80; }
 
-    /* للموبايل الصغير */
     @media (max-width: 480px) {
-      .post-actions {
-        gap: 6px;
-      }
-      .post-actions .btn {
-        min-width: 80px;
-        font-size: 13px;
-        padding: 6px 10px;
-      }
-      .post-footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+      .post-actions .btn { min-width: 80px; font-size: 13px; padding: 6px 10px; }
+      .post-footer { flex-direction: column; align-items: flex-start; }
+      .controls { gap: 8px; }
+      .controls button, .controls select { font-size: 13px; padding: 8px 12px; }
     }
   </style>
 </head>
 <body>
-  <div class="filter-buttons">
-    <button onclick="filterPosts('all', this)" class="active">الكل</button>
-    <button onclick="filterPosts('آية', this)">آيات</button>
-    <button onclick="filterPosts('حديث', this)">أحاديث</button>
-    <button onclick="filterPosts('دعاء', this)">أدعية</button>
-    <button onclick="filterPosts('سؤال ديني', this)">أسئلة</button>
+  <div class="controls">
+    <button onclick="setFilter('all', this)" class="active">الكل</button>
+    <button onclick="setFilter('آية', this)">آيات</button>
+    <button onclick="setFilter('حديث', this)">أحاديث</button>
+    <button onclick="setFilter('دعاء', this)">أدعية</button>
+    <button onclick="setFilter('سؤال ديني', this)">أسئلة</button>
+    
+    <select id="sortSelect" onchange="applyAll()">
+      <option value="newest">الأحدث أولاً</option>
+      <option value="oldest">الأقدم أولاً</option>
+      <option value="title">ترتيب أبجدي</option>
+    </select>
+
+    <select id="perPageSelect" onchange="changePerPage()">
+      <option value="10">10 في الصفحة</option>
+      <option value="20" selected>20 في الصفحة</option>
+      <option value="50">50 في الصفحة</option>
+    </select>
+
+    <button class="reset-btn" onclick="resetAll()">🔄 إعادة ضبط</button>
   </div>
   
   <div style="text-align:center; margin: 15px 0;">
@@ -166,11 +183,15 @@
   </div>
   
   <div style="text-align:center; margin: 20px 0;">
-    <input type="text" id="searchBox" placeholder="ابحث عن آية، حديث، دعاء..." onkeyup="searchPosts(this.value)">
+    <input type="text" id="searchBox" placeholder="ابحث عن آية، حديث، دعاء..." onkeyup="applyAll()">
   </div>
   
   <h1>📖 المحتوى الديني</h1>
+  <div class="page-info" id="statsInfo"></div>
   <div class="container" id="postsContainer">جاري التحميل...</div>
+  
+  <div class="page-info" id="pageInfo"></div>
+  <div class="pagination" id="pagination"></div>
   
   <div class="admin-link">
     <a href="admin.html">لوحة التحكم</a>
@@ -178,15 +199,47 @@
 
   <script>
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'; // حط مفتاحك هنا
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
     let allPosts = [];
+    let currentFilter = 'all';
+    let currentPage = 1;
+    let postsPerPage = 20;
 
     async function loadPosts() {
       const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
       if(error) { console.log(error); return; }
       allPosts = data;
-      displayPosts(allPosts);
+      applyAll();
+    }
+
+    function applyAll() {
+      let result = currentFilter === 'all' 
+        ? [...allPosts] 
+        : allPosts.filter(p => p.category === currentFilter);
+      
+      const keyword = document.getElementById('searchBox').value.trim().toLowerCase();
+      if(keyword) {
+        result = result.filter(p => 
+          p.title.toLowerCase().includes(keyword) ||
+          p.content.toLowerCase().includes(keyword) ||
+          p.category.toLowerCase().includes(keyword)
+        );
+      }
+      
+      const sortBy = document.getElementById('sortSelect').value;
+      if(sortBy === 'oldest') {
+        result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      } else if(sortBy === 'title') {
+        result.sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+      } else {
+        result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      }
+      
+      displayPosts(result);
+      renderPagination(result.length);
+      updateStats(result.length);
     }
 
     function displayPosts(posts) {
@@ -197,7 +250,10 @@
         return;
       }
 
-      container.innerHTML = posts.map(p => `
+      const start = (currentPage - 1) * postsPerPage;
+      const pagePosts = posts.slice(start, start + postsPerPage);
+
+      container.innerHTML = pagePosts.map(p => `
         <div class="post" onclick="addView(${p.id})">
           <h3 style="margin-bottom:12px">${p.title} <span class="category">${p.category}</span></h3>
           <p style="line-height: 1.8; margin: 10px 0;" id="content-${p.id}">${p.content}</p>
@@ -206,7 +262,6 @@
             <div class="post-meta">
               📅 ${new Date(p.created_at).toLocaleDateString('ar-EG', {day:'numeric', month:'long', year:'numeric'})} 
               - 👁️ ${p.views || 0} قراءة 
-              - 🏷️ ${p.category}
             </div>
             <div class="post-actions">
               <button class="btn copy-btn" onclick="copyPost(${p.id}); event.stopPropagation()">📋 نسخ</button>
@@ -217,31 +272,81 @@
       `).join('');
     }
 
-    function filterPosts(category, btn) {
-      document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    function renderPagination(totalPosts) {
+      const totalPages = Math.ceil(totalPosts / postsPerPage);
+      const paginationDiv = document.getElementById('pagination');
+      const pageInfo = document.getElementById('pageInfo');
       
-      if(category === 'all') displayPosts(allPosts);
-      else displayPosts(allPosts.filter(p => p.category === category));
-    }
-
-    function searchPosts(keyword) {
-      keyword = keyword.trim().toLowerCase();
-      
-      if(keyword === '') {
-        displayPosts(allPosts);
-        document.querySelector('.filter-buttons button').classList.add('active');
+      if(totalPages <= 1) {
+        paginationDiv.innerHTML = '';
+        pageInfo.innerHTML = '';
         return;
       }
+
+      pageInfo.innerHTML = `صفحة ${currentPage} من ${totalPages}`;
+
+      let buttons = '';
+      buttons += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>⏮️ السابق</button>`;
       
-      const results = allPosts.filter(p => 
-        p.title.toLowerCase().includes(keyword) ||
-        p.content.toLowerCase().includes(keyword) ||
-        p.category.toLowerCase().includes(keyword)
-      );
+      const startPage = Math.max(1, currentPage - 2);
+      const endPage = Math.min(totalPages, startPage + 4);
       
-      displayPosts(results);
-      document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
+      for(let i = startPage; i <= endPage; i++) {
+        buttons += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+      }
+      
+      buttons += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>التالي ⏭️</button>`;
+      
+      // Jump input
+      buttons += `<input type="number" class="jump-input" min="1" max="${totalPages}" placeholder="رقم" onkeypress="if(event.key==='Enter') jumpToPage(this.value, ${totalPages})">`;
+      
+      paginationDiv.innerHTML = buttons;
+    }
+
+    function updateStats(total) {
+      document.getElementById('statsInfo').innerHTML = 
+        `📊 لقينا ${total} منشور | نعرض ${postsPerPage} في الصفحة`;
+    }
+
+    function goToPage(page) {
+      currentPage = page;
+      applyAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function jumpToPage(page, max) {
+      page = parseInt(page);
+      if(page >= 1 && page <= max) {
+        currentPage = page;
+        applyAll();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function changePerPage() {
+      postsPerPage = parseInt(document.getElementById('perPageSelect').value);
+      currentPage = 1;
+      applyAll();
+    }
+
+    function setFilter(category, btn) {
+      currentFilter = category;
+      currentPage = 1;
+      document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyAll();
+    }
+
+    function resetAll() {
+      currentFilter = 'all';
+      currentPage = 1;
+      postsPerPage = 20;
+      document.getElementById('searchBox').value = '';
+      document.getElementById('sortSelect').value = 'newest';
+      document.getElementById('perPageSelect').value = '20';
+      document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active'));
+      document.querySelector('.controls button').classList.add('active');
+      applyAll();
     }
 
     async function addView(id) {
@@ -252,10 +357,9 @@
       await sb.from('posts').update({ views: newViews }).eq('id', id);
       post.views = newViews;
       
-      // تحديث العداد في نفس البوست
-      const postEl = document.querySelector(`#content-${id}`).closest('.post');
-      const metaEl = postEl.querySelector('.post-meta');
-      metaEl.innerHTML = metaEl.innerHTML.replace(/👁️ \d+ قراءة/, `👁️ ${newViews} قراءة`);
+      const postEl = document.querySelector(`#content-${id}`)?.closest('.post');
+      const metaEl = postEl?.querySelector('.post-meta');
+      if(metaEl) metaEl.innerHTML = metaEl.innerHTML.replace(/👁️ \d+ قراءة/, `👁️ ${newViews} قراءة`);
     }
 
     function copyPost(id) {
