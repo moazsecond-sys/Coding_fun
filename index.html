@@ -157,6 +157,7 @@
 </head>
 <body>
   <div class="controls">
+    <button class="btn" style="background:#f59e0b; color:white" onclick="exportCSV()">📊 تصدير CSV</button>
     <button onclick="setFilter('all', this)" class="active">الكل</button>
     <button onclick="setFilter('آية', this)">آيات</button>
     <button onclick="setFilter('حديث', this)">أحاديث</button>
@@ -396,6 +397,58 @@
         document.getElementById('themeBtn').textContent = '☀️ وضع نهاري';
       }
       loadPosts();
+    }
+    function exportCSV() {
+  // 1. نجيب نفس النتيجة اللي ظاهرة بعد الفلتر والسيرش والترتيب
+  let result = currentFilter === 'all' 
+    ? [...allPosts] 
+    : allPosts.filter(p => p.category === currentFilter);
+  
+  const keyword = document.getElementById('searchBox').value.trim().toLowerCase();
+  if(keyword) {
+    result = result.filter(p => 
+      p.title.toLowerCase().includes(keyword) ||
+      p.content.toLowerCase().includes(keyword) ||
+      p.category.toLowerCase().includes(keyword)
+    );
+  }
+  
+  const sortBy = document.getElementById('sortSelect').value;
+  if(sortBy === 'oldest') {
+    result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  } else if(sortBy === 'title') {
+    result.sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+  } else {
+    result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+
+  // 2. ناخد صفحة واحدة بس زي ما ظاهر
+  const start = (currentPage - 1) * postsPerPage;
+  const pagePosts = result.slice(start, start + postsPerPage);
+
+  // 3. نحول لـ CSV
+  let csv = 'العنوان,التصنيف,المحتوى,التاريخ,المشاهدات\n';
+  pagePosts.forEach(p => {
+    const title = `"${p.title.replace(/"/g, '""')}"`;
+    const category = `"${p.category}"`;
+    const content = `"${p.content.replace(/"/g, '""').replace(/\n/g, ' ')}"`;
+    const date = new Date(p.created_at).toLocaleDateString('ar-EG');
+    const views = p.views || 0;
+    csv += `${title},${category},${content},${date},${views}\n`;
+  });
+
+  // 4. ننزل الملف
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' }); // \uFEFF عشان العربي يظهر صح في إكسيل
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `منشورات-صفحة${currentPage}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  alert(`تم تصدير ${pagePosts.length} منشور كـ CSV 📊`);
     }
   </script>
 </body>
