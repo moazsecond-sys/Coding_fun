@@ -76,7 +76,7 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
   td::before{content: attr(data-label);position:absolute;right:10px;top:10px;font-weight:bold;color:var(--primary)}
   td:first-child, td:last-child{position:static;box-shadow:none;padding-right:5px;text-align:center}
   td:last-child{border-bottom:none}
- .table-wrap{overflow-x:hidden;max-height:none}
+.table-wrap{overflow-x:hidden;max-height:none}
 </style>
 </head>
 <body>
@@ -89,7 +89,7 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 🚨 دخول طوارئ - استخدمه مرة واحدة بس</button>
 <div id="errorBox" style="background:#ffeeee;color:red;padding:10px;margin:10px 0;border:2px solid red;display:none;font-size:14px;text-align:center"></div>
 
-<<div id="login" class="box">
+<div id="login" class="box">
   <h2>🔐 تسجيل دخول</h2>
   <p style="margin-bottom:15px">سجل دخول بحساب GitHub بتاعك</p>
   <button onclick="تسجيل_بجيت_هب()" style="background:#24292e;color:white;padding:15px;width:100%;border:none;border-radius:8px;font-size:16px;cursor:pointer">
@@ -159,7 +159,7 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 <script type="module">
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2.45.4'
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' // <-- رجع المفتاح ده
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let allData = [], filteredData = []
@@ -181,7 +181,7 @@ function showToast(msg, type='success') {
   setTimeout(() => toast.classList.remove('show'), 3000)
 }
 
-window.تسجيل_دخول = async function() {
+window.تسجيل_بجيت_هب = async function() {
   const btn = document.querySelector('#login button')
   btn.disabled = true
   btn.textContent = 'بوديك GitHub...'
@@ -190,11 +190,10 @@ window.تسجيل_دخول = async function() {
     const {error} = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: 'https://moazsecond-sys.github.io/'
+        redirectTo: 'https://moazsecond-sys.github.io/Coding_fun/dashboard-pro.html'
       }
     })
     if(error) throw error
-    // هنا الكود بيقف عشان الصفحة هتتعمل Reload تلقائي
   } catch(error) {
     showToast('فشل الدخول: ' + error.message, 'error')
     btn.disabled = false
@@ -208,30 +207,24 @@ window.تسجيل_خروج = async function(){
 }
 
 async function عرض_البيانات() {
-  // اعرض رسالة تحميل
   document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">⏳ بجلب البيانات...</td></tr>'
-  
-  // هات الداتا من Supabase
+
   const { data, error } = await supabase.from('test').select('*')
-  
-  // لو في إيرور
+
   if(error) {
     document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="loading">❌ إيرور: ${error.message}</td></tr>`
     console.error('إيرور Supabase:', error)
     showToast('فشل جلب البيانات', 'error')
     return
   }
-  
-  // خزن الداتا
+
   allData = data || []
   filteredData = [...allData]
   currentPage = 1
-  
+
   console.log('الداتا جت:', allData.length, 'سجل')
-  
-  // نادي فانكشن الرسم
+
   ترتيب_وعرض()
-  
   showToast('تم جلب البيانات ✅')
 }
 
@@ -275,7 +268,7 @@ window.بحث = function() {
 }
 
 window.ترتيب_عمود = function(col) {
-  if(sortColumn === col) sortAsc =!sortAsc
+  if(sortColumn === col) sortAsc =!sortAsc // صلحت المسافة هنا
   else {sortColumn = col; sortAsc = true}
   localStorage.setItem('sort_col', sortColumn)
   localStorage.setItem('sort_asc', sortAsc)
@@ -468,12 +461,6 @@ function ترتيب_وعرض() {
   }
 }
 
-function getCurrentPageData() {
-  const start = (currentPage - 1) * perPage
-  const end = start + perPage
-  return filteredData.slice(start, end)
-}
-
 // اختصارات كيبورد
 document.addEventListener('keydown', (e) => {
   if(e.ctrlKey && e.key === 'a' && document.getElementById('crud').style.display!== 'none') {
@@ -486,23 +473,24 @@ document.addEventListener('keydown', (e) => {
   }
 })
 
-
 // دخول تلقائي + لو مفيش سيشن ارجع للوجين
-// دخول تلقائي - النسخة الثرثارة
 console.log('1. بدأت أشيك على السيشن...')
 
-// امسح الكود القديم كله وحط ده
 supabase.auth.getSession().then(({data: {session}, error}) => {
   if(error) {
     alert('إيرور سيشن: ' + error.message)
     return
   }
-  
+
   if(session) {
     alert('✅ لقيت سيشن! هعرض البيانات')
+    document.getElementById('login').style.display='none'
+    document.getElementById('crud').style.display='block'
     عرض_البيانات()
   } else {
     alert('❌ مفيش سيشن... سجل دخول')
+    document.getElementById('login').style.display='block'
+    document.getElementById('crud').style.display='none'
   }
 }).catch(err => {
   alert('إيرور قاتل: ' + err.message)
@@ -519,30 +507,31 @@ supabase.auth.onAuthStateChange((event, session) => {
     location.reload()
   }
 })
+
 async function دخول_طوارئ() {
   const box = document.getElementById('errorBox')
   box.style.display = 'block'
   box.innerText = '1. الزرار اشتغل ✅'
-  
+
   try {
     const email = prompt('اكتب إيميلك بتاع Supabase:')
     box.innerText += '\n2. كتبت الإيميل ✅'
-    
+
     const password = prompt('اكتب الباسورد:')
     box.innerText += '\n3. كتبت الباسورد ✅'
-    
-    if(!email || !password) {
+
+    if(!email ||!password) {
       box.innerText += '\n❌ لغيت العملية'
       return
     }
-    
+
     box.innerText += '\n4. بحاول أسجل دخول...'
-    
+
     const {data, error} = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password: password
     })
-    
+
     if(error) {
       box.innerText += '\n❌ فشل: ' + error.message
       alert('فشل: ' + error.message)
@@ -555,7 +544,7 @@ async function دخول_طوارئ() {
     box.innerText += '\n💥 إيرور قاتل: ' + e.message
     alert('إيرور: ' + e.message)
   }
-}}
+}
 </script>
 </body>
 </html>
