@@ -4,103 +4,291 @@
 <meta charset="UTF-8">
 <title>لوحة تحكم برو ماكس ألترا</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f0f2f5; --card:#fff; --text:#333; --border:#ddd; --primary:#5865F2; --hover:#f5f7ff; --success:#57F287
+  --bg:#f5f7fa; --card:#ffffff; --text:#2d3748; --border:#e2e8f0; 
+  --primary:#6366f1; --primary-dark:#4f46e5; --hover:#f8fafc; 
+  --success:#10b981; --danger:#ef4444; --warning:#f59e0b;
+  --shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
 }
 body.dark{
-  --bg:#1e1e2e; --card:#2a2a3e; --text:#e0e0e0; --border:#444; --primary:#7289da; --hover:#35354a; --success:#3BA55D
+  --bg:#0f172a; --card:#1e293b; --text:#f1f5f9; --border:#334155; 
+  --primary:#818cf8; --primary-dark:#6366f1; --hover:#1e293b; 
+  --success:#34d399; --danger:#f87171; --warning:#fbbf24;
+  --shadow:0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
+  --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.3);
 }
-*{box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma;padding:15px;max-width:1200px;margin:20px auto;background:var(--bg);color:var(--text);transition:0.3s}
-.box{padding:20px;background:var(--card);border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);margin-bottom:15px}
-input,button,select{padding:12px;margin:6px 0;width:100%;border-radius:8px;border:1px solid var(--border);font-size:16px;background:var(--card);color:var(--text)}
-button{background:var(--primary);color:white;border:none;cursor:pointer;font-weight:bold;transition:0.2s}
-button:hover{opacity:0.9;transform:translateY(-1px)}
-button:disabled{background:#ccc;cursor:not-allowed;transform:none}
-.btn-danger{background:#ED4245}
-.btn-edit{background:#FEE75C;color:#000}
-.btn-success{background:var(--success);color:#000}
-.btn-small{width:auto;padding:6px 12px;margin:2px;font-size:13px}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+  padding:20px;max-width:1400px;margin:0 auto;
+  background:var(--bg);color:var(--text);
+  transition:background 0.3s, color 0.3s;
+  font-weight:400;line-height:1.6
+}
+
+.box{
+  padding:24px;background:var(--card);border-radius:16px;
+  box-shadow:var(--shadow);margin-bottom:20px;
+  border:1px solid var(--border);transition:all 0.3s
+}
+.box:hover{box-shadow:var(--shadow-lg)}
+
+h2,h3{font-weight:800;margin-bottom:16px;color:var(--text)}
+
+input,button,select{
+  padding:14px 16px;margin:8px 0;width:100%;border-radius:12px;
+  border:2px solid var(--border);font-size:15px;
+  background:var(--card);color:var(--text);
+  font-family:'Tajawal', sans-serif;font-weight:500;
+  transition:all 0.2s
+}
+input:focus,select:focus{
+  outline:none;border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(99,102,241,0.1)
+}
+
+button{
+  background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color:white;border:none;cursor:pointer;font-weight:700;
+  transition:all 0.2s;letter-spacing:0.3px
+}
+button:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(99,102,241,0.3)
+}
+button:active:not(:disabled){transform:translateY(0)}
+button:disabled{background:#cbd5e1;cursor:not-allowed;transform:none}
+
+.btn-danger{
+  background:linear-gradient(135deg, var(--danger) 0%, #dc2626 100%)
+}
+.btn-danger:hover:not(:disabled){
+  box-shadow:0 10px 20px rgba(239,68,68,0.3)
+}
+.btn-edit{
+  background:linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+  color:white
+}
+.btn-success{
+  background:linear-gradient(135deg, var(--success) 0%, #059669 100%)
+}
+.btn-small{
+  width:auto;padding:8px 16px;margin:4px;font-size:13px;
+  border-radius:8px
+}
+
 #crud{display:none}
-.top-bar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center}
-.top-bar input,.top-bar select{flex:1;min-width:150px;margin:0}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:15px}
-.stat-card{background:var(--card);padding:15px;border-radius:8px;text-align:center;border:1px solid var(--border);transition:0.2s}
-.stat-card:hover{transform:translateY(-3px)}
-.stat-num{font-size:28px;font-weight:bold;color:var(--primary)}
-.loading{text-align:center;padding:40px;color:#666;font-size:18px}
+
+.top-bar{
+  display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center
+}
+.top-bar input,.top-bar select{flex:1;min-width:160px;margin:0}
+
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px;margin-bottom:24px
+}
+.stat-card{
+  background:var(--card);padding:20px;border-radius:16px;
+  text-align:center;border:2px solid var(--border);
+  transition:all 0.3s;box-shadow:var(--shadow)
+}
+.stat-card:hover{
+  transform:translateY(-4px);border-color:var(--primary);
+  box-shadow:var(--shadow-lg)
+}
+.stat-num{
+  font-size:36px;font-weight:800;color:var(--primary);margin-bottom:8px
+}
+.stat-card div:last-child{
+  font-size:14px;color:var(--text);opacity:0.7;font-weight:500
+}
+
+.loading{
+  text-align:center;padding:60px;color:var(--text);
+  font-size:18px;font-weight:500;opacity:0.6
+}
 
 /* Toast */
-.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--card);padding:15px 25px;border-radius:8px;box-shadow:0 5px 20px rgba(0,0,0,0.2);border-right:4px solid var(--success);z-index:9999;display:none}
-.toast.show{display:block;animation:slideDown 0.3s}
-@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}
+.toast{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%);
+  background:var(--card);padding:16px 28px;border-radius:12px;
+  box-shadow:var(--shadow-lg);border-right:5px solid var(--success);
+  z-index:9999;display:none;font-weight:600;font-size:15px
+}
+.toast.show{display:block;animation:slideDown 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes slideDown{
+  from{top:-60px;opacity:0;transform:translateX(-50%) scale(0.9)}
+  to{top:24px;opacity:1;transform:translateX(-50%) scale(1)}
+}
 
 /* جدول */
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px;max-height:500px}
-table{width:100%;border-collapse:collapse;text-align:right;min-width:700px}
-thead th{position:sticky;top:0;z-index:2;background:var(--primary);color:white;padding:14px;border:1px solid var(--border);cursor:pointer}
-thead th:hover{opacity:0.9}
-th.sort-asc::after{content:" ▲"} th.sort-desc::after{content:" ▼"}
-tbody td{padding:12px;border:1px solid var(--border)}
+.table-wrap{
+  overflow-x:auto;border:2px solid var(--border);
+  border-radius:16px;max-height:600px;box-shadow:var(--shadow)
+}
+table{
+  width:100%;border-collapse:collapse;text-align:right;
+  min-width:800px;background:var(--card)
+}
+thead th{
+  position:sticky;top:0;z-index:2;
+  background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color:white;padding:18px 16px;border:none;font-weight:800;
+  font-size:15px;cursor:pointer;transition:all 0.2s
+}
+thead th:hover{filter:brightness(1.1)}
+th.sort-asc::after{content:" ▲";font-size:12px} 
+th.sort-desc::after{content:" ▼";font-size:12px}
+tbody td{
+  padding:16px;border-bottom:1px solid var(--border);
+  font-size:14px;font-weight:500
+}
+tbody tr:last-child td{border-bottom:none}
 tbody tr:nth-child(even){background:var(--hover)}
-tbody tr.selected{background:#fff3cd!important}
+tbody tr.selected{background:#fef3c7!important}
+body.dark tbody tr.selected{background:#451a03!important}
 tbody tr:hover{background:var(--hover)}
-th:first-child, td:first-child{position:sticky;right:0;z-index:1;background:inherit;width:50px;text-align:center}
-th:last-child, td:last-child{position:sticky;left:0;z-index:1;background:inherit;box-shadow:-2px 0 5px rgba(0,0,0,0.05)}
-thead th:first-child{z-index:3} thead th:last-child{z-index:3}
-.actions{white-space:nowrap;text-align:center;min-width:180px}
+th:first-child, td:first-child{
+  position:sticky;right:0;z-index:1;background:inherit;
+  width:60px;text-align:center
+}
+th:last-child, td:last-child{
+  position:sticky;left:0;z-index:1;background:inherit;
+  box-shadow:-4px 0 8px rgba(0,0,0,0.05);min-width:180px
+}
+thead th:first-child{z-index:3} 
+thead th:last-child{z-index:3}
+.actions{white-space:nowrap;text-align:center}
 
 /* Pagination */
-.pagination{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:15px;flex-wrap:wrap}
-.pagination button{min-width:40px;width:auto;padding:8px 12px}
-.pagination button.active{background:var(--success);color:#000}
-.pagination-info{color:#666;font-size:14px}
+.pagination{
+  display:flex;gap:8px;justify-content:center;
+  align-items:center;margin-top:24px;flex-wrap:wrap
+}
+.pagination button{
+  min-width:44px;width:auto;padding:10px 14px;
+  font-weight:600;border-radius:10px
+}
+.pagination button.active{
+  background:var(--success);color:white;
+  box-shadow:0 4px 12px rgba(16,185,129,0.3)
+}
+.pagination-info{
+  color:var(--text);font-size:14px;font-weight:600;
+  opacity:0.7;margin:0 12px
+}
 
 /* كروت */
-.cards-wrap{display:none;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
-.card{border:1px solid var(--border);border-radius:12px;padding:15px;background:var(--card);box-shadow:0 2px 5px rgba(0,0,0,0.05);transition:0.2s;position:relative}
-.card:hover{transform:translateY(-5px);box-shadow:0 8px 20px rgba(0,0,0,0.15)}
-.card.selected{border-color:var(--primary);background:var(--hover)}
-.card-check{position:absolute;top:10px;left:10px}
-.card-id{font-size:12px;color:#999;margin-bottom:8px}
-.card-title{font-size:18px;font-weight:bold;margin-bottom:12px;color:var(--text)}
-.card-actions{text-align:center;border-top:1px solid var(--border);padding-top:10px;margin-top:10px}
+.cards-wrap{
+  display:none;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:20px
+}
+.card{
+  border:2px solid var(--border);border-radius:20px;padding:20px;
+  background:var(--card);box-shadow:var(--shadow);
+  transition:all 0.3s;position:relative
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--shadow-lg);border-color:var(--primary)
+}
+.card.selected{
+  border-color:var(--primary);background:var(--hover);
+  box-shadow:0 0 0 3px rgba(99,102,241,0.2)
+}
+.card-check{
+  position:absolute;top:16px;left:16px;
+  width:20px;height:20px;cursor:pointer
+}
+.card-id{
+  font-size:13px;color:var(--text);opacity:0.5;
+  margin-bottom:12px;font-weight:600
+}
+.card-title{
+  font-size:20px;font-weight:800;margin-bottom:12px;
+  color:var(--text);line-height:1.4
+}
+.card-date{
+  font-size:13px;color:var(--text);opacity:0.6;
+  margin-bottom:16px;font-weight:500
+}
+.card-actions{
+  text-align:center;border-top:2px solid var(--border);
+  padding-top:16px;margin-top:16px
+}
 
 /* موبايل */
 @media screen and (max-width: 768px) {
+  body{padding:12px}
+  .box{padding:16px;border-radius:12px}
+  h2{font-size:20px} h3{font-size:18px}
+  
   thead{display:none}
   table, tbody, tr, td{display:block;width:100%}
-  tr{margin-bottom:15px;border:1px solid var(--border);border-radius:10px;padding:10px;position:relative}
-  td{border:none;border-bottom:1px solid var(--border);padding:10px 5px;text-align:right;position:relative;padding-right:50%}
-  td::before{content: attr(data-label);position:absolute;right:10px;top:10px;font-weight:bold;color:var(--primary)}
-  td:first-child, td:last-child{position:static;box-shadow:none;padding-right:5px;text-align:center}
-  td:last-child{border-bottom:none}
-  .table-wrap{overflow-x:hidden;max-height:none}
+  tr{
+    margin-bottom:16px;border:2px solid var(--border);
+    border-radius:16px;padding:16px;position:relative;
+    background:var(--card);box-shadow:var(--shadow)
+  }
+  td{
+    border:none;border-bottom:1px solid var(--border);
+    padding:14px 5px;text-align:right;position:relative;
+    padding-right:45%;font-size:15px
+  }
+  td::before{
+    content: attr(data-label);position:absolute;right:12px;top:14px;
+    font-weight:800;color:var(--primary);font-size:13px
+  }
+  td:first-child, td:last-child{
+    position:static;box-shadow:none;padding-right:5px;
+    text-align:center;border-bottom:none
+  }
+  .table-wrap{overflow-x:hidden;max-height:none;border:none;box-shadow:none}
+  
+  .top-bar{flex-direction:column;gap:10px}
+  .top-bar input,.top-bar select{width:100%}
+  
+  .stats{grid-template-columns:repeat(2,1fr);gap:12px}
+  .stat-num{font-size:28px}
+  
+  .cards-wrap{grid-template-columns:1fr}
+}
+
+/* زر اختبرني */
+.test-btn{
+  position:fixed;top:16px;left:16px;z-index:9999;
+  background:linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color:white;padding:12px 20px;border-radius:12px;
+  font-weight:700;font-size:14px;box-shadow:var(--shadow-lg);
+  border:none;cursor:pointer
+}
 </style>
 </head>
 <body>
-  <button onclick="alert('الموقع عايش ✅')" style="position:fixed;top:10px;left:10px;z-index:9999;background:green;color:white;padding:15px">
-اختبرني
-  </button>
+  <button class="test-btn" onclick="alert('الموقع عايش ✅')">اختبرني</button>
 
 <div id="toast" class="toast"></div>
-<button onclick="دخول_طوارئ()" style="background:red;color:white;padding:10px;margin:10px 0;width:100%">
+<button onclick="دخول_طوارئ()" style="background:linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);color:white;padding:14px;margin:16px 0;width:100%;border-radius:12px;font-weight:700">
 🚨 دخول طوارئ - استخدمه مرة واحدة بس</button>
-<div id="errorBox" style="background:#ffeeee;color:red;padding:10px;margin:10px 0;border:2px solid red;display:none;font-size:14px;text-align:center"></div>
+<div id="errorBox" style="background:#fee2e2;color:var(--danger);padding:16px;margin:16px 0;border:2px solid var(--danger);border-radius:12px;display:none;font-size:14px;text-align:center;font-weight:600"></div>
 
 <div id="login" class="box">
   <h2>🔐 تسجيل دخول</h2>
-  <p style="margin-bottom:15px">سجل دخول بحساب GitHub بتاعك</p>
-  <button onclick="تسجيل_بجيت_هب()" style="background:#24292e;color:white;padding:15px;width:100%;border:none;border-radius:8px;font-size:16px;cursor:pointer">
+  <p style="margin-bottom:20px;opacity:0.7;font-weight:500">سجل دخول بحساب GitHub بتاعك</p>
+  <button onclick="تسجيل_بجيت_هب()" style="background:#24292e;color:white;padding:16px;width:100%;border:none;border-radius:12px;font-size:16px;cursor:pointer;font-weight:700">
     🐙 دخول بـ GitHub
   </button>
 </div>
 
 <div id="crud">
-  <div class="box" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+  <div class="box" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
     <h2>🚀 لوحة تحكم برو ماكس ألترا</h2>
-    <div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn-small" onclick="تبديل_الثيم()">🌙 ثيم</button>
       <button class="btn-small" onclick="عرض_البيانات()">🔄 تحديث</button>
       <button onclick="تسجيل_خروج()">خروج</button>
@@ -111,8 +299,8 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 
   <div class="box">
     <h3>➕ إضافة جديد</h3>
-    <input id="title" placeholder="العنوان + Enter" onkeypress="if(event.key=='Enter') اضافة()">
-    <button id="btnAdd" onclick="اضافة()">نشر</button>
+    <input id="title" placeholder="اكتب العنوان هنا + Enter" onkeypress="if(event.key=='Enter') اضافة()">
+    <button id="btnAdd" onclick="اضافة()">نشر الآن</button>
   </div>
 
   <div class="box">
@@ -133,7 +321,7 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
       <button class="btn-success" onclick="تصدير_اكسل()">📥 Excel</button>
       <button class="btn-success" onclick="تبديل_العرض()">🔄 عرض</button>
       <button class="btn-danger" id="btnDeleteSelected" onclick="حذف_المحدد()" style="display:none">🗑️ حذف المحدد</button>
-      <span id="count">0 سجل</span>
+      <span id="count" style="font-weight:700">0 سجل</span>
     </div>
 
     <div id="tableView" class="table-wrap">
@@ -177,7 +365,7 @@ document.getElementById('perPage').value = perPage
 function showToast(msg, type='success') {
   const toast = document.getElementById('toast')
   toast.textContent = msg
-  toast.style.borderRightColor = type==='success'? 'var(--success)' : '#ED4245'
+  toast.style.borderRightColor = type==='success'? 'var(--success)' : 'var(--danger)'
   toast.classList.add('show')
   setTimeout(() => toast.classList.remove('show'), 3000)
 }
@@ -422,12 +610,13 @@ function ترتيب_وعرض() {
       document.getElementById('cardsView').style.display = 'none'
       let rows = ''
       pageData.forEach(item => {
+        const date = item.created_at ? new Date(item.created_at).toLocaleDateString('ar-EG', {year:'numeric', month:'short', day:'numeric'}) : ''
         rows += `
           <tr class="${selectedIds.has(item.id)?'selected':''}">
           <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
           <td data-label="ID">${item.id}</td>
           <td data-label="العنوان">${item['عنوان'] || ''}</td>
-          <td data-label="التاريخ">${item.created_at || ''}</td>
+          <td data-label="التاريخ">${date}</td>
           <td class="actions" data-label="إجراءات">
           <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${(item['عنوان'] || '').replace(/'/g, "\\'")}')">تعديل</button>
           <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
@@ -442,12 +631,13 @@ function ترتيب_وعرض() {
       document.getElementById('cardsView').style.display = 'grid'
       let cards = ''
       pageData.forEach(item => {
+        const date = item.created_at ? new Date(item.created_at).toLocaleDateString('ar-EG', {year:'numeric', month:'long', day:'numeric'}) : ''
         cards += `
           <div class="card ${selectedIds.has(item.id)?'selected':''}">
             <input type="checkbox" class="card-check" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})">
             <div class="card-id">ID: ${item.id}</div>
             <div class="card-title">${item['عنوان'] || ''}</div>
-            <div class="card-id">التاريخ: ${item.created_at || ''}</div>
+            <div class="card-date">📅 ${date}</div>
             <div class="card-actions">
               <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${(item['عنوان'] || '').replace(/'/g, "\\'")}')">تعديل</button>
               <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
@@ -486,12 +676,10 @@ supabase.auth.getSession().then(({data: {session}, error}) => {
   }
 
   if(session) {
-    alert('✅ لقيت سيشن! هعرض البيانات')
     document.getElementById('login').style.display='none'
     document.getElementById('crud').style.display='block'
     عرض_البيانات()
   } else {
-    alert('❌ مفيش سيشن... سجل دخول')
     document.getElementById('login').style.display='block'
     document.getElementById('crud').style.display='none'
   }
