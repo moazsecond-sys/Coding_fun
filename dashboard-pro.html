@@ -76,7 +76,7 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
   td::before{content: attr(data-label);position:absolute;right:10px;top:10px;font-weight:bold;color:var(--primary)}
   td:first-child, td:last-child{position:static;box-shadow:none;padding-right:5px;text-align:center}
   td:last-child{border-bottom:none}
-.table-wrap{overflow-x:hidden;max-height:none}
+  .table-wrap{overflow-x:hidden;max-height:none}
 </style>
 </head>
 <body>
@@ -122,8 +122,8 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
       <select id="sortSelect" onchange="ترتيب_من_سلكت()">
         <option value="id-desc">ID تنازلي</option>
         <option value="id-asc">ID تصاعدي</option>
-        <option value="title-asc">العنوان أ-ي</option>
-        <option value="title-desc">العنوان ي-أ</option>
+        <option value="عنوان-asc">العنوان أ-ي</option>
+        <option value="عنوان-desc">العنوان ي-أ</option>
       </select>
       <select id="perPage" onchange="تغيير_عدد_الصفحات()">
         <option value="10">10 في الصفحة</option>
@@ -142,11 +142,12 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
           <tr>
             <th><input type="checkbox" id="checkAll" onchange="تحديد_الكل()"></th>
             <th onclick="ترتيب_عمود('id')">ID</th>
-            <th onclick="ترتيب_عمود('title')">العنوان</th>
+            <th onclick="ترتيب_عمود('عنوان')">العنوان</th>
+            <th onclick="ترتيب_عمود('created_at')">التاريخ</th>
             <th>إجراءات</th>
           </tr>
         </thead>
-        <tbody id="tableBody"><tr><td colspan="4" class="loading">⏳ جاري التحميل...</td></tr></tbody>
+        <tbody id="tableBody"><tr><td colspan="5" class="loading">⏳ جاري التحميل...</td></tr></tbody>
       </table>
     </div>
 
@@ -159,7 +160,7 @@ thead th:first-child{z-index:3} thead th:last-child{z-index:3}
 <script type="module">
 import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2.45.4'
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' // <-- رجع المفتاح ده
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo' // <-- حط المفتاح هنا
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let allData = [], filteredData = []
@@ -207,12 +208,12 @@ window.تسجيل_خروج = async function(){
 }
 
 async function عرض_البيانات() {
-  document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">⏳ بجلب البيانات...</td></tr>'
+  document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="loading">⏳ بجلب البيانات...</td></tr>'
 
   const { data, error } = await supabase.from('test').select('*')
 
   if(error) {
-    document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="loading">❌ إيرور: ${error.message}</td></tr>`
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="loading">❌ إيرور: ${error.message}</td></tr>`
     console.error('إيرور Supabase:', error)
     showToast('فشل جلب البيانات', 'error')
     return
@@ -233,7 +234,7 @@ window.اضافة = async function() {
   if(!title) return showToast('اكتب عنوان', 'error')
   const btn = document.getElementById('btnAdd')
   btn.disabled=true
-  const { error } = await supabase.from('test').insert([{title}])
+  const { error } = await supabase.from('test').insert([{'عنوان': title}])
   btn.disabled=false
   if(error) showToast(error.message, 'error')
   else {
@@ -246,7 +247,7 @@ window.اضافة = async function() {
 window.تعديل = async function(id, oldTitle) {
   const newTitle = prompt('العنوان الجديد:', oldTitle)
   if(!newTitle || newTitle === oldTitle) return
-  const { error } = await supabase.from('test').update({title: newTitle}).eq('id', id)
+  const { error } = await supabase.from('test').update({'عنوان': newTitle}).eq('id', id)
   if(error) showToast(error.message, 'error')
   else {عرض_البيانات(); showToast('تم التعديل ✅')}
 }
@@ -261,14 +262,14 @@ window.حذف = async function(id) {
 window.بحث = function() {
   const val = document.getElementById('search').value.toLowerCase()
   filteredData = allData.filter(item =>
-    String(item.id).includes(val) || item.title.toLowerCase().includes(val)
+    String(item.id).includes(val) || (item['عنوان'] || '').toLowerCase().includes(val)
   )
   currentPage = 1
   ترتيب_وعرض()
 }
 
 window.ترتيب_عمود = function(col) {
-  if(sortColumn === col) sortAsc =!sortAsc // صلحت المسافة هنا
+  if(sortColumn === col) sortAsc =!sortAsc
   else {sortColumn = col; sortAsc = true}
   localStorage.setItem('sort_col', sortColumn)
   localStorage.setItem('sort_asc', sortAsc)
@@ -332,8 +333,8 @@ function تحديث_زرار_الحذف() {
 }
 
 window.تصدير_اكسل = function() {
-  let csv = 'ID,العنوان\n'
-  filteredData.forEach(item => csv += `${item.id},"${item.title}"\n`)
+  let csv = 'ID,العنوان,التاريخ\n'
+  filteredData.forEach(item => csv += `${item.id},"${item['عنوان'] || ''}","${item.created_at || ''}"\n`)
   const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'})
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
@@ -411,7 +412,7 @@ function ترتيب_وعرض() {
     console.log('برسم:', pageData.length, 'سجل')
 
     if(pageData.length === 0) {
-      document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="loading">مفيش بيانات لعرضها</td></tr>'
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="5" class="loading">مفيش بيانات لعرضها</td></tr>'
       document.getElementById('cardsView').innerHTML = '<div class="loading" style="grid-column:1/-1">مفيش بيانات</div>'
       return
     }
@@ -425,12 +426,13 @@ function ترتيب_وعرض() {
           <tr class="${selectedIds.has(item.id)?'selected':''}">
           <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
           <td data-label="ID">${item.id}</td>
-          <td data-label="العنوان">${item.title || ''}</td>
+          <td data-label="العنوان">${item['عنوان'] || ''}</td>
+          <td data-label="التاريخ">${item.created_at || ''}</td>
           <td class="actions" data-label="إجراءات">
-          <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${(item.title || '').replace(/'/g, "\\'")}')">تعديل</button>
+          <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${(item['عنوان'] || '').replace(/'/g, "\\'")}')">تعديل</button>
           <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
-  </td>
-</tr>
+          </td>
+          </tr>
         `
       })
       document.getElementById('tableBody').innerHTML = rows
@@ -444,9 +446,10 @@ function ترتيب_وعرض() {
           <div class="card ${selectedIds.has(item.id)?'selected':''}">
             <input type="checkbox" class="card-check" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})">
             <div class="card-id">ID: ${item.id}</div>
-            <div class="card-title">${item.title}</div>
+            <div class="card-title">${item['عنوان'] || ''}</div>
+            <div class="card-id">التاريخ: ${item.created_at || ''}</div>
             <div class="card-actions">
-              <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
+              <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${(item['عنوان'] || '').replace(/'/g, "\\'")}')">تعديل</button>
               <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
             </div>
           </div>
@@ -457,7 +460,7 @@ function ترتيب_وعرض() {
 
   } catch(e) {
     console.error('إيرور في الرسم:', e)
-    document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="loading">❌ إيرور رسم: ${e.message}</td></tr>`
+    document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="loading">❌ إيرور رسم: ${e.message}</td></tr>`
   }
 }
 
