@@ -423,14 +423,14 @@ function ترتيب_وعرض() {
       pageData.forEach(item => {
         rows += `
           <tr class="${selectedIds.has(item.id)?'selected':''}">
-            <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
-            <td data-label="ID">${item.id}</td>
-            <td data-label="العنوان">${item.title}</td>
-            <td class="actions" data-label="إجراءات">
-              <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${item.title.replace(/'/g, "\\'")}')">تعديل</button>
-              <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
-            </td>
-          </tr>
+          <td><input type="checkbox" ${selectedIds.has(item.id)?'checked':''} onchange="تحديد_سجل(${item.id})"></td>
+          <td data-label="ID">${item.id}</td>
+          <td data-label="العنوان">${item.title || ''}</td>
+          <td class="actions" data-label="إجراءات">
+          <button class="btn-edit btn-small" onclick="تعديل(${item.id}, '${(item.title || '').replace(/'/g, "\\'")}')">تعديل</button>
+          <button class="btn-danger btn-small" onclick="حذف(${item.id})">حذف</button>
+  </td>
+</tr>
         `
       })
       document.getElementById('tableBody').innerHTML = rows
