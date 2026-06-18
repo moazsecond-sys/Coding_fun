@@ -288,6 +288,7 @@ input[type="file"] { display: none; }
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
+// ⚠️ حط المفتاح الـ anon public بتاعك هنا كامل
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -345,7 +346,7 @@ function displayPosts(postsToShow) {
       <p>${p.content}</p>
       <div class="btns">
         <button class="btn copy-btn" onclick="copyPostFormatted(${p.id})">📋 ${t[currentLang].copy}</button>
-        <button class="btn share-btn" onclick="sharePost('${p.title.replace(/'/g, "\\'")}', ${p.id})">📤 ${t[currentLang].share}</button>
+        <button class="btn share-btn" onclick="sharePost(\`${p.title.replace(/`/g, "'")}\`, ${p.id})">📤 ${t[currentLang].share}</button>
         <button class="btn edit-btn" onclick="editPost(${p.id})">✏️ ${t[currentLang].edit}</button>
         <button class="btn delete-btn" onclick="deletePost(${p.id})">🗑️ ${t[currentLang].delete}</button>
       </div>
@@ -390,6 +391,7 @@ async function renderAll() {
 
 window.editPost = function(id) {
   const post = allPosts.find(p => p.id === id);
+  if(!post) return;
   document.getElementById('editId').value = id;
   document.getElementById('newTitle').value = post.title;
   document.getElementById('newCategory').value = post.category;
@@ -410,17 +412,41 @@ async function savePost() {
   }
 
   try {
-    if(id && id !== '') {
-      await sb.from('posts').update({title, content, category}).eq('id', id);
-      alert('تم التعديل ✅');
+    let error;
+
+    if(id && id!== '') {
+      // تعديل
+      const result = await sb.from('posts').update({title, content, category}).eq('id', id).select();
+      error = result.error;
+      if(!error) alert('تم التعديل ✅');
     } else {
-      await sb.from('posts').insert([{title, content, category}]);
-      alert('تمت الإضافة ✅');
+      // إضافة جديدة
+      const result = await sb.from('posts').insert([{title, content, category}]).select();
+      error = result.error;
+      if(!error) alert('تمت الإضافة ✅');
     }
 
-    closeModal(); // هنا بتفضي الـ id
-    allPosts = [];
-    await renderAll(); // استنى التحميل يخلص
+    if(error) throw error;
+
+    closeModal();
+    allPosts = []; // فضي الكاش
+    await renderAll();
+
+  } catch(e) {
+    alert('خطأ: ' + e.message);
+    console.error('تفاصيل الخطأ:', e);
+  }
+}
+
+async function deletePost(id) {
+  if(!confirm('متأكد من الحذف؟')) return;
+  try {
+    const {error} = await sb.from('posts').delete().eq('id', id).select();
+    if(error) throw error;
+
+    allPosts = []; // فضي الكاش
+    await renderAll();
+    alert('تم الحذف ✅');
   } catch(e) {
     alert('خطأ: ' + e.message);
     console.error(e);
@@ -458,13 +484,14 @@ window.importBackup = async function(event) {
     title: p.title,
     content: p.content,
     category: p.category
-  })));
+  }))).select();
 
   if(error) alert('خطأ الاستيراد: ' + error.message);
-  else alert(t[currentLang].backupImport);
-
-  allPosts = [];
-  renderAll();
+  else {
+    alert(t[currentLang].backupImport);
+    allPosts = [];
+    renderAll();
+  }
 }
 
 window.toggleFav = function(id) {
@@ -476,6 +503,7 @@ window.toggleFav = function(id) {
 window.openModal = function() {
   document.getElementById('addModal').classList.add('active');
 }
+
 window.closeModal = function() {
   document.getElementById('addModal').classList.remove('active');
   document.getElementById('editId').value = '';
@@ -484,20 +512,6 @@ window.closeModal = function() {
   document.getElementById('modalTitle').textContent = t[currentLang].add;
 }
 
-async function deletePost(id) {
-  if(!confirm('متأكد من الحذف؟')) return;
-  try {
-    const {error} = await sb.from('posts').delete().eq('id', id);
-    if(error) throw error;
-    
-    allPosts = []; // فضي الكاش
-    await renderAll(); // حمل من جديد
-    alert('تم الحذف ✅');
-  } catch(e) {
-    alert('خطأ: ' + e.message);
-    console.error(e);
-  }
-}
 window.goToPage = function(page) {
   const totalPages = Math.ceil(filteredPosts.length / parseInt(document.getElementById('perPage').value));
   if(page >= 1 && page <= totalPages) {
@@ -518,7 +532,7 @@ window.changeLanguage = function(lang) {
   localStorage.setItem('lang', lang);
   document.getElementById('htmlTag').dir = lang === 'ar'? 'rtl' : 'ltr';
   document.getElementById('htmlTag').lang = lang;
-  document.getElementById('pageTitle').textContent = t.title;
+  document.getElementById('pageTitle').textContent = t[lang].title;
 
   document.querySelectorAll('[data-ar]').forEach(el => {
     el.textContent = el.getAttribute(`data-${lang}`);
