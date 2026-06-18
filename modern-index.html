@@ -266,8 +266,8 @@ input[type="file"] { display: none; }
 <div class="container" id="posts"><div class="loading">جاري التحميل...</div></div>
 <div class="pagination" id="pages"></div>
 
-<div class="modal" id="addModal">
-  <div class="modal-content">
+<div class="modal" id="addModal" onclick="if(event.target.id==='addModal') closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
     <h3 id="modalTitle" data-ar="إضافة محتوى جديد" data-en="Add/Edit Content">إضافة محتوى جديد</h3>
     <input type="hidden" id="editId">
     <input type="text" id="newTitle" placeholder="العنوان">
@@ -279,8 +279,8 @@ input[type="file"] { display: none; }
     </select>
     <textarea id="newContent" placeholder="النص الكامل..."></textarea>
     <div style="display: flex; gap: 10px;">
-      <button class="add-btn" style="flex:1" onclick="savePost()">✅ <span data-ar="حفظ" data-en="Save">حفظ</span></button>
-      <button class="btn delete-btn" style="flex:1" onclick="closeModal()">❌ <span data-ar="إلغاء" data-en="Cancel">إلغاء</span></button>
+      <button class="add-btn" style="flex:1" type="button" onclick="savePost()">✅ <span data-ar="حفظ" data-en="Save">حفظ</span></button>
+      <button class="btn delete-btn" style="flex:1" type="button" onclick="closeModal()">❌ <span data-ar="إلغاء" data-en="Cancel">إلغاء</span></button>
     </div>
   </div>
 </div>
@@ -383,6 +383,7 @@ async function renderAll() {
     renderPagination();
     updateStats();
   } catch(e) {
+    console.error('خطأ في renderAll:', e);
     document.getElementById('posts').innerHTML = `<div class="loading" style="color:red">خطأ: ${e.message}</div>`;
   }
 }
@@ -408,19 +409,26 @@ async function savePost() {
     return;
   }
 
-  if(id && id !== '') {
-    const {data, error} = await sb.from('posts').update({title, content, category}).eq('id', id).select();
-    if(error) alert('خطأ التعديل: ' + error.message);
-    else alert('تم التعديل ✅');
-  } else {
-    const {data, error} = await sb.from('posts').insert([{title, content, category}]).select();
-    if(error) alert('خطأ الإضافة: ' + error.message);
-    else alert('تمت الإضافة ✅');
-  }
+  try {
+    if(id && id !== '') {
+      console.log('بحدث ID:', id);
+      const {error} = await sb.from('posts').update({title, content, category}).eq('id', id);
+      if(error) throw error;
+      alert('تم التعديل ✅');
+    } else {
+      console.log('بضيف بوست جديد');
+      const {error} = await sb.from('posts').insert([{title, content, category}]);
+      if(error) throw error;
+      alert('تمت الإضافة ✅');
+    }
 
-  closeModal();
-  allPosts = [];
-  renderAll();
+    closeModal();
+    allPosts = []; // فضي الكاش
+    await renderAll(); // استنى التحميل يخلص
+  } catch(e) {
+    alert('خطأ: ' + e.message);
+    console.error('تفاصيل الخطأ:', e);
+  }
 }
 
 window.copyPostFormatted = function(id) {
@@ -482,18 +490,18 @@ window.closeModal = function() {
 
 async function deletePost(id) {
   if(!confirm('متأكد من الحذف؟')) return;
-  const {data, error} = await sb.from('posts').delete().eq('id', id).select();
-  
-  if(error) {
-    alert('خطأ الحذف: ' + error.message);
-    console.error(error);
-  } else {
+  try {
+    const {error} = await sb.from('posts').delete().eq('id', id);
+    if(error) throw error;
+    
+    allPosts = []; // فضي الكاش
+    await renderAll(); // حمل من جديد
     alert('تم الحذف ✅');
-    allPosts = [];
-    renderAll();
+  } catch(e) {
+    alert('خطأ: ' + e.message);
+    console.error(e);
   }
 }
-
 window.goToPage = function(page) {
   const totalPages = Math.ceil(filteredPosts.length / parseInt(document.getElementById('perPage').value));
   if(page >= 1 && page <= totalPages) {
