@@ -266,7 +266,6 @@ input[type="file"] { display: none; }
 <div class="container" id="posts"><div class="loading">جاري التحميل...</div></div>
 <div class="pagination" id="pages"></div>
 
-<!-- مودال الإضافة والتعديل -->
 <div class="modal" id="addModal">
   <div class="modal-content">
     <h3 id="modalTitle" data-ar="إضافة محتوى جديد" data-en="Add/Edit Content">إضافة محتوى جديد</h3>
@@ -410,9 +409,11 @@ async function savePost() {
   }
 
   if(id) {
-    await sb.from('posts').update({title, content, category}).eq('id', id);
+    const {error} = await sb.from('posts').update({title, content, category}).eq('id', id);
+    if(error) alert('خطأ التعديل: ' + error.message);
   } else {
-    await sb.from('posts').insert([{title, content, category}]);
+    const {error} = await sb.from('posts').insert([{title, content, category}]);
+    if(error) alert('خطأ الإضافة: ' + error.message);
   }
 
   closeModal();
@@ -427,7 +428,6 @@ window.copyPostFormatted = function(id) {
   alert(t[currentLang].copied);
 }
 
-// ===== Backup الجديد 📦 =====
 window.exportBackup = function() {
   const dataStr = JSON.stringify(allPosts, null, 2);
   const blob = new Blob([dataStr], {type: 'application/json'});
@@ -448,13 +448,15 @@ window.importBackup = async function(event) {
 
   if(!confirm(`هتستورد ${data.length} بوست. متأكد؟`)) return;
 
-  await sb.from('posts').insert(data.map(p => ({
+  const {error} = await sb.from('posts').insert(data.map(p => ({
     title: p.title,
     content: p.content,
     category: p.category
   })));
 
-  alert(t[currentLang].backupImport);
+  if(error) alert('خطأ الاستيراد: ' + error.message);
+  else alert(t[currentLang].backupImport);
+
   allPosts = [];
   renderAll();
 }
@@ -478,7 +480,8 @@ window.closeModal = function() {
 
 async function deletePost(id) {
   if(!confirm('متأكد من الحذف؟')) return;
-  await sb.from('posts').delete().eq('id', id);
+  const {error} = await sb.from('posts').delete().eq('id', id);
+  if(error) alert('خطأ الحذف: ' + error.message);
   allPosts = [];
   renderAll();
 }
