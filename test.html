@@ -2,69 +2,44 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>سجل الدوسات</title>
-<style> 
-body { background: black; color: white; text-align: center; font-size: 24px; margin-top: 50px; }
-button { font-size: 20px; padding: 12px 25px; cursor: pointer; margin: 5px; border-radius: 8px; border: none; }
-#logBox { margin-top: 30px; max-height: 300px; overflow-y: auto; border: 1px solid gray; padding: 10px; width: 80%; margin-left: auto; margin-right: auto; }
-.logItem { color: #00ff88; font-size: 16px; margin: 5px 0; }
-</style>
+<title>اختبار Supabase</title>
 </head>
-<body>
+<body style="padding:40px; font-family:Tajawal">
+<h2>اختبار الاتصال بـ Supabase</h2>
+<div id="result">جاري الاختبار...</div>
 
-<p>عدد الدوسات: <span id="counter">0</span></p>
-<button onclick="view_number()" style="background: white;">دوس هنا</button>
-<button onclick="reset_count()" style="background: red; color: white;">صفر العداد</button>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
-<div id="logBox">
-  <p style="color: gray;">سجل الأحداث:</p>
-  <div id="logList"></div>
-</div>
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 
-<script>
-  // 1. نجيب المصفوفة القديمة من الذاكرة
-  let log = JSON.parse(localStorage.getItem('clickLog')) || [];
-  
-  // نعرض العداد والسجل أول ما الصفحة تفتح
-  document.getElementById('counter').textContent = log.length;
-  display_log();
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const result = document.getElementById('result');
 
-  // 2. فانكشن الدوس
-  function view_number() {
-    // نجيب الوقت الحالي بالثانية
-    let now = new Date();
-    let timeString = now.toLocaleTimeString('ar-EG');
+async function test() {
+  try {
+    result.innerHTML += '<br>1. بحاول أجيب البوستات...';
+    const { data, error } = await sb.from('posts').select('*').limit(5);
     
-    // نحط الوقت الجديد في المصفوفة
-    log.push(timeString);
-    
-    // نحدث العداد والسجل على الشاشة
-    document.getElementById('counter').textContent = log.length;
-    display_log();
-    
-    // نحفظ المصفوفة كلها في الذاكرة
-    localStorage.setItem('clickLog', JSON.stringify(log));
-  }
-
-  // 3. فانكشن عرض السجل
-  function display_log() {
-    let logList = document.getElementById('logList');
-    logList.innerHTML = ''; // نفضي القديم
-    
-    // نلف على المصفوفة من الآخر للأول عشان الجديد يطلع فوق
-    for(let i = log.length - 1; i >= 0; i--) {
-      logList.innerHTML += `<div class="logItem">دوسة رقم ${i+1} : ${log[i]}</div>`;
+    if(error) {
+      result.innerHTML += `<br>❌ خطأ: ${error.message}<br>الكود: ${error.code}`;
+      return;
     }
+    
+    if(!data || data.length === 0) {
+      result.innerHTML += '<br>⚠️ الجدول فاضي - مفيش بوستات';
+      return;
+    }
+    
+    result.innerHTML += `<br>✅ نجح! لقينا ${data.length} بوست`;
+    result.innerHTML += '<br><br>أول بوست:<br>' + JSON.stringify(data[0], null, 2);
+    
+  } catch(e) {
+    result.innerHTML += `<br>💥 خطأ فادح: ${e.message}`;
   }
-
-  // 4. فانكشن الصفر
-  function reset_count() {
-    log = []; // نفضي المصفوفة
-    document.getElementById('counter').textContent = 0;
-    document.getElementById('logList').innerHTML = '';
-    localStorage.removeItem('clickLog'); // نمسح من الذاكرة
-  }
+}
+test();
 </script>
-
 </body>
 </html>
