@@ -243,8 +243,7 @@ h1 {
 <button class="add-btn" onclick="openModal()">➕ <span data-ar="إضافة محتوى جديد" data-en="Add New Content">إضافة محتوى جديد</span></button>
 
 <div class="controls">
-  <input type="text" id="searchBox" placeholder="ابحث عن آية أو حديث..." data-ar-placeholder="ابحث عن آية أو حديث..." data-en-placeholder="Search...">
-  <select id="catFilter">
+<input type="text" id="searchBox" placeholder="ابحث عن آية أو حديث...">  <select id="catFilter">
     <option value="all" data-ar="كل التصنيفات" data-en="All Categories">كل التصنيفات</option>
     <option value="آية">آية</option>
     <option value="حديث">حديث</option>
@@ -482,10 +481,20 @@ window.changeLanguage = function(lang) {
   localStorage.setItem('lang', lang);
   document.getElementById('htmlTag').dir = lang === 'ar'? 'rtl' : 'ltr';
   document.getElementById('htmlTag').lang = lang;
+
+  document.getElementById('pageTitle').textContent = t[lang].title;
+
   document.querySelectorAll('[data-ar]').forEach(el => {
     el.textContent = el.getAttribute(`data-${lang}`);
   });
-  document.getElementById('searchBox').placeholder = t.search;
+
+  // السطر الوحيد المهم عشان الـ placeholder
+  if(lang === 'ar') {
+    document.getElementById('searchBox').placeholder = "ابحث عن آية أو حديث...";
+  } else {
+    document.getElementById('searchBox').placeholder = "Search for verse or hadith...";
+  }
+
   renderAll();
 }
 
