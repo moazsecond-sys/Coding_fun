@@ -223,24 +223,38 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
-  const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+  <script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
+
+  const SUPABASE_URL = 'https://mirrxytqttjglxrarq.supabase.co';
+  const SUPABASE_KEY = 'المفتاح_اللي_حطيته';
+
+  document.getElementById('postsContainer').innerHTML = '1. السكريبت بدأ ✅<br>';
 
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+  document.getElementById('postsContainer').innerHTML += '2. اتصلنا بسوبابيز ✅<br>';
 
-  let allPosts = [];
-  let currentFilter = 'all';
-  let currentPage = 1;
-  let postsPerPage = 20;
-  let currentLang = localStorage.getItem('lang') || 'ar';
-
-  const translations = {
-    ar: { title: "متجر سيف - المحتوى الديني", loading: "جاري التحميل...", noResults: "لم نجد نتائج 🔍 جرب كلمة بحث تانية", found: "لقينا", of: "من", post: "منشور", show: "نعرض", perPage: "في الصفحة", page: "صفحة", ofPage: "من", prev: "⏮️ السابق", next: "التالي ⏭️", views: "قراءة", copied: "تم نسخ النص 📋", shared: "تم نسخ المنشور 🌸", exported: "تم تصدير", postAsCSV: "منشور كـ CSV 📊" },
-    en: { title: "Seif Store - Islamic Content", loading: "Loading...", noResults: "No results found 🔍 Try another keyword", found: "Found", of: "of", post: "posts", show: "Showing", perPage: "per page", page: "Page", ofPage: "of", prev: "⏮️ Previous", next: "Next ⏭️", views: "views", copied: "Text copied 📋", shared: "Post copied 🌸", exported: "Exported", postAsCSV: "posts as CSV 📊" },
-    es: { title: "Tienda Seif - Contenido Islámico", loading: "Cargando...", noResults: "No se encontraron resultados 🔍 Prueba otra palabra clave", found: "Encontrados", of: "de", post: "publicaciones", show: "Mostrando", perPage: "por página", page: "Página", ofPage: "de", prev: "⏮️ Anterior", next: "Siguiente ⏭️", views: "vistas", copied: "Texto copiado 📋", shared: "Publicación copiada 🌸", exported: "Exportadas", postAsCSV: "publicaciones como CSV 📊" },
-    pt: { title: "Loja Seif - Conteúdo Islâmico", loading: "Carregando...", noResults: "Nenhum resultado encontrado 🔍 Tente outra palavra-chave", found: "Encontrados", of: "de", post: "publicações", show: "Mostrando", perPage: "por página", page: "Página", ofPage: "de", prev: "⏮️ Anterior", next: "Próximo ⏭️", views: "visualizações", copied: "Texto copiado 📋", shared: "Publicação copiada 🌸", exported: "Exportadas", postAsCSV: "publicações como CSV 📊" },
-    de: { title: "Seif Shop - Islamische Inhalte", loading: "Lädt...", noResults: "Keine Ergebnisse gefunden 🔍 Versuchen Sie ein anderes Stichwort", found: "Gefunden", of: "von", post: "Beiträge", show: "Zeige", perPage: "pro Seite", page: "Seite", ofPage: "von", prev: "⏮️ Zurück", next: "Weiter ⏭️", views: "Aufrufe", copied: "Text kopiert 📋", shared: "Beitrag kopiert 🌸", exported: "Exportiert", postAsCSV: "Beiträge als CSV 📊" }
-  };
+  async function loadPosts() {
+    document.getElementById('postsContainer').innerHTML += '3. بنجيب الداتا...<br>';
+    
+    const { data, error } = await sb.from('posts').select('*').limit(1);
+    
+    document.getElementById('postsContainer').innerHTML += '4. وصل الرد<br>';
+    
+    if(error) {
+      document.getElementById('postsContainer').innerHTML += '❌ الخطأ: ' + error.message + '<br>الكود: ' + error.code;
+      return;
+    }
+    
+    if(!data) {
+      document.getElementById('postsContainer').innerHTML += '❌ data = null';
+      return;
+    }
+    
+    document.getElementById('postsContainer').innerHTML += '✅ لقينا ' + data.length + ' بوست';
+  }
+  
+  loadPosts();
 
   async function loadPosts() {
     document.getElementById('postsContainer').innerHTML = translations[currentLang].loading;
