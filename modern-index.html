@@ -403,22 +403,33 @@ async function savePost() {
   const content = document.getElementById('newContent').value.trim();
   const category = document.getElementById('newCategory').value;
 
+  console.log('ID اللي جاي:', id); // عشان نشوف الـ id واصل ولا لأ
+
   if(!title ||!content) {
     alert('اكتب العنوان والنص');
     return;
   }
 
-  if(id) {
-    const {error} = await sb.from('posts').update({title, content, category}).eq('id', id);
-    if(error) alert('خطأ التعديل: ' + error.message);
-  } else {
-    const {error} = await sb.from('posts').insert([{title, content, category}]);
-    if(error) alert('خطأ الإضافة: ' + error.message);
-  }
+  try {
+    if(id && id !== '') {
+      console.log('هعدل البوست رقم:', id);
+      const {data, error} = await sb.from('posts').update({title, content, category}).eq('id', id).select();
+      if(error) throw error;
+      alert('تم التعديل ✅');
+    } else {
+      console.log('هضيف بوست جديد');
+      const {data, error} = await sb.from('posts').insert([{title, content, category}]).select();
+      if(error) throw error;
+      alert('تمت الإضافة ✅');
+    }
 
-  closeModal();
-  allPosts = [];
-  renderAll();
+    closeModal();
+    allPosts = [];
+    renderAll();
+  } catch(e) {
+    alert('خطأ: ' + e.message);
+    console.error(e);
+  }
 }
 
 window.copyPostFormatted = function(id) {
