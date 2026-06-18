@@ -376,14 +376,14 @@ function updateStats() {
 
 async function renderAll() {
   try {
-    document.getElementById('posts').innerHTML = `<div class="loading">${t[currentLang].loading}</div>`;
+    document.getElementById('posts').innerHTML = `<div class="loading">جاري التحميل...</div>`;
     if(allPosts.length === 0) await loadData();
     filterPosts();
     displayPosts(paginatePosts());
     renderPagination();
     updateStats();
   } catch(e) {
-    console.error('خطأ في renderAll:', e);
+    console.error('خطأ renderAll:', e);
     document.getElementById('posts').innerHTML = `<div class="loading" style="color:red">خطأ: ${e.message}</div>`;
   }
 }
@@ -411,23 +411,19 @@ async function savePost() {
 
   try {
     if(id && id !== '') {
-      console.log('بحدث ID:', id);
-      const {error} = await sb.from('posts').update({title, content, category}).eq('id', id);
-      if(error) throw error;
+      await sb.from('posts').update({title, content, category}).eq('id', id);
       alert('تم التعديل ✅');
     } else {
-      console.log('بضيف بوست جديد');
-      const {error} = await sb.from('posts').insert([{title, content, category}]);
-      if(error) throw error;
+      await sb.from('posts').insert([{title, content, category}]);
       alert('تمت الإضافة ✅');
     }
 
-    closeModal();
-    allPosts = []; // فضي الكاش
+    closeModal(); // هنا بتفضي الـ id
+    allPosts = [];
     await renderAll(); // استنى التحميل يخلص
   } catch(e) {
     alert('خطأ: ' + e.message);
-    console.error('تفاصيل الخطأ:', e);
+    console.error(e);
   }
 }
 
