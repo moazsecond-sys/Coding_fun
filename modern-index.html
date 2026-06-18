@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlTag">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">المحتوى الديني</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg1: #f8f9fa; --bg2: #e9f5eb;
+  --card: white; --text: #222; --text2: #666;
+  --green: #4ade80; --green-dark: #2d5a3d;
+  --shadow: rgba(0,0,0,0.08);
+}
+body.dark {
+  --bg1: #1a1a1a; --bg2: #2d2d2d;
+  --card: #2a2a2a; --text: #e0e0e0; --text2: #aaa;
+  --green: #22c55e; --green-dark: #16a34a;
+  --shadow: rgba(0,0,0,0.3);
+}
+* { box-sizing: border-box; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+  color: var(--text);
+  padding: 20px;
+  margin: 0;
+  min-height: 100vh;
+  transition: 0.3s;
+}
+body[dir="ltr"] { font-family: 'Poppins', sans-serif; }
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.top-bar select,.top-bar button {
+  padding: 10px 15px;
+  border: 2px solid var(--green);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 25px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+h1 {
+  text-align: center;
+  color: var(--green-dark);
+  margin: 20px 0 10px;
+  font-size: 32px;
+}
+.subtitle {
+  text-align: center;
+  color: var(--text2);
+  margin-bottom: 25px;
+}
+
+.add-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 14px 25px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  margin: 20px auto;
+  transition: 0.2s;
+}
+.add-btn:hover { transform: scale(1.05); }
+
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px auto;
+  max-width: 850px;
+}
+.controls input,.controls select {
+  padding: 12px 18px;
+  border: 2px solid var(--green);
+  border-radius: 25px;
+  font-family: inherit;
+  font-size: 15px;
+  background: var(--card);
+  color: var(--text);
+  outline: none;
+}
+
+.stats {
+  text-align: center;
+  color: var(--green-dark);
+  font-weight: bold;
+  margin: 15px 0;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.post {
+  background: var(--card);
+  padding: 25px;
+  border-radius: 18px;
+  margin: 18px 0;
+  box-shadow: 0 4px 12px var(--shadow);
+  border-right: 4px solid var(--green);
+  position: relative;
+}
+.post h3 {
+  margin: 0 0 12px;
+  color: var(--green-dark);
+  font-size: 20px;
+  padding-left: 35px;
+  padding-right: 35px;
+}
+.post p {
+  line-height: 1.9;
+  font-size: 17px;
+  margin: 12px 0;
+  white-space: pre-wrap;
+  color: var(--text);
+}
+.category {
+  color: var(--green);
+  font-weight: bold;
+  font-size: 14px;
+  background: rgba(74, 222, 128, 0.15);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+.fav-btn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+.fav-btn.active { color: #ef4444; }
+
+.btns {
+  margin-top: 15px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+}
+.copy-btn { background: #3b82f6; color: white; }
+.share-btn { background: #25D366; color: white; }
+.edit-btn { background: #f59e0b; color: white; }
+.delete-btn { background: #ef4444; color: white; }
+
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 35px 0;
+  flex-wrap: wrap;
+}
+.pagination button {
+  padding: 10px 16px;
+  border: 2px solid var(--green);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.pagination button.active {
+  background: var(--green);
+  color: white;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+.modal.active { display: flex; }
+.modal-content {
+  background: var(--card);
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 500px;
+}
+.modal-content input,.modal-content textarea,.modal-content select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  font-family: inherit;
+  background: var(--bg1);
+  color: var(--text);
+}
+.modal-content textarea { min-height: 120px; resize: vertical; }
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: var(--text2);
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <select onchange="changeLanguage(this.value)" id="langSelect">
+    <option value="ar">🌍 العربية</option>
+    <option value="en">🇬🇧 English</option>
+  </select>
+  <button onclick="toggleDark()">🌙 <span data-ar="وضع داكن" data-en="Dark Mode">وضع داكن</span></button>
+</div>
+
+<h1>📖 <span data-ar="المحتوى الديني" data-en="Islamic Content">المحتوى الديني</span></h1>
+<p class="subtitle" data-ar="آيات، أحاديث، أدعية، وأسئلة" data-en="Verses, Hadith, Prayers & Questions">آيات، أحاديث، أدعية، وأسئلة</p>
+
+<button class="add-btn" onclick="openModal()">➕ <span data-ar="إضافة محتوى جديد" data-en="Add New Content">إضافة محتوى جديد</span></button>
+
+<div class="controls">
+  <input type="text" id="searchBox" placeholder="ابحث عن آية أو حديث..." data-ar-placeholder="ابحث عن آية أو حديث..." data-en-placeholder="Search...">
+  <select id="catFilter">
+    <option value="all" data-ar="كل التصنيفات" data-en="All Categories">كل التصنيفات</option>
+    <option value="آية">آية</option>
+    <option value="حديث">حديث</option>
+    <option value="دعاء">دعاء</option>
+    <option value="سؤال ديني">سؤال ديني</option>
+  </select>
+  <select id="perPage">
+    <option value="20" selected>20 في الصفحة</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+  </select>
+  <select id="filterFav" onchange="renderAll()">
+    <option value="all">الكل</option>
+    <option value="fav">المفضلة فقط</option>
+  </select>
+</div>
+
+<div class="stats" id="stats">جاري التحميل...</div>
+<div class="container" id="posts"><div class="loading">جاري التحميل...</div></div>
+<div class="pagination" id="pages"></div>
+
+<!-- مودال الإضافة والتعديل -->
+<div class="modal" id="addModal">
+  <div class="modal-content">
+    <h3 id="modalTitle" data-ar="إضافة محتوى جديد" data-en="Add/Edit Content">إضافة محتوى جديد</h3>
+    <input type="hidden" id="editId">
+    <input type="text" id="newTitle" placeholder="العنوان" data-ar-placeholder="العنوان" data-en-placeholder="Title">
+    <select id="newCategory">
+      <option value="آية">آية</option>
+      <option value="حديث">حديث</option>
+      <option value="دعاء">دعاء</option>
+      <option value="سؤال ديني">سؤال ديني</option>
+    </select>
+    <textarea id="newContent" placeholder="النص الكامل..." data-ar-placeholder="النص الكامل..." data-en-placeholder="Full text..."></textarea>
+    <div style="display: flex; gap: 10px;">
+      <button class="add-btn" style="flex:1" onclick="savePost()">✅ <span data-ar="حفظ" data-en="Save">حفظ</span></button>
+      <button class="btn delete-btn" style="flex:1" onclick="closeModal()">❌ <span data-ar="إلغاء" data-en="Cancel">إلغاء</span></button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
+
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ===== 1. الديوان العام =====
+let allPosts = [];
+let filteredPosts = [];
+let currentPage = 1;
+let currentLang = localStorage.getItem('lang') || 'ar';
+let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+// ===== 2. الترجمات =====
+const t = {
+ar: {title:"المحتوى الديني",subtitle:"آيات، أحاديث، أدعية، وأسئلة",search:"ابحث عن آية أو حديث...",all:"كل التصنيفات",loading:"جاري التحميل...",no:"لا يوجد نتائج",found:"نتيجة",prev:"السابق",next:"التالي",copied:"تم النسخ ✅",share:"مشاركة",copy:"نسخ",delete:"حذف",edit:"تعديل",add:"إضافة محتوى جديد",save:"حفظ",cancel:"إلغاء"},
+en: {title:"Islamic Content",subtitle:"Verses, Hadith, Prayers & Questions",search:"Search...",all:"All Categories",loading:"Loading...",no:"No results",found:"results",prev:"Previous",next:"Next",copied:"Copied ✅",share:"Share",copy:"Copy",delete:"Delete",edit:"Edit",add:"Add New Content",save:"Save",cancel:"Cancel"}
+};
+
+// ===== 3. جلب البيانات =====
+async function loadData() {
+  const {data, error} = await sb.from('posts').select('*').order('created_at', {ascending:false});
+  if(error) throw error;
+  allPosts = data || [];
+  filteredPosts = [...allPosts];
+}
+
+// ===== 4. المعالجة =====
+function filterPosts() {
+  const search = document.getElementById('searchBox').value.toLowerCase().trim();
+  const cat = document.getElementById('catFilter').value;
+  const favOnly = document.getElementById('filterFav').value === 'fav';
+
+  filteredPosts = allPosts.filter(p => {
+    const matchCat = cat === 'all' || p.category === cat;
+    const matchSearch =!search || (p.title + p.content + p.category).toLowerCase().includes(search);
+    const matchFav =!favOnly || favorites.includes(p.id);
+    return matchCat && matchSearch && matchFav;
+  });
+}
+
+function paginatePosts() {
+  const perPage = parseInt(document.getElementById('perPage').value);
+  const start = (currentPage - 1) * perPage;
+  return filteredPosts.slice(start, start + perPage);
+}
+
+// ===== 5. العرض =====
+function displayPosts(postsToShow) {
+  const container = document.getElementById('posts');
+  if(postsToShow.length === 0) {
+    container.innerHTML = `<div class="loading">${t[currentLang].no}</div>`;
+    return;
+  }
+
+  container.innerHTML = postsToShow.map(p => `
+    <div class="post">
+      <button class="fav-btn ${favorites.includes(p.id)?'active':''}" onclick="toggleFav(${p.id})">
+        ${favorites.includes(p.id)?'❤️':'🤍'}
+      </button>
+      <h3>${p.title} <span class="category">${p.category}</span></h3>
+      <p>${p.content}</p>
+      <div class="btns">
+        <button class="btn copy-btn" onclick="copyPostFormatted(${p.id})">📋 ${t[currentLang].copy}</button>
+        <button class="btn share-btn" onclick="sharePost('${p.title.replace(/'/g, "\\'")}', ${p.id})">📤 ${t[currentLang].share}</button>
+        <button class="btn edit-btn" onclick="editPost(${p.id})">✏️ ${t[currentLang].edit}</button>
+        <button class="btn delete-btn" onclick="deletePost(${p.id})">🗑️ ${t[currentLang].delete}</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPagination() {
+  const perPage = parseInt(document.getElementById('perPage').value);
+  const totalPages = Math.ceil(filteredPosts.length / perPage);
+  const container = document.getElementById('pages');
+  if(totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  let html = `<button onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>${t[currentLang].prev}</button>`;
+  for(let i = 1; i <= totalPages; i++) {
+    html += `<button class="${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  html += `<button onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>${t[currentLang].next}</button>`;
+  container.innerHTML = html;
+}
+
+function updateStats() {
+  document.getElementById('stats').textContent = `${filteredPosts.length} ${t[currentLang].found}`;
+}
+
+// ===== 6. السلطة العليا =====
+async function renderAll() {
+  try {
+    document.getElementById('posts').innerHTML = `<div class="loading">${t[currentLang].loading}</div>`;
+    if(allPosts.length === 0) await loadData();
+    filterPosts();
+    displayPosts(paginatePosts());
+    renderPagination();
+    updateStats();
+  } catch(e) {
+    document.getElementById('posts').innerHTML = `<div class="loading" style="color:red">خطأ: ${e.message}</div>`;
+  }
+}
+
+// ===== 7. التعديل - الوزير الجديد ✏️ =====
+window.editPost = function(id) {
+  const post = allPosts.find(p => p.id === id);
+  document.getElementById('editId').value = id;
+  document.getElementById('newTitle').value = post.title;
+  document.getElementById('newCategory').value = post.category;
+  document.getElementById('newContent').value = post.content;
+  document.getElementById('modalTitle').textContent = t[currentLang].edit;
+  openModal();
+}
+
+async function savePost() {
+  const id = document.getElementById('editId').value;
+  const title = document.getElementById('newTitle').value.trim();
+  const content = document.getElementById('newContent').value.trim();
+  const category = document.getElementById('newCategory').value;
+
+  if(!title ||!content) {
+    alert('اكتب العنوان والنص');
+    return;
+  }
+
+  if(id) {
+    // تعديل
+    await sb.from('posts').update({title, content, category}).eq('id', id);
+  } else {
+    // إضافة
+    await sb.from('posts').insert([{title, content, category}]);
+  }
+
+  closeModal();
+  allPosts = [];
+  renderAll();
+}
+
+// ===== 8. النسخ المنسق - الجديد 📋 =====
+window.copyPostFormatted = function(id) {
+  const post = allPosts.find(p => p.id === id);
+  const formatted = `${post.category === 'آية' ? '📖' : post.category === 'حديث' ? '🕋' : '🤲'} ${post.title}\n${post.content}\n[${post.category}]`;
+  navigator.clipboard.writeText(formatted);
+  alert(t[currentLang].copied);
+}
+
+// ===== 9. الباقي =====
+window.toggleFav = function(id) {
+  favorites = favorites.includes(id) ? favorites.filter(f => f!== id) : [...favorites, id];
+  localStorage.setItem('favorites', JSON.stringify(favorites));
+  renderAll();
+}
+
+window.openModal = function() {
+  document.getElementById('addModal').classList.add('active');
+}
+window.closeModal = function() {
+  document.getElementById('addModal').classList.remove('active');
+  document.getElementById('editId').value = '';
+  document.getElementById('newTitle').value = '';
+  document.getElementById('newContent').value = '';
+  document.getElementById('modalTitle').textContent = t[currentLang].add;
+}
+
+async function deletePost(id) {
+  if(!confirm('متأكد من الحذف؟')) return;
+  await sb.from('posts').delete().eq('id', id);
+  allPosts = [];
+  renderAll();
+}
+
+window.goToPage = function(page) {
+  const totalPages = Math.ceil(filteredPosts.length / parseInt(document.getElementById('perPage').value));
+  if(page >= 1 && page <= totalPages) {
+    currentPage = page;
+    renderAll();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+}
+
+window.sharePost = function(title, id) {
+  const post = allPosts.find(p => p.id === id);
+  copyPostFormatted(id);
+  if(navigator.share) navigator.share({title: title, text: post.content});
+}
+
+window.changeLanguage = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  document.getElementById('htmlTag').dir = lang === 'ar'? 'rtl' : 'ltr';
+  document.getElementById('htmlTag').lang = lang;
+  document.querySelectorAll('[data-ar]').forEach(el => {
+    el.textContent = el.getAttribute(`data-${lang}`);
+  });
+  document.getElementById('searchBox').placeholder = t.search;
+  renderAll();
+}
+
+window.toggleDark = function() {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('dark', document.body.classList.contains('dark'));
+}
+
+// ===== 10. البداية =====
+document.addEventListener('DOMContentLoaded', () => {
+  if(localStorage.getItem('dark') === 'true') document.body.classList.add('dark');
+  document.getElementById('langSelect').value = currentLang;
+  changeLanguage(currentLang);
+  document.getElementById('searchBox').onkeyup = () => { currentPage = 1; renderAll(); };
+  document.getElementById('catFilter').onchange = () => { currentPage = 1; renderAll(); };
+  document.getElementById('perPage').onchange = () => { currentPage = 1; renderAll(); };
+});
+</script>
+</body>
+</html>
