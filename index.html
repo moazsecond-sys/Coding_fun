@@ -1,308 +1,132 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlTag">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="pageTitle">صفحة معاذ المحتوى الديني</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* كل الـ CSS بتاعك زي ما هو بالظبط - مغيرتش حرف */
-    body { font-family: 'Tajawal', sans-serif; background: #f8f9fa; color: #222; padding: 20px; transition: 0.3s ease; }
-    body[dir="ltr"] { font-family: 'Poppins', sans-serif; }
-    h1 { text-align: center; color: #2d5a3d; margin: 30px 0; font-size: 32px; }
-  .container { max-width: 700px; margin: auto; }
-  .post { background: white; padding: 20px; border-radius: 15px; margin: 15px 0; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; animation: fadeInUp 0.5s ease; transition: transform 0.2s; }
-  .post:hover { transform: translateY(-3px); }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .category { color: #2d5a3d; font-weight: bold; font-size: 14px; }
-  .admin-link { text-align: center; margin-top: 40px; }
-  .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
-  .controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 25px 0; }
-  .controls button,.controls select,.controls input { padding: 10px 16px; border: 2px solid #4ade80; background: white; color: #2d5a3d; border-radius: 25px; cursor: pointer; font-family: inherit; font-size: 15px; transition: 0.2s; outline: none; }
-  .controls button.active,.controls button:hover { background: #4ade80; color: white; }
-  .btn { border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: 0.2s; }
-  .share-btn { background: #25D366; color: white; }
-  .copy-btn { background: #3b82f6; color: white; }
-  .reset-btn { background: #ef4444; color: white; }
-    #themeBtn { padding: 10px 18px; border: none; border-radius: 25px; background: #f0f0f0; color: #333; cursor: pointer; }
-    #searchBox { width: 85%; max-width: 420px; padding: 12px 18px; border-radius: 25px; border: 2px solid #4ade80; text-align: center; }
-  .pagination { display: flex; gap: 10px; justify-content: center; margin: 30px 0; flex-wrap: wrap; }
-  .pagination button { padding: 10px 16px; border: 2px solid #4ade80; background: white; color: #2d5a3d; border-radius: 12px; cursor: pointer; font-weight: bold; }
-  .pagination button.active { background: #4ade80; color: white; }
-  .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
-  .lang-switch { position: fixed; top: 20px; left: 20px; z-index: 999; padding: 8px 12px; border: 2px solid #4ade80; background: white; color: #2d5a3d; border-radius: 20px; cursor: pointer; font-weight: bold; }
-    body.dark { background: #0f0f0f; color: #e0e0e0; }
-    body.dark.post { background: #1e1e1e; border-color: #333; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">المحتوى الديني</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Tajawal', sans-serif; background: #f8f9fa; color: #222; padding: 20px; }
+body[dir="ltr"] { font-family: 'Poppins', sans-serif; }
+h1 { text-align: center; color: #2d5a3d; margin: 30px 0; }
+.container { max-width: 700px; margin: auto; }
+.post { background: white; padding: 20px; border-radius: 15px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.category { color: #2d5a3d; font-weight: bold; font-size: 14px; }
+.controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
+.controls select,.controls input,.controls button { padding: 10px 15px; border: 2px solid #4ade80; border-radius: 25px; font-family: inherit; }
+.lang-switch { position: fixed; top: 20px; left: 20px; padding: 8px 12px; border: 2px solid #4ade80; background: white; border-radius: 20px; }
+.pagination { display: flex; gap: 8px; justify-content: center; margin: 30px 0; flex-wrap: wrap; }
+.pagination button { padding: 8px 14px; border: 2px solid #4ade80; background: white; border-radius: 10px; cursor: pointer; }
+.pagination button.active { background: #4ade80; color: white; }
+.btn { padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; margin: 5px; }
+.share-btn { background: #25D366; color: white; }
+.copy-btn { background: #3b82f6; color: white; }
+</style>
 </head>
 <body>
-  <!-- كل الـ HTML بتاعك زي ما هو -->
-  <select class="lang-switch" onchange="changeLang(this.value)" id="langSelect">
-    <option value="ar">🌍 العربية</option>
-    <option value="en">🇬🇧 English</option>
-    <option value="es">🇪🇸 Español</option>
-    <option value="pt">🇧🇷 Português</option>
-    <option value="de">🇩🇪 Deutsch</option>
-  </select>
+<select class="lang-switch" onchange="changeLang(this.value)" id="langSelect">
+<option value="ar">🌍 العربية</option>
+<option value="en">🇬🇧 English</option>
+<option value="es">🇪🇸 Español</option>
+<option value="pt">🇧🇷 Português</option>
+<option value="de">🇩🇪 Deutsch</option>
+</select>
 
-  <div class="controls">
-    <button class="btn" style="background:#f59e0b; color:white" onclick="exportCSV()">📊 <span data-ar="تصدير CSV" data-en="Export CSV">تصدير CSV</span></button>
-    <button onclick="setFilter('all', this)" class="active"><span data-ar="الكل" data-en="All">الكل</span></button>
-    <button onclick="setFilter('آية', this)"><span data-ar="آيات" data-en="Verses">آيات</span></button>
-    <button onclick="setFilter('حديث', this)"><span data-ar="أحاديث" data-en="Hadith">أحاديث</span></button>
-    <button onclick="setFilter('دعاء', this)"><span data-ar="أدعية" data-en="Duas">أدعية</span></button>
-    <button onclick="setFilter('سؤال ديني', this)"><span data-ar="أسئلة" data-en="Questions">أسئلة</span></button>
-    <select id="sortSelect" onchange="applyAll()">
-      <option value="newest" data-ar="الأحدث أولاً" data-en="Newest First">الأحدث أولاً</option>
-      <option value="oldest" data-ar="الأقدم أولاً" data-en="Oldest First">الأقدم أولاً</option>
-      <option value="title" data-ar="ترتيب أبجدي" data-en="Alphabetical">ترتيب أبجدي</option>
-      <option value="views" data-ar="الأكثر قراءة" data-en="Most Viewed">الأكثر قراءة</option>
-    </select>
-    <select id="perPageSelect" onchange="changePerPage()">
-      <option value="10" data-ar="10 في الصفحة" data-en="10 per page">10 في الصفحة</option>
-      <option value="20" selected data-ar="20 في الصفحة" data-en="20 per page">20 في الصفحة</option>
-      <option value="50" data-ar="50 في الصفحة" data-en="50 per page">50 في الصفحة</option>
-    </select>
-    <button class="reset-btn" onclick="resetAll()">🔄 <span data-ar="إعادة ضبط" data-en="Reset">إعادة ضبط</span></button>
-  </div>
+<div class="controls">
+<input type="text" id="searchBox" placeholder="ابحث..." onkeyup="render()">
+<select id="catFilter" onchange="render()">
+<option value="all">كل التصنيفات</option>
+<option value="آية">آيات</option>
+<option value="حديث">أحاديث</option>
+<option value="دعاء">أدعية</option>
+<option value="سؤال ديني">أسئلة</option>
+</select>
+<select id="perPage" onchange="render()">
+<option value="10">10 في الصفحة</option>
+<option value="20" selected>20 في الصفحة</option>
+<option value="50">50 في الصفحة</option>
+</select>
+</div>
 
-  <div class="controls">
-    <input type="text" id="surahFilter" data-ar="🔍 فلتر حسب السورة/الكلمة..." onkeyup="applyAll()">
-    <select id="categoryFilter" onchange="applyAll()">
-      <option value="all" data-ar="كل التصنيفات" data-en="All Categories">كل التصنيفات</option>
-      <option value="آية" data-ar="آيات فقط">آيات فقط</option>
-      <option value="حديث" data-ar="أحاديث فقط">أحاديث فقط</option>
-      <option value="دعاء" data-ar="أدعية فقط">أدعية فقط</option>
-      <option value="سؤال ديني" data-ar="أسئلة فقط">أسئلة فقط</option>
-    </select>
-    <button class="reset-btn" onclick="clearAllFilters()">🧹 <span data-ar="مسح الفلاتر">مسح الفلاتر</span></button>
-  </div>
-
-  <div style="text-align:center; margin: 15px 0;">
-    <button id="themeBtn" onclick="toggleTheme()">🌙 <span data-ar="وضع ليلي" data-en="Dark Mode">وضع ليلي</span></button>
-  </div>
-
-  <div style="text-align:center; margin: 20px 0;">
-    <input type="text" id="searchBox" data-ar="ابحث عن آية، حديث، دعاء... مثال: البقرة 255" onkeyup="applyAll()">
-  </div>
-
-  <h1>📖 <span data-ar="المحتوى الديني" data-en="Islamic Content">المحتوى الديني</span></h1>
-  <div class="page-info" id="statsInfo"></div>
-  <div class="container" id="postsContainer">جاري التحميل...</div>
-  <div class="page-info" id="pageInfo"></div>
-  <div class="pagination" id="pagination"></div>
-
-  <div class="admin-link">
-    <a href="admin.html"><span data-ar="لوحة التحكم" data-en="Admin Panel">لوحة التحكم</span></a>
-  </div>
+<h1>📖 <span data-ar="المحتوى الديني" data-en="Islamic Content">المحتوى الديني</span></h1>
+<div class="container" id="posts">جاري التحميل...</div>
+<div class="pagination" id="pages"></div>
 
 <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
-  // ✅ صلحت الـ URL هنا: شلت glgl الزيادة
-  const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-  // ✅ حط المفتاح الـ anon public الكامل هنا
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 
-  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+let allPosts = [];
+let currentPage = 1;
+let currentLang = localStorage.getItem('lang') || 'ar';
 
-  let allPosts = [];
-  let currentFilter = 'all';
-  let currentPage = 1;
-  let postsPerPage = 20;
-  let currentLang = localStorage.getItem('lang') || 'ar';
+const t = {
+ar: {title:"المحتوى الديني",loading:"جاري التحميل...",no:"لا يوجد نتائج",page:"صفحة",of:"من",prev:"السابق",next:"التالي",copied:"تم النسخ",share:"مشاركة"},
+en: {title:"Islamic Content",loading:"Loading...",no:"No results",page:"Page",of:"of",prev:"Previous",next:"Next",copied:"Copied",share:"Share"},
+es: {title:"Contenido Islámico",loading:"Cargando...",no:"Sin resultados",page:"Página",of:"de",prev:"Anterior",next:"Siguiente",copied:"Copiado",share:"Compartir"},
+pt: {title:"Conteúdo Islâmico",loading:"Carregando...",no:"Sem resultados",page:"Página",of:"de",prev:"Anterior",next:"Próximo",copied:"Copiado",share:"Compartilhar"},
+de: {title:"Islamische Inhalte",loading:"Lädt...",no:"Keine Ergebnisse",page:"Seite",of:"von",prev:"Zurück",next:"Weiter",copied:"Kopiert",share:"Teilen"}
+};
 
-  const translations = {
-    ar: { title: "متجر سيف - المحتوى الديني", loading: "جاري التحميل...", noResults: "لم نجد نتائج 🔍 جرب كلمة بحث تانية", found: "لقينا", of: "من", post: "منشور", show: "نعرض", perPage: "في الصفحة", page: "صفحة", ofPage: "من", prev: "⏮️ السابق", next: "التالي ⏭️", views: "قراءة", copied: "تم نسخ النص 📋", shared: "تم نسخ المنشور 🌸", exported: "تم تصدير", postAsCSV: "منشور كـ CSV 📊" },
-    en: { title: "Seif Store - Islamic Content", loading: "Loading...", noResults: "No results found 🔍 Try another keyword", found: "Found", of: "of", post: "posts", show: "Showing", perPage: "per page", page: "Page", ofPage: "of", prev: "⏮️ Previous", next: "Next ⏭️", views: "views", copied: "Text copied 📋", shared: "Post copied 🌸", exported: "Exported", postAsCSV: "posts as CSV 📊" },
-    es: { title: "Tienda Seif - Contenido Islámico", loading: "Cargando...", noResults: "No se encontraron resultados 🔍 Prueba otra palabra clave", found: "Encontrados", of: "de", post: "publicaciones", show: "Mostrando", perPage: "por página", page: "Página", ofPage: "de", prev: "⏮️ Anterior", next: "Siguiente ⏭️", views: "vistas", copied: "Texto copiado 📋", shared: "Publicación copiada 🌸", exported: "Exportadas", postAsCSV: "publicaciones como CSV 📊" },
-    pt: { title: "Loja Seif - Conteúdo Islâmico", loading: "Carregando...", noResults: "Nenhum resultado encontrado 🔍 Tente outra palavra-chave", found: "Encontrados", of: "de", post: "publicações", show: "Mostrando", perPage: "por página", page: "Página", ofPage: "de", prev: "⏮️ Anterior", next: "Próximo ⏭️", views: "visualizações", copied: "Texto copiado 📋", shared: "Publicação copiada 🌸", exported: "Exportadas", postAsCSV: "publicações como CSV 📊" },
-    de: { title: "Seif Shop - Islamische Inhalte", loading: "Lädt...", noResults: "Keine Ergebnisse gefunden 🔍 Versuchen Sie ein anderes Stichwort", found: "Gefunden", of: "von", post: "Beiträge", show: "Zeige", perPage: "pro Seite", page: "Seite", ofPage: "von", prev: "⏮️ Zurück", next: "Weiter ⏭️", views: "Aufrufe", copied: "Text kopiert 📋", shared: "Beitrag kopiert 🌸", exported: "Exportiert", postAsCSV: "Beiträge als CSV 📊" }
-  };
+window.changeLang = function(lang) {
+currentLang = lang;
+localStorage.setItem('lang', lang);
+document.getElementById('htmlTag').dir = lang === 'ar'? 'rtl' : 'ltr';
+document.body.style.fontFamily = lang === 'ar'? "'Tajawal'" : "'Poppins'";
+document.getElementById('pageTitle').textContent = t[lang].title;
+document.querySelectorAll('[data-ar]').forEach(el => el.textContent = el.getAttribute(`data-${lang}`));
+render();
+}
 
-  function changeLang(lang) {
-    currentLang = lang;
-    localStorage.setItem('lang', currentLang);
-    applyLanguage();
-    applyAll();
-  }
+async function load() {
+const {data, error} = await sb.from('posts').select('*').order('created_at', {ascending:false});
+if(error) { document.getElementById('posts').innerHTML = 'خطأ: ' + error.message; return; }
+allPosts = data || [];
+changeLang(currentLang);
+render();
+}
 
-  function applyLanguage() {
-    const html = document.getElementById('htmlTag');
-    const t = translations[currentLang];
-    if(currentLang === 'ar') {
-      html.lang = 'ar';
-      html.dir = 'rtl';
-      document.body.style.fontFamily = "'Tajawal', sans-serif";
-    } else {
-      html.lang = currentLang;
-      html.dir = 'ltr';
-      document.body.style.fontFamily = "'Poppins', sans-serif";
-    }
-    document.getElementById('langSelect').value = currentLang;
-    document.querySelectorAll('[data-ar]').forEach(el => {
-      const text = el.getAttribute(`data-${currentLang}`);
-      if(el.tagName === 'INPUT') el.placeholder = text;
-      else el.textContent = text;
-    });
-    document.getElementById('pageTitle').textContent = t.title;
-  }
+window.render = function() {
+const search = document.getElementById('searchBox').value.toLowerCase();
+const cat = document.getElementById('catFilter').value;
+const perPage = parseInt(document.getElementById('perPage').value);
 
-  async function loadPosts() {
-    try {
-      const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-      if(error) {
-        document.getElementById('postsContainer').innerHTML = '❌ خطأ Supabase:<br>' + error.message + '<br>الكود: ' + error.code;
-        return;
-      }
-      if(!data || data.length === 0) {
-        document.getElementById('postsContainer').innerHTML = 'لا يوجد محتوى بعد';
-        return;
-      }
-      allPosts = data;
-      applyLanguage();
-      applyAll();
-    } catch(e) {
-      document.getElementById('postsContainer').innerHTML = '💥 خطأ: ' + e.message;
-    }
-  }
+let posts = allPosts.filter(p =>
+(cat === 'all' || p.category === cat) &&
+(p.title + p.content + p.category).toLowerCase().includes(search)
+);
 
-  function applyAll() {
-    let result = [...allPosts];
-    if(currentFilter!== 'all') result = result.filter(p => p.category === currentFilter);
-    const catFilter = document.getElementById('categoryFilter').value;
-    if(catFilter!== 'all') result = result.filter(p => p.category === catFilter);
-    const keyword = document.getElementById('searchBox').value.trim().toLowerCase();
-    const surahKeyword = document.getElementById('surahFilter').value.trim().toLowerCase();
-    if(keyword || surahKeyword) {
-      result = result.filter(p => {
-        const text = (p.title + ' + p.content + ' + p.category).toLowerCase();
-        return (!keyword || text.includes(keyword)) && (!surahKeyword || text.includes(surahKeyword));
-      });
-    }
-    const sortBy = document.getElementById('sortSelect').value;
-    if(sortBy === 'oldest') result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    else if(sortBy === 'title') result.sort((a, b) => a.title.localeCompare(b.title, currentLang));
-    else if(sortBy === 'views') result.sort((a, b) => (b.views || 0) - (a.views || 0));
-    else result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    displayPosts(result);
-    renderPagination(result.length);
-    updateStats(result.length, allPosts.length);
-  }
+const totalPages = Math.ceil(posts.length / perPage);
+currentPage = Math.min(currentPage, totalPages || 1);
 
-  function displayPosts(posts) {
-    const container = document.getElementById('postsContainer');
-    const t = translations[currentLang];
-    if(!posts || posts.length === 0) {
-      container.innerHTML = `<p style="text-align:center; color:#666; padding:40px">${t.noResults}</p>`;
-      return;
-    }
-    const start = (currentPage - 1) * postsPerPage;
-    const pagePosts = posts.slice(start, start + postsPerPage);
-    container.innerHTML = pagePosts.map(p => `
-      <div class="post" onclick="addView(${p.id})">
-        <h3 style="margin-bottom:12px">${p.title} <span class="category">${p.category}</span></h3>
-        <p style="line-height: 1.8; margin: 10px 0;" id="content-${p.id}">${p.content}</p>
-        <div class="post-footer">
-          <div class="post-meta">📅 ${new Date(p.created_at).toLocaleDateString(currentLang === 'ar'? 'ar-EG' : currentLang, {day:'numeric', month:'long', year:'numeric'})} - 👁️ ${p.views || 0} ${t.views}</div>
-          <div class="post-actions">
-            <button class="btn copy-btn" onclick="copyPost(${p.id}); event.stopPropagation()">📋 ${currentLang === 'ar'? 'نسخ' : 'Copy'}</button>
-            <button class="btn share-btn" onclick="sharePost(\`${p.title.replace(/`/g, '\\`')}\`, \`${p.content.replace(/`/g, '\\`')}\`); event.stopPropagation()">📤 ${currentLang === 'ar'? 'مشاركة' : 'Share'}</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
+const start = (currentPage - 1) * perPage;
+const pagePosts = posts.slice(start, start + perPage);
 
-  function renderPagination(totalPosts) {
-    const totalPages = Math.ceil(totalPosts / postsPerPage);
-    const paginationDiv = document.getElementById('pagination');
-    const pageInfo = document.getElementById('pageInfo');
-    const t = translations[currentLang];
-    if(totalPages <= 1) { paginationDiv.innerHTML = ''; pageInfo.innerHTML = ''; return; }
-    pageInfo.innerHTML = `${t.page} ${currentPage} ${t.ofPage} ${totalPages}`;
-    let buttons = '';
-    buttons += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1? 'disabled' : ''}>${t.prev}</button>`;
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, startPage + 4);
-    for(let i = startPage; i <= endPage; i++) {
-      buttons += `<button onclick="goToPage(${i})" class="${i === currentPage? 'active' : ''}">${i}</button>`;
-    }
-    buttons += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages? 'disabled' : ''}>${t.next}</button>`;
-    buttons += `<input type="number" class="jump-input" min="1" max="${totalPages}" placeholder="${currentLang === 'ar'? 'رقم' : 'No.'}" onkeypress="if(event.key==='Enter') jumpToPage(this.value, ${totalPages})">`;
-    paginationDiv.innerHTML = buttons;
-  }
+document.getElementById('posts').innerHTML = pagePosts.length?
+pagePosts.map(p => `
+<div class="post">
+<h3>${p.title} <span class="category">${p.category}</span></h3>
+<p style="line-height:1.8">${p.content}</p>
+<button class="btn copy-btn" onclick="navigator.clipboard.writeText(\`${p.content}\`); alert(t[currentLang].copied)">📋</button>
+<button class="btn share-btn" onclick="navigator.share?navigator.share({title:'${p.title}',text:\`${p.content}\`}):navigator.clipboard.writeText(\`${p.title}\n\n${p.content}\`)">📤 ${t[currentLang].share}</button>
+</div>
+`).join('') : `<p style="text-align:center">${t[currentLang].no}</p>`;
 
-  function updateStats(total, all) {
-    const t = translations[currentLang];
-    document.getElementById('statsInfo').innerHTML = `📊 ${t.found} ${total} ${t.of} ${all} ${t.post} | ${t.show} ${postsPerPage} ${t.perPage}`;
-  }
+let pagesHTML = '';
+if(totalPages > 1) {
+pagesHTML += `<button onclick="currentPage--; render()" ${currentPage===1?'disabled':''}>${t[currentLang].prev}</button>`;
+for(let i=1; i<=totalPages; i++) {
+pagesHTML += `<button class="${i===currentPage?'active':''}" onclick="currentPage=${i}; render()">${i}</button>`;
+}
+pagesHTML += `<button onclick="currentPage++; render()" ${currentPage===totalPages?'disabled':''}>${t[currentLang].next}</button>`;
+}
+document.getElementById('pages').innerHTML = pagesHTML;
+}
 
-  window.goToPage = function(page) { currentPage = page; applyAll(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  window.jumpToPage = function(page, max) { page = parseInt(page); if(page >= 1 && page <= max) { currentPage = page; applyAll(); window.scrollTo({ top: 0, behavior: 'smooth' }); } }
-  window.changePerPage = function() { postsPerPage = parseInt(document.getElementById('perPageSelect').value); currentPage = 1; applyAll(); }
-  window.setFilter = function(category, btn) { currentFilter = category; currentPage = 1; document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyAll(); }
-  window.clearAllFilters = function() { document.getElementById('searchBox').value = ''; document.getElementById('surahFilter').value = ''; document.getElementById('categoryFilter').value = 'all'; currentFilter = 'all'; currentPage = 1; document.querySelectorAll('.controls button').forEach(b => b.classList.remove('active')); document.querySelector('.controls button').classList.add('active'); applyAll(); }
-  window.resetAll = function() { clearAllFilters(); document.getElementById('sortSelect').value = 'newest'; document.getElementById('perPageSelect').value = '20'; postsPerPage = 20; applyAll(); }
-  async function addView(id) {
-    const post = allPosts.find(p => p.id === id);
-    if(!post) return;
-    const newViews = (post.views || 0) + 1;
-    await sb.from('posts').update({ views: newViews }).eq('id', id);
-    post.views = newViews;
-    const postEl = document.querySelector(`#content-${id}`)?.closest('.post');
-    const metaEl = postEl?.querySelector('.post-meta');
-    if(metaEl) {
-      const t = translations[currentLang];
-      metaEl.innerHTML = metaEl.innerHTML.replace(/👁️ \d+.+/, `👁️ ${newViews} ${t.views}`);
-    }
-  }
-  window.copyPost = function(id) { navigator.clipboard.writeText(document.getElementById(`content-${id}`).innerText); alert(translations[currentLang].copied); }
-  window.sharePost = function(title, content) {
-    const t = translations[currentLang];
-    const text = `${title}\n\n${content}\n\n${currentLang === 'ar'? 'من موقع المحتوى الديني' : 'From Islamic Content Website'}`;
-    if(navigator.share) navigator.share({ title, text });
-    else { navigator.clipboard.writeText(text); alert(t.shared); }
-  }
-  window.toggleTheme = function() {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    const themeText = isDark? (currentLang === 'ar'? 'وضع نهاري' : 'Light Mode') : (currentLang === 'ar'? 'وضع ليلي' : 'Dark Mode');
-    document.getElementById('themeBtn').innerHTML = isDark? `☀️ ${themeText}` : `🌙 ${themeText}`;
-    localStorage.setItem('theme', isDark? 'dark' : 'light');
-  }
-  window.exportCSV = function() {
-    let result = currentFilter === 'all'? [...allPosts] : allPosts.filter(p => p.category === currentFilter);
-    const keyword = document.getElementById('searchBox').value.trim().toLowerCase();
-    const surahKeyword = document.getElementById('surahFilter').value.trim().toLowerCase();
-    if(keyword || surahKeyword) {
-      result = result.filter(p => {
-        const text = (p.title + ' + p.content + ' + p.category).toLowerCase();
-        return (!keyword || text.includes(keyword)) && (!surahKeyword || text.includes(surahKeyword));
-      });
-    }
-    const start = (currentPage - 1) * postsPerPage;
-    const pagePosts = result.slice(start, start + postsPerPage);
-    const t = translations[currentLang];
-    const headers = currentLang === 'ar'? 'العنوان,التصنيف,المحتوى,التاريخ,المشاهدات\n' : 'Title,Category,Content,Date,Views\n';
-    let csv = headers;
-    pagePosts.forEach(p => {
-      csv += `"${p.title.replace(/"/g, '""')}","${p.category}","${p.content.replace(/"/g, '""').replace(/\n/g, ')}",${new Date(p.created_at).toLocaleDateString(currentLang === 'ar'? 'ar-EG' : currentLang)},${p.views || 0}\n`;
-    });
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `posts-page${currentPage}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    alert(`${t.exported} ${pagePosts.length} ${t.postAsCSV}`);
-  }
-
-  window.onload = () => {
-    if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
-    loadPosts();
-  }
+load();
 </script>
 </body>
 </html>
