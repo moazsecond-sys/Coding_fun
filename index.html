@@ -283,29 +283,33 @@
   }
 
   async function loadPosts() {
-    document.getElementById('postsContainer').innerHTML = '1- المفتاح: ' + SUPABASE_KEY.substring(0,15) + '...<br>2- بحاول أجيب الداتا...';
-
-    try {
-      const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-
-      if(error) {
-        document.getElementById('postsContainer').innerHTML = '❌ خطأ Supabase:<br>' + error.message + '<br>الكود: ' + error.code;
-        return;
-      }
-
-      if(!data || data.length === 0) {
-        document.getElementById('postsContainer').innerHTML = '✅ الاتصال تمام بس مفيش بوستات في الجدول';
-        return;
-      }
-
-      allPosts = data;
-      applyLanguage();
-      applyAll();
-
-    } catch(e) {
-      document.getElementById('postsContainer').innerHTML = '💥 وقع هنا: ' + e.message;
+  document.getElementById('postsContainer').innerHTML = '1- URL: ' + SUPABASE_URL.substring(0,30) + '...<br>2- Key: ' + SUPABASE_KEY.substring(0,15) + '...<br>3- بحاول أجيب الداتا...';
+  
+  try {
+    const { data, error, status } = await sb.from('posts').select('*').limit(1);
+    
+    document.getElementById('postsContainer').innerHTML += '<br>4- Status: ' + status;
+    
+    if(error) {
+      document.getElementById('postsContainer').innerHTML += '<br>❌ Error: ' + error.message;
+      return;
     }
+    
+    document.getElementById('postsContainer').innerHTML += '<br>✅ Data length: ' + data.length;
+    
+    if(data.length === 0) {
+      document.getElementById('postsContainer').innerHTML += '<br>الجدول فاضي أو RLS مانع';
+    }
+    
+    const full = await sb.from('posts').select('*').order('created_at', { ascending: false });
+    allPosts = full.data;
+    applyLanguage();
+    applyAll();
+    
+  } catch(e) {
+    document.getElementById('postsContainer').innerHTML += '<br>💥 Catch: ' + e.message;
   }
+}
 
   function applyAll() {
     let result = [...allPosts];
