@@ -249,7 +249,20 @@
   </div>
 
   <script type="module">
-    import { createClient } from './supabase.js'
+  document.getElementById('postsContainer').innerHTML = '0- الكود وصل هنا ✅';
+
+  try {
+    const test = await import('./supabase.js');
+    document.getElementById('postsContainer').innerHTML += '<br>1- ملف supabase.js وصل ✅';
+    
+    const { createClient } = test;
+    document.getElementById('postsContainer').innerHTML += '<br>2- createClient موجود ✅';
+    document.getElementById('postsContainer').innerHTML += '<br>3- لو شايف الرسالة دي يبقى الملف سليم والمشكلة في المفتاح';
+    
+  } catch(e) {
+    document.getElementById('postsContainer').innerHTML = '💥 الملف supabase.js مش واصل: ' + e.message;
+  }
+</script>
 
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'; // 👈 حط المفتاح بتاعك هنا
