@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="pageTitle"> - صفحة معاذ المحتوى الديني</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.skypack.dev/@supabase/supabase-js@2.45.4"></script>
+  <!-- شلنا Skypack وحطينا الملف المحلي تحت في الـ module -->
   <style>
     body {
       font-family: 'Tajawal', sans-serif;
@@ -17,9 +17,9 @@
     body[dir="ltr"] { font-family: 'Poppins', sans-serif; }
 
     h1 { text-align: center; color: #2d5a3d; margin: 30px 0; font-size: 32px; }
-   .container { max-width: 700px; margin: auto; }
+  .container { max-width: 700px; margin: auto; }
 
-   .post {
+  .post {
       background: white;
       padding: 20px;
       border-radius: 15px;
@@ -30,44 +30,44 @@
       animation: fadeInUp 0.5s ease;
       transition: transform 0.2s;
     }
-   .post:hover { transform: translateY(-3px); }
+  .post:hover { transform: translateY(-3px); }
 
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-   .category { color: #2d5a3d; font-weight: bold; font-size: 14px; }
-   .admin-link { text-align: center; margin-top: 40px; }
-   .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
+  .category { color: #2d5a3d; font-weight: bold; font-size: 14px; }
+  .admin-link { text-align: center; margin-top: 40px; }
+  .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
 
-   .controls {
+  .controls {
       display: flex; gap: 12px; justify-content: center;
       flex-wrap: wrap; margin: 25px 0;
     }
-   .controls button,.controls select,.controls input {
+  .controls button,.controls select,.controls input {
       padding: 10px 16px; border: 2px solid #4ade80;
       background: white; color: #2d5a3d;
       border-radius: 25px; cursor: pointer; font-family: inherit;
       font-size: 15px; transition: 0.2s; outline: none;
     }
-   .controls button.active,
-   .controls button:hover {
+  .controls button.active,
+  .controls button:hover {
       background: #4ade80; color: white;
     }
-   .controls input:focus {
+  .controls input:focus {
       border-color: #2d5a3d; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
     }
 
-   .btn {
+  .btn {
       border: none; padding: 8px 14px; border-radius: 8px;
       cursor: pointer; font-size: 14px; font-family: inherit;
       transition: 0.2s;
     }
-   .btn:hover { opacity: 0.8; transform: translateY(-2px); }
-   .share-btn { background: #25D366; color: white; }
-   .copy-btn { background: #3b82f6; color: white; }
-   .reset-btn { background: #ef4444; color: white; }
+  .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+  .share-btn { background: #25D366; color: white; }
+  .copy-btn { background: #3b82f6; color: white; }
+  .reset-btn { background: #ef4444; color: white; }
 
     #themeBtn {
       padding: 10px 18px; border: none; border-radius: 25px;
@@ -82,7 +82,7 @@
     }
     #searchBox:focus { border-color: #2d5a3d; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1); }
 
-   .post-footer {
+  .post-footer {
       margin-top: 15px;
       padding-top: 12px;
       border-top: 1px solid #e0e0e0;
@@ -92,50 +92,48 @@
       flex-wrap: wrap;
       gap: 10px;
     }
-   .post-meta {
+  .post-meta {
       font-size: 13px;
       color: #666;
     }
-   .post-actions {
+  .post-actions {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-   .pagination {
+  .pagination {
       display: flex; gap: 10px; justify-content: center;
       margin: 30px 0; flex-wrap: wrap; align-items: center;
     }
-   .pagination button {
+  .pagination button {
       padding: 10px 16px; border: 2px solid #4ade80;
       background: white; color: #2d5a3d; border-radius: 12px;
       cursor: pointer; font-family: inherit; font-weight: bold;
       transition: 0.2s;
     }
-   .pagination button:disabled {
+  .pagination button:disabled {
       opacity: 0.4; cursor: not-allowed;
     }
-   .pagination button.active {
+  .pagination button.active {
       background: #4ade80; color: white;
     }
-   .page-info {
+  .page-info {
       text-align: center; color: #2d5a3d; margin: 10px 0; font-size: 15px; font-weight: bold;
     }
-   .jump-input {
+  .jump-input {
       width: 70px; padding: 8px; border-radius: 8px; border: 2px solid #4ade80;
       text-align: center; font-family: inherit;
     }
 
-    /* زرار اللغات الجديد */
-   .lang-switch {
+  .lang-switch {
       position: fixed; top: 20px; left: 20px; z-index: 999;
       padding: 8px 12px; border: 2px solid #4ade80;
       background: white; color: #2d5a3d; border-radius: 20px;
       cursor: pointer; font-weight: bold; font-family: inherit;
       transition: 0.2s;
     }
-   .lang-switch:hover { background: #4ade80; color: white; }
-    body.dark.lang-switch { background: #1e1e1e; color: #4ade80; border-color: #4ade80; }
+  .lang-switch:hover { background: #4ade80; color: white; }
 
     body.dark {
       background: #0f0f0f; color: #e0e0e0;
@@ -164,16 +162,15 @@
     body.dark #searchBox { background: #1a1a1a; color: white; border: 2px solid #4ade80; }
 
     @media (max-width: 480px) {
-     .post-actions.btn { min-width: 80px; font-size: 13px; padding: 6px 10px; }
-     .post-footer { flex-direction: column; align-items: flex-start; }
-     .controls { gap: 8px; }
-     .controls button,.controls select,.controls input { font-size: 13px; padding: 8px 12px; }
-     .lang-switch { top: 10px; left: 10px; font-size: 13px; padding: 6px 10px; }
+    .post-actions.btn { min-width: 80px; font-size: 13px; padding: 6px 10px; }
+    .post-footer { flex-direction: column; align-items: flex-start; }
+    .controls { gap: 8px; }
+    .controls button,.controls select,.controls input { font-size: 13px; padding: 8px 12px; }
+    .lang-switch { top: 10px; left: 10px; font-size: 13px; padding: 6px 10px; }
     }
   </style>
 </head>
 <body>
-  <!-- قائمة اختيار اللغة 5 لغات -->
   <select class="lang-switch" onchange="changeLang(this.value)" id="langSelect">
     <option value="ar">🌍 العربية</option>
     <option value="en">🇬🇧 English</option>
@@ -250,10 +247,14 @@
   <div class="admin-link">
     <a href="admin.html"><span data-ar="لوحة التحكم" data-en="Admin Panel" data-es="Panel de admin" data-pt="Painel admin" data-de="Admin-Panel">لوحة التحكم</span></a>
   </div>
-  <script>
+
+  <script type="module">
+    import { createClient } from './supabase.js'
+
     const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'; // حط مفتاحك هنا
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'; // 👈 حط المفتاح بتاعك هنا
+
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let allPosts = [];
     let currentFilter = 'all';
@@ -261,7 +262,6 @@
     let postsPerPage = 20;
     let currentLang = localStorage.getItem('lang') || 'ar';
 
-    // قاموس 5 لغات
     const translations = {
       ar: {
         title: "متجر سيف - المحتوى الديني",
@@ -333,7 +333,6 @@
 
       document.getElementById('langSelect').value = currentLang;
 
-      // تغيير كل النصوص
       document.querySelectorAll('[data-ar]').forEach(el => {
         const text = el.getAttribute(`data-${currentLang}`);
         if(el.tagName === 'INPUT') {
@@ -346,14 +345,18 @@
       document.getElementById('pageTitle').textContent = t.title;
       const isDark = document.body.classList.contains('dark');
       const themeText = isDark
-      ? (currentLang === 'ar'? 'وضع نهاري' : currentLang === 'en'? 'Light Mode' : currentLang === 'es'? 'Modo claro' : currentLang === 'pt'? 'Modo claro' : 'Heller Modus')
+       ? (currentLang === 'ar'? 'وضع نهاري' : currentLang === 'en'? 'Light Mode' : currentLang === 'es'? 'Modo claro' : currentLang === 'pt'? 'Modo claro' : 'Heller Modus')
         : (currentLang === 'ar'? 'وضع ليلي' : currentLang === 'en'? 'Dark Mode' : currentLang === 'es'? 'Modo oscuro' : currentLang === 'pt'? 'Modo escuro' : 'Dunkler Modus');
       document.getElementById('themeBtn').innerHTML = isDark? `☀️ ${themeText}` : `🌙 ${themeText}`;
     }
 
     async function loadPosts() {
       const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-      if(error) { console.log(error); return; }
+      if(error) {
+        console.error(error);
+        document.getElementById('postsContainer').innerHTML = 'خطأ في جلب الداتا ❌ تحقق من المفتاح والاتصال';
+        return;
+      }
       allPosts = data;
       applyLanguage();
       applyAll();
@@ -552,7 +555,7 @@
       const t = translations[currentLang];
       const isDark = document.body.classList.contains('dark');
       const themeText = isDark
-      ? (currentLang === 'ar'? 'وضع نهاري' : currentLang === 'en'? 'Light Mode' : currentLang === 'es'? 'Modo claro' : currentLang === 'pt'? 'Modo claro' : 'Heller Modus')
+       ? (currentLang === 'ar'? 'وضع نهاري' : currentLang === 'en'? 'Light Mode' : currentLang === 'es'? 'Modo claro' : currentLang === 'pt'? 'Modo claro' : 'Heller Modus')
         : (currentLang === 'ar'? 'وضع ليلي' : currentLang === 'en'? 'Dark Mode' : currentLang === 'es'? 'Modo oscuro' : currentLang === 'pt'? 'Modo escuro' : 'Dunkler Modus');
       document.getElementById('themeBtn').innerHTML = isDark? `☀️ ${themeText}` : `🌙 ${themeText}`;
       localStorage.setItem('theme', isDark? 'dark' : 'light');
@@ -597,7 +600,7 @@
       pagePosts.forEach(p => {
         const title = `"${p.title.replace(/"/g, '""')}"`;
         const category = `"${p.category}"`;
-        const content = `"${p.content.replace(/"/g, '""').replace(/\n/g, ')}"`;
+        const content = `"${p.content.replace(/"/g, '""').replace(/\n/g, ' ')}"`;
         const date = new Date(p.created_at).toLocaleDateString(currentLang === 'ar'? 'ar-EG' : currentLang);
         const views = p.views || 0;
         csv += `${title},${category},${content},${date},${views}\n`;
