@@ -248,20 +248,12 @@
     <a href="admin.html"><span data-ar="لوحة التحكم" data-en="Admin Panel" data-es="Panel de admin" data-pt="Painel admin" data-de="Admin-Panel">لوحة التحكم</span></a>
   </div>
 
-  <script type="module">
-  document.getElementById('postsContainer').innerHTML = '0- الكود وصل هنا ✅';
-
-  try {
-    const test = await import('./supabase.js');
-    document.getElementById('postsContainer').innerHTML += '<br>1- ملف supabase.js وصل ✅';
-    
-    const { createClient } = test;
-    document.getElementById('postsContainer').innerHTML += '<br>2- createClient موجود ✅';
-    document.getElementById('postsContainer').innerHTML += '<br>3- لو شايف الرسالة دي يبقى الملف سليم والمشكلة في المفتاح';
-    
-  } catch(e) {
-    document.getElementById('postsContainer').innerHTML = '💥 الملف supabase.js مش واصل: ' + e.message;
+  <script type="importmap">
+{
+  "imports": {
+    "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm"
   }
+}
 </script>
 <script>
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
