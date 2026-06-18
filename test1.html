@@ -2,29 +2,30 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>اختبار Supabase</title>
-  <script src="https://esm.sh/@supabase/supabase-js@2.45.4?bundle"></script>
-  <style>
-    body { font-family: Arial; padding: 20px; background: #f0fdf4; }
-    pre { background: #1e293b; color: #22c55e; padding: 15px; border-radius: 8px; overflow-x: auto; }
-    h1 { color: #15803d; }
-  </style>
+  <title>اختبار Supabase v2</title>
+  <script src="https://esm.sh/@supabase/supabase-js@2.45.4?bundle" defer></script>
 </head>
-<body>
-  <h1>🔍 اختبار الاتصال بـ Supabase</h1>
-  <div id="result">جاري الاختبار...</div>
+<body style="padding:20px;font-family:Arial;background:#f0fdf4">
+  <h2 style="color:#15803d">اختبار Supabase بـ 📡</h2>
+  <div id="result">جاري التحميل...</div>
 
-  <script>
-    const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+  <script defer>
+    window.addEventListener('load', () => {
+      document.getElementById('result').innerHTML += '<br>1. الصفحة حملت ✅';
+      
+      if(typeof supabase === 'undefined') {
+        document.getElementById('result').innerHTML += '<br>❌ المكتبة محملتش';
+        return;
+      }
+      document.getElementById('result').innerHTML += '<br>2. المكتبة موجودة ✅';
 
-    sb.from('posts').select('*').limit(3).then(({data, error, count}) => {
-      const result = document.getElementById('result');
-      result.innerHTML = `
-        <h2>النتيجة:</h2>
-        <pre>${JSON.stringify({data, error, count}, null, 2)}</pre>
-        <h3>التشخيص:</h3>
-        <p>${error ? '❌ في خطأ: ' + error.message : '✅ الاتصال ناجح! عدد الصفوف: ' + (data?.length || 0)}</p>
-      `;
+      const sb = supabase.createClient('https://mirrxytqttjglglxrarq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo');
+
+      sb.from('posts').select('*').limit(1).then(({data, error}) => {
+        document.getElementById('result').innerHTML += `<br><br><pre>${JSON.stringify({data, error}, null, 2)}</pre>`;
+      }).catch(e => {
+        document.getElementById('result').innerHTML += `<br>❌ خطأ في الاتصال: ${e.message}`;
+      });
     });
   </script>
 </body>
