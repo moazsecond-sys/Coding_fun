@@ -288,9 +288,9 @@ input[type="file"] { display: none; }
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
-// ⚠️ حط المفتاح الـ anon public بتاعك هنا كامل
+// ⚠️ حط المفتاح الـ anon public بتاعك هنا كامل من Supabase
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'; //  anon public key من هنا
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allPosts = [];
@@ -389,6 +389,7 @@ async function renderAll() {
   }
 }
 
+// خليت كل الفانكشن دي global عشان الـ onclick يشوفها
 window.editPost = function(id) {
   const post = allPosts.find(p => p.id === id);
   if(!post) return;
@@ -400,7 +401,7 @@ window.editPost = function(id) {
   openModal();
 }
 
-async function savePost() {
+window.savePost = async function() {
   const id = document.getElementById('editId').value;
   const title = document.getElementById('newTitle').value.trim();
   const content = document.getElementById('newContent').value.trim();
@@ -415,12 +416,10 @@ async function savePost() {
     let error;
 
     if(id && id!== '') {
-      // تعديل
       const result = await sb.from('posts').update({title, content, category}).eq('id', id).select();
       error = result.error;
       if(!error) alert('تم التعديل ✅');
     } else {
-      // إضافة جديدة
       const result = await sb.from('posts').insert([{title, content, category}]).select();
       error = result.error;
       if(!error) alert('تمت الإضافة ✅');
@@ -429,7 +428,7 @@ async function savePost() {
     if(error) throw error;
 
     closeModal();
-    allPosts = []; // فضي الكاش
+    allPosts = [];
     await renderAll();
 
   } catch(e) {
@@ -438,13 +437,13 @@ async function savePost() {
   }
 }
 
-async function deletePost(id) {
+window.deletePost = async function(id) {
   if(!confirm('متأكد من الحذف؟')) return;
   try {
     const {error} = await sb.from('posts').delete().eq('id', id).select();
     if(error) throw error;
 
-    allPosts = []; // فضي الكاش
+    allPosts = [];
     await renderAll();
     alert('تم الحذف ✅');
   } catch(e) {
