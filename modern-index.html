@@ -403,33 +403,24 @@ async function savePost() {
   const content = document.getElementById('newContent').value.trim();
   const category = document.getElementById('newCategory').value;
 
-  console.log('ID اللي جاي:', id); // عشان نشوف الـ id واصل ولا لأ
-
   if(!title ||!content) {
     alert('اكتب العنوان والنص');
     return;
   }
 
-  try {
-    if(id && id !== '') {
-      console.log('هعدل البوست رقم:', id);
-      const {data, error} = await sb.from('posts').update({title, content, category}).eq('id', id).select();
-      if(error) throw error;
-      alert('تم التعديل ✅');
-    } else {
-      console.log('هضيف بوست جديد');
-      const {data, error} = await sb.from('posts').insert([{title, content, category}]).select();
-      if(error) throw error;
-      alert('تمت الإضافة ✅');
-    }
-
-    closeModal();
-    allPosts = [];
-    renderAll();
-  } catch(e) {
-    alert('خطأ: ' + e.message);
-    console.error(e);
+  if(id && id !== '') {
+    const {data, error} = await sb.from('posts').update({title, content, category}).eq('id', id).select();
+    if(error) alert('خطأ التعديل: ' + error.message);
+    else alert('تم التعديل ✅');
+  } else {
+    const {data, error} = await sb.from('posts').insert([{title, content, category}]).select();
+    if(error) alert('خطأ الإضافة: ' + error.message);
+    else alert('تمت الإضافة ✅');
   }
+
+  closeModal();
+  allPosts = [];
+  renderAll();
 }
 
 window.copyPostFormatted = function(id) {
@@ -491,10 +482,16 @@ window.closeModal = function() {
 
 async function deletePost(id) {
   if(!confirm('متأكد من الحذف؟')) return;
-  const {error} = await sb.from('posts').delete().eq('id', id);
-  if(error) alert('خطأ الحذف: ' + error.message);
-  allPosts = [];
-  renderAll();
+  const {data, error} = await sb.from('posts').delete().eq('id', id).select();
+  
+  if(error) {
+    alert('خطأ الحذف: ' + error.message);
+    console.error(error);
+  } else {
+    alert('تم الحذف ✅');
+    allPosts = [];
+    renderAll();
+  }
 }
 
 window.goToPage = function(page) {
