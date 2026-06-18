@@ -1,54 +1,68 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>عداد مبيتنسيش + الوقت</title>
+<title>سجل الدوسات</title>
 <style> 
-body { background: black; color: white; text-align: center; font-size: 30px; margin-top: 100px; }
-button { font-size: 25px; padding: 15px 30px; cursor: pointer; margin: 5px; }
-#lastTime { font-size: 18px; color: gray; margin-top: 20px; }
+body { background: black; color: white; text-align: center; font-size: 24px; margin-top: 50px; }
+button { font-size: 20px; padding: 12px 25px; cursor: pointer; margin: 5px; border-radius: 8px; border: none; }
+#logBox { margin-top: 30px; max-height: 300px; overflow-y: auto; border: 1px solid gray; padding: 10px; width: 80%; margin-left: auto; margin-right: auto; }
+.logItem { color: #00ff88; font-size: 16px; margin: 5px 0; }
 </style>
 </head>
 <body>
 
 <p>عدد الدوسات: <span id="counter">0</span></p>
-<p id="lastTime">آخر دوسة: مفيش لسه</p>
-<button onclick="view_number()">دوس هنا</button>
+<button onclick="view_number()" style="background: white;">دوس هنا</button>
 <button onclick="reset_count()" style="background: red; color: white;">صفر العداد</button>
 
+<div id="logBox">
+  <p style="color: gray;">سجل الأحداث:</p>
+  <div id="logList"></div>
+</div>
+
 <script>
-  // 1. نجيب العداد والوقت القديم من الذاكرة
-  let count = localStorage.getItem('myCounter');
-  let lastTime = localStorage.getItem('lastClickTime');
+  // 1. نجيب المصفوفة القديمة من الذاكرة
+  let log = JSON.parse(localStorage.getItem('clickLog')) || [];
   
-  if (count === null) count = 0; else count = parseInt(count);
-  document.getElementById('counter').textContent = count;
-  
-  if (lastTime !== null) document.getElementById('lastTime').textContent = "آخر دوسة: " + lastTime;
+  // نعرض العداد والسجل أول ما الصفحة تفتح
+  document.getElementById('counter').textContent = log.length;
+  display_log();
 
   // 2. فانكشن الدوس
   function view_number() {
-    count = count + 1;
-    document.getElementById('counter').textContent = count;
-    
-    // نجيب الوقت الحالي
+    // نجيب الوقت الحالي بالثانية
     let now = new Date();
-    let timeString = now.toLocaleTimeString('ar-EG'); // يطلع الوقت بالعربي
+    let timeString = now.toLocaleTimeString('ar-EG');
     
-    document.getElementById('lastTime').textContent = "آخر دوسة: " + timeString;
+    // نحط الوقت الجديد في المصفوفة
+    log.push(timeString);
     
-    // نحفظ الاتنين في الذاكرة
-    localStorage.setItem('myCounter', count);
-    localStorage.setItem('lastClickTime', timeString);
+    // نحدث العداد والسجل على الشاشة
+    document.getElementById('counter').textContent = log.length;
+    display_log();
+    
+    // نحفظ المصفوفة كلها في الذاكرة
+    localStorage.setItem('clickLog', JSON.stringify(log));
   }
 
-  // 3. فانكشن الصفر
+  // 3. فانكشن عرض السجل
+  function display_log() {
+    let logList = document.getElementById('logList');
+    logList.innerHTML = ''; // نفضي القديم
+    
+    // نلف على المصفوفة من الآخر للأول عشان الجديد يطلع فوق
+    for(let i = log.length - 1; i >= 0; i--) {
+      logList.innerHTML += `<div class="logItem">دوسة رقم ${i+1} : ${log[i]}</div>`;
+    }
+  }
+
+  // 4. فانكشن الصفر
   function reset_count() {
-    count = 0;
-    document.getElementById('counter').textContent = count;
-    document.getElementById('lastTime').textContent = "آخر دوسة: مفيش لسه";
-    localStorage.setItem('myCounter', count);
-    localStorage.removeItem('lastClickTime');
+    log = []; // نفضي المصفوفة
+    document.getElementById('counter').textContent = 0;
+    document.getElementById('logList').innerHTML = '';
+    localStorage.removeItem('clickLog'); // نمسح من الذاكرة
   }
 </script>
 
