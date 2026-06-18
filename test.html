@@ -2,46 +2,53 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>عداد مبيتنسيش</title>
+<title>عداد مبيتنسيش + الوقت</title>
 <style> 
 body { background: black; color: white; text-align: center; font-size: 30px; margin-top: 100px; }
-button { font-size: 25px; padding: 15px 30px; cursor: pointer; }
+button { font-size: 25px; padding: 15px 30px; cursor: pointer; margin: 5px; }
+#lastTime { font-size: 18px; color: gray; margin-top: 20px; }
 </style>
 </head>
 <body>
 
 <p>عدد الدوسات: <span id="counter">0</span></p>
+<p id="lastTime">آخر دوسة: مفيش لسه</p>
 <button onclick="view_number()">دوس هنا</button>
 <button onclick="reset_count()" style="background: red; color: white;">صفر العداد</button>
 
 <script>
-  // 1. اول ما الصفحة تفتح: هات الرقم القديم من الذاكرة
+  // 1. نجيب العداد والوقت القديم من الذاكرة
   let count = localStorage.getItem('myCounter');
+  let lastTime = localStorage.getItem('lastClickTime');
   
-  // لو مفيش رقم قديم، ابدأ من 0
-  if (count === null) {
-    count = 0;
-  } else {
-    count = parseInt(count); // حوله من نص لرقم
-  }
-  
-  // اكتب الرقم في الصفحة
+  if (count === null) count = 0; else count = parseInt(count);
   document.getElementById('counter').textContent = count;
+  
+  if (lastTime !== null) document.getElementById('lastTime').textContent = "آخر دوسة: " + lastTime;
 
-  // 2. الفانكشن بتاعت الدوس
+  // 2. فانكشن الدوس
   function view_number() {
     count = count + 1;
     document.getElementById('counter').textContent = count;
     
-    // احفظ الرقم الجديد في الذاكرة
+    // نجيب الوقت الحالي
+    let now = new Date();
+    let timeString = now.toLocaleTimeString('ar-EG'); // يطلع الوقت بالعربي
+    
+    document.getElementById('lastTime').textContent = "آخر دوسة: " + timeString;
+    
+    // نحفظ الاتنين في الذاكرة
     localStorage.setItem('myCounter', count);
+    localStorage.setItem('lastClickTime', timeString);
   }
 
-  // 3. فانكشن زيادة عشان تصفر العداد
+  // 3. فانكشن الصفر
   function reset_count() {
     count = 0;
     document.getElementById('counter').textContent = count;
+    document.getElementById('lastTime').textContent = "آخر دوسة: مفيش لسه";
     localStorage.setItem('myCounter', count);
+    localStorage.removeItem('lastClickTime');
   }
 </script>
 
