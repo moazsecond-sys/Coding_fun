@@ -6,25 +6,189 @@
 <title id="pageTitle">المحتوى الديني</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 <style>
-body { font-family: 'Tajawal', sans-serif; background: #f8f9fa; color: #222; padding: 20px; }
+* { box-sizing: border-box; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9f5eb 100%);
+  color: #222;
+  padding: 20px;
+  margin: 0;
+  min-height: 100vh;
+}
 body[dir="ltr"] { font-family: 'Poppins', sans-serif; }
-h1 { text-align: center; color: #2d5a3d; margin: 30px 0; }
-.container { max-width: 700px; margin: auto; }
-.post { background: white; padding: 20px; border-radius: 15px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-.category { color: #2d5a3d; font-weight: bold; font-size: 14px; }
-.controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 20px 0; }
-.controls select,.controls input,.controls button { padding: 10px 15px; border: 2px solid #4ade80; border-radius: 25px; font-family: inherit; }
-.lang-switch { position: fixed; top: 20px; left: 20px; padding: 8px 12px; border: 2px solid #4ade80; background: white; border-radius: 20px; }
-.pagination { display: flex; gap: 8px; justify-content: center; margin: 30px 0; flex-wrap: wrap; }
-.pagination button { padding: 8px 14px; border: 2px solid #4ade80; background: white; border-radius: 10px; cursor: pointer; }
-.pagination button.active { background: #4ade80; color: white; }
-.btn { padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; margin: 5px; }
-.share-btn { background: #25D366; color: white; }
-.copy-btn { background: #3b82f6; color: white; }
+
+h1 {
+  text-align: center;
+  color: #2d5a3d;
+  margin: 30px 0 20px;
+  font-size: 32px;
+}
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.lang-switch {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 15px;
+  border: 2px solid #4ade80;
+  background: white;
+  border-radius: 25px;
+  font-family: inherit;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px auto;
+  max-width: 800px;
+}
+.controls select,
+.controls input {
+  padding: 12px 18px;
+  border: 2px solid #4ade80;
+  border-radius: 25px;
+  font-family: inherit;
+  font-size: 15px;
+  background: white;
+  outline: none;
+  transition: 0.3s;
+}
+.controls input:focus,
+.controls select:focus {
+  border-color: #2d5a3d;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+}
+
+.stats {
+  text-align: center;
+  color: #2d5a3d;
+  font-weight: bold;
+  margin: 15px 0;
+  font-size: 16px;
+}
+
+.container {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.post {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  margin: 18px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-right: 4px solid #4ade80;
+  transition: 0.3s;
+}
+.post:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+.post h3 {
+  margin: 0 0 12px;
+  color: #2d5a3d;
+  font-size: 20px;
+}
+.post p {
+  line-height: 1.9;
+  font-size: 17px;
+  margin: 12px 0;
+  white-space: pre-wrap;
+}
+.category {
+  color: #16a34a;
+  font-weight: bold;
+  font-size: 14px;
+  background: #dcfce7;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.btns {
+  margin-top: 15px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  transition: 0.2s;
+}
+.btn:hover {
+  transform: scale(1.05);
+}
+.copy-btn {
+  background: #3b82f6;
+  color: white;
+}
+.share-btn {
+  background: #25D366;
+  color: white;
+}
+
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 35px 0;
+  flex-wrap: wrap;
+}
+.pagination button {
+  padding: 10px 16px;
+  border: 2px solid #4ade80;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.pagination button:hover:not(:disabled) {
+  background: #dcfce7;
+}
+.pagination button.active {
+  background: #4ade80;
+  color: white;
+  border-color: #4ade80;
+}
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  body { padding: 15px; }
+  h1 { font-size: 24px; }
+ .post { padding: 18px; }
+ .controls { flex-direction: column; }
+ .controls input,.controls select { width: 100%; }
+}
 </style>
 </head>
 <body>
-<select class="lang-switch" onchange="changeLang(this.value)" id="langSelect">
+
+<select class="lang-switch" onchange="changeLanguage(this.value)" id="langSelect">
 <option value="ar">🌍 العربية</option>
 <option value="en">🇬🇧 English</option>
 <option value="es">🇪🇸 Español</option>
@@ -32,101 +196,209 @@ h1 { text-align: center; color: #2d5a3d; margin: 30px 0; }
 <option value="de">🇩🇪 Deutsch</option>
 </select>
 
+<h1>📖 <span data-ar="المحتوى الديني" data-en="Islamic Content">المحتوى الديني</span></h1>
+<p class="subtitle" data-ar="آيات، أحاديث، أدعية، وأسئلة" data-en="Verses, Hadith, Prayers & Questions">آيات، أحاديث، أدعية، وأسئلة</p>
+
 <div class="controls">
-<input type="text" id="searchBox" placeholder="ابحث..." onkeyup="render()">
-<select id="catFilter" onchange="render()">
-<option value="all">كل التصنيفات</option>
-<option value="آية">آيات</option>
-<option value="حديث">أحاديث</option>
-<option value="دعاء">أدعية</option>
-<option value="سؤال ديني">أسئلة</option>
+<input type="text" id="searchBox" placeholder="ابحث عن آية أو حديث..." data-ar-placeholder="ابحث عن آية أو حديث..." data-en-placeholder="Search for verse or hadith...">
+<select id="catFilter">
+<option value="all" data-ar="كل التصنيفات" data-en="All Categories">كل التصنيفات</option>
+<option value="آية" data-ar="آيات" data-en="Verses">آيات</option>
+<option value="حديث" data-ar="أحاديث" data-en="Hadith">أحاديث</option>
+<option value="دعاء" data-ar="أدعية" data-en="Prayers">أدعية</option>
+<option value="سؤال ديني" data-ar="أسئلة دينية" data-en="Questions">أسئلة دينية</option>
 </select>
-<select id="perPage" onchange="render()">
+<select id="perPage">
 <option value="10">10 في الصفحة</option>
 <option value="20" selected>20 في الصفحة</option>
 <option value="50">50 في الصفحة</option>
+<option value="100">100 في الصفحة</option>
 </select>
 </div>
 
-<h1>📖 <span data-ar="المحتوى الديني" data-en="Islamic Content">المحتوى الديني</span></h1>
-<div class="container" id="posts">جاري التحميل...</div>
+<div class="stats" id="stats">جاري التحميل...</div>
+<div class="container" id="posts"><div class="loading">جاري التحميل...</div></div>
 <div class="pagination" id="pages"></div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
+// ===== الإعدادات =====
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ===== 1. الديوان العام - المتغيرات =====
 let allPosts = [];
+let filteredPosts = [];
 let currentPage = 1;
 let currentLang = localStorage.getItem('lang') || 'ar';
 
+// ===== 2. قاموس الترجمات =====
 const t = {
-ar: {title:"المحتوى الديني",loading:"جاري التحميل...",no:"لا يوجد نتائج",page:"صفحة",of:"من",prev:"السابق",next:"التالي",copied:"تم النسخ",share:"مشاركة"},
-en: {title:"Islamic Content",loading:"Loading...",no:"No results",page:"Page",of:"of",prev:"Previous",next:"Next",copied:"Copied",share:"Share"},
-es: {title:"Contenido Islámico",loading:"Cargando...",no:"Sin resultados",page:"Página",of:"de",prev:"Anterior",next:"Siguiente",copied:"Copiado",share:"Compartir"},
-pt: {title:"Conteúdo Islâmico",loading:"Carregando...",no:"Sem resultados",page:"Página",of:"de",prev:"Anterior",next:"Próximo",copied:"Copiado",share:"Compartilhar"},
-de: {title:"Islamische Inhalte",loading:"Lädt...",no:"Keine Ergebnisse",page:"Seite",of:"von",prev:"Zurück",next:"Weiter",copied:"Kopiert",share:"Teilen"}
+ar: {title:"المحتوى الديني",subtitle:"آيات، أحاديث، أدعية، وأسئلة",search:"ابحث عن آية أو حديث...",all:"كل التصنيفات",verses:"آيات",hadith:"أحاديث",prayers:"أدعية",questions:"أسئلة دينية",loading:"جاري التحميل...",no:"لا يوجد نتائج",found:"نتيجة",page:"صفحة",of:"من",prev:"السابق",next:"التالي",copied:"تم النسخ ✅",share:"مشاركة",copy:"نسخ"},
+en: {title:"Islamic Content",subtitle:"Verses, Hadith, Prayers & Questions",search:"Search for verse or hadith...",all:"All Categories",verses:"Verses",hadith:"Hadith",prayers:"Prayers",questions:"Questions",loading:"Loading...",no:"No results",found:"results",page:"Page",of:"of",prev:"Previous",next:"Next",copied:"Copied ✅",share:"Share",copy:"Copy"},
+es: {title:"Contenido Islámico",subtitle:"Versos, Hadices, Oraciones y Preguntas",search:"Buscar verso o hadiz...",all:"Todas las categorías",verses:"Versos",hadith:"Hadices",prayers:"Oraciones",questions:"Preguntas",loading:"Cargando...",no:"Sin resultados",found:"resultados",page:"Página",of:"de",prev:"Anterior",next:"Siguiente",copied:"Copiado ✅",share:"Compartir",copy:"Copiar"},
+pt: {title:"Conteúdo Islâmico",subtitle:"Versos, Hadiths, Orações e Perguntas",search:"Pesquisar verso ou hadith...",all:"Todas as categorias",verses:"Versos",hadith:"Hadiths",prayers:"Orações",questions:"Perguntas",loading:"Carregando...",no:"Sem resultados",found:"resultados",page:"Página",of:"de",prev:"Anterior",next:"Próximo",copied:"Copiado ✅",share:"Compartilhar",copy:"Copiar"},
+de: {title:"Islamische Inhalte",subtitle:"Verse, Hadithe, Gebete & Fragen",search:"Suche nach Vers oder Hadith...",all:"Alle Kategorien",verses:"Verse",hadith:"Hadithe",prayers:"Gebete",questions:"Fragen",loading:"Lädt...",no:"Keine Ergebnisse",found:"Ergebnisse",page:"Seite",of:"von",prev:"Zurück",next:"Weiter",copied:"Kopiert ✅",share:"Teilen",copy:"Kopieren"}
 };
 
-window.changeLang = function(lang) {
-currentLang = lang;
-localStorage.setItem('lang', lang);
-document.getElementById('htmlTag').dir = lang === 'ar'? 'rtl' : 'ltr';
-document.body.style.fontFamily = lang === 'ar'? "'Tajawal'" : "'Poppins'";
-document.getElementById('pageTitle').textContent = t[lang].title;
-document.querySelectorAll('[data-ar]').forEach(el => el.textContent = el.getAttribute(`data-${lang}`));
-render();
+// ===== 3. الطبقة الأولى: جلب البيانات =====
+async function loadData() {
+  try {
+    const {data, error} = await sb.from('posts').select('*').order('created_at', {ascending:false});
+    if(error) throw error;
+    allPosts = data || [];
+    filteredPosts = [...allPosts];
+  } catch(e) {
+    throw new Error('فشل الاتصال بـ Supabase: ' + e.message);
+  }
 }
 
-async function load() {
-const {data, error} = await sb.from('posts').select('*').order('created_at', {ascending:false});
-if(error) { document.getElementById('posts').innerHTML = 'خطأ: ' + error.message; return; }
-allPosts = data || [];
-changeLang(currentLang);
-render();
+// ===== 4. الطبقة الثانية: المعالجة =====
+function filterPosts() {
+  const search = document.getElementById('searchBox').value.toLowerCase().trim();
+  const cat = document.getElementById('catFilter').value;
+
+  filteredPosts = allPosts.filter(p => {
+    const matchCat = cat === 'all' || p.category === cat;
+    const matchSearch =!search || (p.title + ' + p.content + ' + p.category).toLowerCase().includes(search);
+    return matchCat && matchSearch;
+  });
 }
 
-window.render = function() {
-const search = document.getElementById('searchBox').value.toLowerCase();
-const cat = document.getElementById('catFilter').value;
-const perPage = parseInt(document.getElementById('perPage').value);
-
-let posts = allPosts.filter(p =>
-(cat === 'all' || p.category === cat) &&
-(p.title + p.content + p.category).toLowerCase().includes(search)
-);
-
-const totalPages = Math.ceil(posts.length / perPage);
-currentPage = Math.min(currentPage, totalPages || 1);
-
-const start = (currentPage - 1) * perPage;
-const pagePosts = posts.slice(start, start + perPage);
-
-document.getElementById('posts').innerHTML = pagePosts.length?
-pagePosts.map(p => `
-<div class="post">
-<h3>${p.title} <span class="category">${p.category}</span></h3>
-<p style="line-height:1.8">${p.content}</p>
-<button class="btn copy-btn" onclick="navigator.clipboard.writeText(\`${p.content}\`); alert(t[currentLang].copied)">📋</button>
-<button class="btn share-btn" onclick="navigator.share?navigator.share({title:'${p.title}',text:\`${p.content}\`}):navigator.clipboard.writeText(\`${p.title}\n\n${p.content}\`)">📤 ${t[currentLang].share}</button>
-</div>
-`).join('') : `<p style="text-align:center">${t[currentLang].no}</p>`;
-
-let pagesHTML = '';
-if(totalPages > 1) {
-pagesHTML += `<button onclick="currentPage--; render()" ${currentPage===1?'disabled':''}>${t[currentLang].prev}</button>`;
-for(let i=1; i<=totalPages; i++) {
-pagesHTML += `<button class="${i===currentPage?'active':''}" onclick="currentPage=${i}; render()">${i}</button>`;
-}
-pagesHTML += `<button onclick="currentPage++; render()" ${currentPage===totalPages?'disabled':''}>${t[currentLang].next}</button>`;
-}
-document.getElementById('pages').innerHTML = pagesHTML;
+function paginatePosts() {
+  const perPage = parseInt(document.getElementById('perPage').value);
+  const start = (currentPage - 1) * perPage;
+  const end = start + perPage;
+  return filteredPosts.slice(start, end);
 }
 
-load();
+// ===== 5. الطبقة الثالثة: العرض =====
+function displayPosts(postsToShow) {
+  const container = document.getElementById('posts');
+  if(postsToShow.length === 0) {
+    container.innerHTML = `<div class="loading">${t[currentLang].no}</div>`;
+    return;
+  }
+
+  container.innerHTML = postsToShow.map(p => `
+    <div class="post">
+      <h3>${p.title} <span class="category">${p.category}</span></h3>
+      <p>${p.content}</p>
+      <div class="btns">
+        <button class="btn copy-btn" onclick="copyPost(\`${p.content.replace(/`/g, '\\`')}\`)">📋 ${t[currentLang].copy}</button>
+        <button class="btn share-btn" onclick="sharePost('${p.title.replace(/'/g, "\\'")}', \`${p.content.replace(/`/g, '\\`')}\`)">📤 ${t[currentLang].share}</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPagination() {
+  const perPage = parseInt(document.getElementById('perPage').value);
+  const totalPages = Math.ceil(filteredPosts.length / perPage);
+  const container = document.getElementById('pages');
+
+  if(totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  let html = `<button onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>${t[currentLang].prev}</button>`;
+
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, currentPage + 2);
+
+  for(let i = startPage; i <= endPage; i++) {
+    html += `<button class="${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+
+  html += `<button onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>${t[currentLang].next}</button>`;
+  container.innerHTML = html;
+}
+
+function updateStats() {
+  const count = filteredPosts.length;
+  document.getElementById('stats').textContent = `${count} ${t[currentLang].found}`;
+}
+
+// ===== 6. السلطة العليا: المدير العام =====
+async function renderAll() {
+  try {
+    document.getElementById('posts').innerHTML = `<div class="loading">${t[currentLang].loading}</div>`;
+
+    // لو أول مرة ومفيش داتا، جيبها
+    if(allPosts.length === 0) {
+      await loadData();
+    }
+
+    // الهرم يشتغل بالترتيب
+    filterPosts();
+    const postsToShow = paginatePosts();
+    displayPosts(postsToShow);
+    renderPagination();
+    updateStats();
+
+  } catch(e) {
+    document.getElementById('posts').innerHTML = `<div class="loading" style="color:red">خطأ: ${e.message}</div>`;
+  }
+}
+
+// ===== 7. دوال مساعدة =====
+window.goToPage = function(page) {
+  const perPage = parseInt(document.getElementById('perPage').value);
+  const totalPages = Math.ceil(filteredPosts.length / perPage);
+  if(page >= 1 && page <= totalPages) {
+    currentPage = page;
+    renderAll();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+}
+
+window.copyPost = function(text) {
+  navigator.clipboard.writeText(text);
+  alert(t[currentLang].copied);
+}
+
+window.sharePost = function(title, content) {
+  if(navigator.share) {
+    navigator.share({title: title, text: content});
+  } else {
+    copyPost(title + '\n\n' + content);
+  }
+}
+
+window.changeLanguage = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+
+  // غير الاتجاه والخط
+  document.getElementById('htmlTag').dir = lang === 'ar'? 'rtl' : 'ltr';
+  document.getElementById('htmlTag').lang = lang;
+  document.body.style.fontFamily = lang === 'ar'? "'Tajawal'" : "'Poppins'";
+
+  // غير النصوص
+  document.getElementById('pageTitle').textContent = t[lang].title;
+  document.querySelectorAll('[data-ar]').forEach(el => {
+    el.textContent = el.getAttribute(`data-${lang}`);
+  });
+  document.getElementById('searchBox').placeholder = t[lang].search;
+
+  renderAll();
+}
+
+// ===== 8. نقطة البداية =====
+document.addEventListener('DOMContentLoaded', () => {
+  // ظبط اللغة المحفوظة
+  document.getElementById('langSelect').value = currentLang;
+  changeLanguage(currentLang);
+
+  // اربط الأحداث بالسلطة العليا
+  document.getElementById('searchBox').onkeyup = () => { currentPage = 1; renderAll(); };
+  document.getElementById('catFilter').onchange = () => { currentPage = 1; renderAll(); };
+  document.getElementById('perPage').onchange = () => { currentPage = 1; renderAll(); };
+});
 </script>
 </body>
 </html>
