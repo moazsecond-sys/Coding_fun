@@ -242,6 +242,50 @@
     de: { title: "Seif Shop - Islamische Inhalte", loading: "Lädt...", noResults: "Keine Ergebnisse gefunden 🔍 Versuchen Sie ein anderes Stichwort", found: "Gefunden", of: "von", post: "Beiträge", show: "Zeige", perPage: "pro Seite", page: "Seite", ofPage: "von", prev: "⏮️ Zurück", next: "Weiter ⏭️", views: "Aufrufe", copied: "Text kopiert 📋", shared: "Beitrag kopiert 🌸", exported: "Exportiert", postAsCSV: "Beiträge als CSV 📊" }
   };
 
+  async function loadPosts() {
+    document.getElementById('postsContainer').innerHTML = translations[currentLang].loading;
+
+    const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+
+    if(error) {
+      document.getElementById('postsContainer').innerHTML = '❌ خطأ: ' + error.message;
+      return;
+    }
+
+    if(!data || data.length === 0) {
+      document.getElementById('postsContainer').innerHTML = '✅ مفيش بوستات في الجدول';
+      return;
+    }
+
+    allPosts = data;
+    displayPosts(allPosts);
+  }
+
+  function displayPosts(posts) {
+    const container = document.getElementById('postsContainer');
+    const t = translations[currentLang];
+
+    if(posts.length === 0) {
+      container.innerHTML = `<p style="text-align:center">${t.noResults}</p>`;
+      return;
+    }
+
+    const start = (currentPage - 1) * postsPerPage;
+    const pagePosts = posts.slice(start, start + postsPerPage);
+
+    container.innerHTML = pagePosts.map(p => `
+      <div class="post">
+        <h3>${p.title} <span class="category">${p.category}</span></h3>
+        <p>${p.content}</p>
+        <div style="color:#666; font-size:13px; margin-top:10px">
+          📅 ${new Date(p.created_at).toLocaleDateString(currentLang === 'ar'? 'ar-EG' : currentLang)} - 👁️ ${p.views || 0} ${t.views}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.onload = loadPosts;
+
   function changeLang(lang) {
     currentLang = lang;
     localStorage.setItem('lang', currentLang);
