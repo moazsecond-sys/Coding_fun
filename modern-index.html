@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">المحتوى الديني</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg1: #f8f9fa; --bg2: #e9f5eb;
@@ -28,8 +28,6 @@ body {
   min-height: 100vh;
   transition: 0.3s;
 }
-body[dir="ltr"] { font-family: 'Poppins', sans-serif; }
-
 .top-bar {
   display: flex;
   justify-content: space-between;
@@ -47,7 +45,6 @@ body[dir="ltr"] { font-family: 'Poppins', sans-serif; }
   font-family: inherit;
   cursor: pointer;
 }
-
 h1 {
   text-align: center;
   color: var(--green-dark);
@@ -59,8 +56,14 @@ h1 {
   color: var(--text2);
   margin-bottom: 25px;
 }
-
-.add-btn {
+.btns-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px auto;
+}
+.add-btn,.backup-btn {
   background: var(--green);
   color: white;
   border: none;
@@ -69,12 +72,10 @@ h1 {
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  display: block;
-  margin: 20px auto;
   transition: 0.2s;
 }
-.add-btn:hover { transform: scale(1.05); }
-
+.add-btn:hover,.backup-btn:hover { transform: scale(1.05); }
+.backup-btn { background: #3b82f6; }
 .controls {
   display: flex;
   gap: 12px;
@@ -93,7 +94,6 @@ h1 {
   color: var(--text);
   outline: none;
 }
-
 .stats {
   text-align: center;
   color: var(--green-dark);
@@ -101,12 +101,10 @@ h1 {
   margin: 15px 0;
   font-size: 16px;
 }
-
 .container {
   max-width: 750px;
   margin: 0 auto;
 }
-
 .post {
   background: var(--card);
   padding: 25px;
@@ -148,7 +146,6 @@ h1 {
   cursor: pointer;
 }
 .fav-btn.active { color: #ef4444; }
-
 .btns {
   margin-top: 15px;
   display: flex;
@@ -167,7 +164,6 @@ h1 {
 .share-btn { background: #25D366; color: white; }
 .edit-btn { background: #f59e0b; color: white; }
 .delete-btn { background: #ef4444; color: white; }
-
 .pagination {
   display: flex;
   gap: 8px;
@@ -188,7 +184,6 @@ h1 {
   background: var(--green);
   color: white;
 }
-
 .modal {
   display: none;
   position: fixed;
@@ -218,13 +213,13 @@ h1 {
   color: var(--text);
 }
 .modal-content textarea { min-height: 120px; resize: vertical; }
-
 .loading {
   text-align: center;
   padding: 50px;
   font-size: 18px;
   color: var(--text2);
 }
+input[type="file"] { display: none; }
 </style>
 </head>
 <body>
@@ -240,10 +235,16 @@ h1 {
 <h1>📖 <span data-ar="المحتوى الديني" data-en="Islamic Content">المحتوى الديني</span></h1>
 <p class="subtitle" data-ar="آيات، أحاديث، أدعية، وأسئلة" data-en="Verses, Hadith, Prayers & Questions">آيات، أحاديث، أدعية، وأسئلة</p>
 
-<button class="add-btn" onclick="openModal()">➕ <span data-ar="إضافة محتوى جديد" data-en="Add New Content">إضافة محتوى جديد</span></button>
+<div class="btns-row">
+  <button class="add-btn" onclick="openModal()">➕ <span data-ar="إضافة محتوى جديد" data-en="Add New Content">إضافة محتوى جديد</span></button>
+  <button class="backup-btn" onclick="exportBackup()">💾 <span data-ar="تصدير Backup" data-en="Export Backup">تصدير Backup</span></button>
+  <button class="backup-btn" onclick="document.getElementById('importFile').click()">📂 <span data-ar="استيراد Backup" data-en="Import Backup">استيراد Backup</span></button>
+  <input type="file" id="importFile" accept=".json" onchange="importBackup(event)">
+</div>
 
 <div class="controls">
-<input type="text" id="searchBox" placeholder="ابحث عن آية أو حديث...">  <select id="catFilter">
+  <input type="text" id="searchBox" placeholder="ابحث عن آية أو حديث...">
+  <select id="catFilter">
     <option value="all" data-ar="كل التصنيفات" data-en="All Categories">كل التصنيفات</option>
     <option value="آية">آية</option>
     <option value="حديث">حديث</option>
@@ -270,14 +271,14 @@ h1 {
   <div class="modal-content">
     <h3 id="modalTitle" data-ar="إضافة محتوى جديد" data-en="Add/Edit Content">إضافة محتوى جديد</h3>
     <input type="hidden" id="editId">
-    <input type="text" id="newTitle" placeholder="العنوان" data-ar-placeholder="العنوان" data-en-placeholder="Title">
+    <input type="text" id="newTitle" placeholder="العنوان">
     <select id="newCategory">
       <option value="آية">آية</option>
       <option value="حديث">حديث</option>
       <option value="دعاء">دعاء</option>
       <option value="سؤال ديني">سؤال ديني</option>
     </select>
-    <textarea id="newContent" placeholder="النص الكامل..." data-ar-placeholder="النص الكامل..." data-en-placeholder="Full text..."></textarea>
+    <textarea id="newContent" placeholder="النص الكامل..."></textarea>
     <div style="display: flex; gap: 10px;">
       <button class="add-btn" style="flex:1" onclick="savePost()">✅ <span data-ar="حفظ" data-en="Save">حفظ</span></button>
       <button class="btn delete-btn" style="flex:1" onclick="closeModal()">❌ <span data-ar="إلغاء" data-en="Cancel">إلغاء</span></button>
@@ -292,20 +293,17 @@ const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ===== 1. الديوان العام =====
 let allPosts = [];
 let filteredPosts = [];
 let currentPage = 1;
 let currentLang = localStorage.getItem('lang') || 'ar';
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 
-// ===== 2. الترجمات =====
 const t = {
-ar: {title:"المحتوى الديني",subtitle:"آيات، أحاديث، أدعية، وأسئلة",search:"ابحث عن آية أو حديث...",all:"كل التصنيفات",loading:"جاري التحميل...",no:"لا يوجد نتائج",found:"نتيجة",prev:"السابق",next:"التالي",copied:"تم النسخ ✅",share:"مشاركة",copy:"نسخ",delete:"حذف",edit:"تعديل",add:"إضافة محتوى جديد",save:"حفظ",cancel:"إلغاء"},
-en: {title:"Islamic Content",subtitle:"Verses, Hadith, Prayers & Questions",search:"Search...",all:"All Categories",loading:"Loading...",no:"No results",found:"results",prev:"Previous",next:"Next",copied:"Copied ✅",share:"Share",copy:"Copy",delete:"Delete",edit:"Edit",add:"Add New Content",save:"Save",cancel:"Cancel"}
+ar: {title:"المحتوى الديني",subtitle:"آيات، أحاديث، أدعية، وأسئلة",search:"ابحث عن آية أو حديث...",all:"كل التصنيفات",loading:"جاري التحميل...",no:"لا يوجد نتائج",found:"نتيجة",prev:"السابق",next:"التالي",copied:"تم النسخ ✅",share:"مشاركة",copy:"نسخ",delete:"حذف",edit:"تعديل",add:"إضافة محتوى جديد",save:"حفظ",cancel:"إلغاء",backupDone:"تم تصدير الملف ✅",backupImport:"تم استيراد البيانات ✅"},
+en: {title:"Islamic Content",subtitle:"Verses, Hadith, Prayers & Questions",search:"Search...",all:"All Categories",loading:"Loading...",no:"No results",found:"results",prev:"Previous",next:"Next",copied:"Copied ✅",share:"Share",copy:"Copy",delete:"Delete",edit:"Edit",add:"Add New Content",save:"Save",cancel:"Cancel",backupDone:"Backup exported ✅",backupImport:"Data imported ✅"}
 };
 
-// ===== 3. جلب البيانات =====
 async function loadData() {
   const {data, error} = await sb.from('posts').select('*').order('created_at', {ascending:false});
   if(error) throw error;
@@ -313,7 +311,6 @@ async function loadData() {
   filteredPosts = [...allPosts];
 }
 
-// ===== 4. المعالجة =====
 function filterPosts() {
   const search = document.getElementById('searchBox').value.toLowerCase().trim();
   const cat = document.getElementById('catFilter').value;
@@ -333,7 +330,6 @@ function paginatePosts() {
   return filteredPosts.slice(start, start + perPage);
 }
 
-// ===== 5. العرض =====
 function displayPosts(postsToShow) {
   const container = document.getElementById('posts');
   if(postsToShow.length === 0) {
@@ -379,7 +375,6 @@ function updateStats() {
   document.getElementById('stats').textContent = `${filteredPosts.length} ${t[currentLang].found}`;
 }
 
-// ===== 6. السلطة العليا =====
 async function renderAll() {
   try {
     document.getElementById('posts').innerHTML = `<div class="loading">${t[currentLang].loading}</div>`;
@@ -393,7 +388,6 @@ async function renderAll() {
   }
 }
 
-// ===== 7. التعديل - الوزير الجديد ✏️ =====
 window.editPost = function(id) {
   const post = allPosts.find(p => p.id === id);
   document.getElementById('editId').value = id;
@@ -416,10 +410,8 @@ async function savePost() {
   }
 
   if(id) {
-    // تعديل
     await sb.from('posts').update({title, content, category}).eq('id', id);
   } else {
-    // إضافة
     await sb.from('posts').insert([{title, content, category}]);
   }
 
@@ -428,17 +420,47 @@ async function savePost() {
   renderAll();
 }
 
-// ===== 8. النسخ المنسق - الجديد 📋 =====
 window.copyPostFormatted = function(id) {
   const post = allPosts.find(p => p.id === id);
-  const formatted = `${post.category === 'آية' ? '📖' : post.category === 'حديث' ? '🕋' : '🤲'} ${post.title}\n${post.content}\n[${post.category}]`;
+  const formatted = `${post.category === 'آية'? '📖' : post.category === 'حديث'? '🕋' : '🤲'} ${post.title}\n${post.content}\n[${post.category}]`;
   navigator.clipboard.writeText(formatted);
   alert(t[currentLang].copied);
 }
 
-// ===== 9. الباقي =====
+// ===== Backup الجديد 📦 =====
+window.exportBackup = function() {
+  const dataStr = JSON.stringify(allPosts, null, 2);
+  const blob = new Blob([dataStr], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  alert(t[currentLang].backupDone);
+}
+
+window.importBackup = async function(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const text = await file.text();
+  const data = JSON.parse(text);
+
+  if(!confirm(`هتستورد ${data.length} بوست. متأكد؟`)) return;
+
+  await sb.from('posts').insert(data.map(p => ({
+    title: p.title,
+    content: p.content,
+    category: p.category
+  })));
+
+  alert(t[currentLang].backupImport);
+  allPosts = [];
+  renderAll();
+}
+
 window.toggleFav = function(id) {
-  favorites = favorites.includes(id) ? favorites.filter(f => f!== id) : [...favorites, id];
+  favorites = favorites.includes(id)? favorites.filter(f => f!== id) : [...favorites, id];
   localStorage.setItem('favorites', JSON.stringify(favorites));
   renderAll();
 }
@@ -481,19 +503,13 @@ window.changeLanguage = function(lang) {
   localStorage.setItem('lang', lang);
   document.getElementById('htmlTag').dir = lang === 'ar'? 'rtl' : 'ltr';
   document.getElementById('htmlTag').lang = lang;
-
-  document.getElementById('pageTitle').textContent = t[lang].title;
+  document.getElementById('pageTitle').textContent = t.title;
 
   document.querySelectorAll('[data-ar]').forEach(el => {
     el.textContent = el.getAttribute(`data-${lang}`);
   });
 
-  // السطر الوحيد المهم عشان الـ placeholder
-  if(lang === 'ar') {
-    document.getElementById('searchBox').placeholder = "ابحث عن آية أو حديث...";
-  } else {
-    document.getElementById('searchBox').placeholder = "Search for verse or hadith...";
-  }
+  document.getElementById('searchBox').placeholder = lang === 'ar'? "ابحث عن آية أو حديث..." : "Search for verse or hadith...";
 
   renderAll();
 }
@@ -503,7 +519,6 @@ window.toggleDark = function() {
   localStorage.setItem('dark', document.body.classList.contains('dark'));
 }
 
-// ===== 10. البداية =====
 document.addEventListener('DOMContentLoaded', () => {
   if(localStorage.getItem('dark') === 'true') document.body.classList.add('dark');
   document.getElementById('langSelect').value = currentLang;
