@@ -222,18 +222,35 @@
 
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
-
-  <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
-
-  const SUPABASE_URL = 'https://mirrxytqttjglxrarq.supabase.co';
-  const SUPABASE_KEY = 'المفتاح_اللي_حطيته';
-
-  document.getElementById('postsContainer').innerHTML = '1. السكريبت بدأ ✅<br>';
-
-  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-  document.getElementById('postsContainer').innerHTML += '2. اتصلنا بسوبابيز ✅<br>';
-
+<script type="module">
+  document.getElementById('postsContainer').innerHTML = '1. HTML وصل ✅<br>';
+  
+  try {
+    document.getElementById('postsContainer').innerHTML += '2. بجرب استدعي المكتبة...<br>';
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm');
+    document.getElementById('postsContainer').innerHTML += '3. المكتبة نزلت ✅<br>';
+    
+    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+    
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+    document.getElementById('postsContainer').innerHTML += '4. عملنا الكلاينت ✅<br>';
+    
+    document.getElementById('postsContainer').innerHTML += '5. بنجيب الداتا...<br>';
+    const { data, error } = await sb.from('posts').select('*');
+    
+    if(error) {
+      document.getElementById('postsContainer').innerHTML += '❌ إيرور من سوبابيز: ' + error.message;
+      return;
+    }
+    
+    document.getElementById('postsContainer').innerHTML += '6. الداتا رجعت! العدد: ' + data.length + '<br>';
+    document.getElementById('postsContainer').innerHTML += JSON.stringify(data, null, 2);
+    
+  } catch(e) {
+    document.getElementById('postsContainer').innerHTML += '💥 وقع في السكريبت: ' + e.message;
+  }
+</script>
   async function loadPosts() {
     document.getElementById('postsContainer').innerHTML += '3. بنجيب الداتا...<br>';
     
