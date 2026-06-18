@@ -351,16 +351,28 @@
     }
 
     async function loadPosts() {
-      const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-      if(error) {
-        console.error(error);
-        document.getElementById('postsContainer').innerHTML = 'خطأ في جلب الداتا ❌ تحقق من المفتاح والاتصال';
-        return;
-      }
-      allPosts = data;
-      applyLanguage();
-      applyAll();
+  document.getElementById('postsContainer').innerHTML = '1- بدأ التحميل... المفتاح: ' + SUPABASE_KEY.substring(0,10) + '...';
+  
+  try {
+    document.getElementById('postsContainer').innerHTML += '<br>2- بحاول أتصل بـ Supabase...';
+    
+    const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+    
+    if(error) {
+      document.getElementById('postsContainer').innerHTML = '❌ خطأ من Supabase: ' + error.message + '<br>الكود: ' + error.code;
+      return;
     }
+    
+    document.getElementById('postsContainer').innerHTML = '✅ الداتا وصلت! عدد البوستات: ' + data.length + '<br>جاري العرض...';
+    
+    allPosts = data;
+    applyLanguage();
+    applyAll();
+    
+  } catch(e) {
+    document.getElementById('postsContainer').innerHTML = '💥 الكود وقع قبل ما يوصل: ' + e.message;
+  }
+}
 
     function applyAll() {
       let result = [...allPosts];
