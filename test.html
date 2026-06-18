@@ -1,45 +1,63 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl" lang="ar">
 <head>
 <meta charset="UTF-8">
 <title>اختبار Supabase</title>
-</head>
-<body style="padding:40px; font-family:Tajawal">
-<h2>اختبار الاتصال بـ Supabase</h2>
-<div id="result">جاري الاختبار...</div>
-
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'; // <- غير ده حالاً
 
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-const result = document.getElementById('result');
 
-async function test() {
-  try {
-    result.innerHTML += '<br>1. بحاول أجيب البوستات...';
-    const { data, error } = await sb.from('posts').select('*').limit(5);
-    
-    if(error) {
-      result.innerHTML += `<br>❌ خطأ: ${error.message}<br>الكود: ${error.code}`;
-      return;
-    }
-    
-    if(!data || data.length === 0) {
-      result.innerHTML += '<br>⚠️ الجدول فاضي - مفيش بوستات';
-      return;
-    }
-    
-    result.innerHTML += `<br>✅ نجح! لقينا ${data.length} بوست`;
-    result.innerHTML += '<br><br>أول بوست:<br>' + JSON.stringify(data[0], null, 2);
-    
-  } catch(e) {
-    result.innerHTML += `<br>💥 خطأ فادح: ${e.message}`;
+window.loadPosts = async function() {
+  const {data, error} = await sb.from('posts').select('*').limit(5);
+  if(error) {
+    alert('خطأ التحميل: ' + error.message);
+    return;
+  }
+  document.getElementById('list').innerHTML = data.map(p => `
+    <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+      <h3>${p.id} - ${p.title}</h3>
+      <button onclick="testUpdate(${p.id})">جرب التعديل</button>
+      <button onclick="testDelete(${p.id})">جرب الحذف</button>
+    </div>
+  `).join('');
+}
+
+window.testUpdate = async function(id) {
+  console.log('بحاول أعدل ID:', id);
+  const {data, error} = await sb.from('posts').update({title: 'تم التعديل ' + Date.now()}).eq('id', id).select();
+  
+  if(error) {
+    alert('خطأ التعديل: ' + error.message + '\n\nCode: ' + error.code);
+    console.error(error);
+  } else {
+    alert('تم التعديل بنجاح ✅');
+    loadPosts();
   }
 }
-test();
+
+window.testDelete = async function(id) {
+  console.log('بحاول أحذف ID:', id);
+  const {data, error} = await sb.from('posts').delete().eq('id', id).select();
+  
+  if(error) {
+    alert('خطأ الحذف: ' + error.message + '\n\nCode: ' + error.code);
+    console.error(error);
+  } else {
+    alert('تم الحذف بنجاح ✅');
+    loadPosts();
+  }
+}
+
+loadPosts();
 </script>
+</head>
+<body>
+<h1>اختبار الحذف والتعديل</h1>
+<button onclick="loadPosts()">تحميل البيانات</button>
+<div id="list">جاري التحميل...</div>
 </body>
 </html>
