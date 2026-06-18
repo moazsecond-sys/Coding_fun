@@ -356,29 +356,30 @@ const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
     }
 
     async function loadPosts() {
-  document.getElementById('postsContainer').innerHTML = '1- بدأ التحميل... المفتاح: ' + SUPABASE_KEY.substring(0,10) + '...';
+  document.getElementById('postsContainer').innerHTML = '1- المفتاح: ' + SUPABASE_KEY.substring(0,15) + '...<br>2- بحاول أجيب الداتا...';
   
   try {
-    document.getElementById('postsContainer').innerHTML += '<br>2- بحاول أتصل بـ Supabase...';
-    
     const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
     
     if(error) {
-      document.getElementById('postsContainer').innerHTML = '❌ خطأ من Supabase: ' + error.message + '<br>الكود: ' + error.code;
+      document.getElementById('postsContainer').innerHTML = '❌ خطأ Supabase:<br>' + error.message + '<br>الكود: ' + error.code + '<br>تفاصيل: ' + error.details;
       return;
     }
     
-    document.getElementById('postsContainer').innerHTML = '✅ الداتا وصلت! عدد البوستات: ' + data.length + '<br>جاري العرض...';
+    if(!data || data.length === 0) {
+      document.getElementById('postsContainer').innerHTML = '✅ الاتصال تمام بس مفيش بوستات في الجدول';
+      return;
+    }
     
+    document.getElementById('postsContainer').innerHTML = '✅ نجح! عدد البوستات: ' + data.length;
     allPosts = data;
     applyLanguage();
     applyAll();
     
   } catch(e) {
-    document.getElementById('postsContainer').innerHTML = '💥 الكود وقع قبل ما يوصل: ' + e.message;
+    document.getElementById('postsContainer').innerHTML = '💥 وقع هنا: ' + e.message;
   }
 }
-
     function applyAll() {
       let result = [...allPosts];
 
