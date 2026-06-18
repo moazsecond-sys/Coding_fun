@@ -2,23 +2,46 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>عداد الدوسات</title>
+<title>عداد مبيتنسيش</title>
 <style> 
 body { background: black; color: white; text-align: center; font-size: 30px; margin-top: 100px; }
-button { font-size: 25px; padding: 15px 30px; }
+button { font-size: 25px; padding: 15px 30px; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <p>عدد الدوسات: <span id="counter">0</span></p>
 <button onclick="view_number()">دوس هنا</button>
+<button onclick="reset_count()" style="background: red; color: white;">صفر العداد</button>
 
 <script>
-  let count = 0; // المتغير اللي هيحفظ العدد
+  // 1. اول ما الصفحة تفتح: هات الرقم القديم من الذاكرة
+  let count = localStorage.getItem('myCounter');
+  
+  // لو مفيش رقم قديم، ابدأ من 0
+  if (count === null) {
+    count = 0;
+  } else {
+    count = parseInt(count); // حوله من نص لرقم
+  }
+  
+  // اكتب الرقم في الصفحة
+  document.getElementById('counter').textContent = count;
 
+  // 2. الفانكشن بتاعت الدوس
   function view_number() {
-    count = count + 1; // كل دوسة زود 1
-    document.getElementById('counter').textContent = count; // اكتب العدد الجديد في الصفحة
+    count = count + 1;
+    document.getElementById('counter').textContent = count;
+    
+    // احفظ الرقم الجديد في الذاكرة
+    localStorage.setItem('myCounter', count);
+  }
+
+  // 3. فانكشن زيادة عشان تصفر العداد
+  function reset_count() {
+    count = 0;
+    document.getElementById('counter').textContent = count;
+    localStorage.setItem('myCounter', count);
   }
 </script>
 
