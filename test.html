@@ -336,9 +336,12 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 function log(msg) {
   document.getElementById('debug').innerHTML += msg + '<br>';
-  }
+  console.log(msg);
+}
+
 // ===== المتغيرات =====
 let allPosts = [];
 let filteredPosts = [];
@@ -349,7 +352,8 @@ let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 // ===== قاموس الترجمات =====
 const t = {
 ar: {title:"المحتوى الديني",subtitle:"آيات، أحاديث، أدعية، وأسئلة",search:"ابحث عن آية أو حديث...",all:"كل التصنيفات",verses:"آيات",hadith:"أحاديث",prayers:"أدعية",questions:"أسئلة دينية",loading:"جاري التحميل...",no:"لا يوجد نتائج",found:"نتيجة",page:"صفحة",of:"من",prev:"السابق",next:"التالي",copied:"تم النسخ ✅",share:"مشاركة",copy:"نسخ",delete:"حذف",add:"إضافة محتوى جديد",save:"حفظ",cancel:"إلغاء",dark:"وضع داكن",favOnly:"المفضلة فقط"},
-en: {title:"Islamic Content",subtitle:"Verses, Hadith, Prayers & Questions",search:"Search for verse or hadith...",all:"All Categories",verses:"Verses",hadith:"Hadith",prayers:"Prayers",questions:"Questions",loading:"Loading...",no:"No results",found:"results",page:"Page",of:"of",prev:"Previous",next:"Next",copied:"Copied ✅",share:"Share",copy:"Copy",delete:"Delete",add:"Add New Content",save:"Save",cancel:"Cancel",dark:"Dark Mode",favOnly:"Favorites Only"}
+en: {title:"Islamic Content",subtitle:"Verses, Hadith, Prayers & Questions",search:"Search for verse or hadith...",all:"All Categories",verses:"Verses",hadith:"Hadith",prayers:"Prayers",questions:"Questions",loading:"Loading...",no:"No results",found:"results",page:"Page",of:"of",prev:"Previous",next:"Next",copied:"Copied ✅",share:"Share",copy:"Copy",delete:"Delete",add:"Add New Content",save:"Save",cancel:"Cancel",dark:"Dark Mode",favOnly:"Favorites Only"},
+es: {title:"Contenido Islámico",subtitle:"Versos, Hadices, Súplicas y Preguntas",search:"Buscar verso o hadiz...",all:"Todas las categorías",verses:"Versos",hadith:"Hadices",prayers:"Súplicas",questions:"Preguntas",loading:"Cargando...",no:"No hay resultados",found:"resultados",page:"Página",of:"de",prev:"Anterior",next:"Siguiente",copied:"Copiado ✅",share:"Compartir",copy:"Copiar",delete:"Eliminar",add:"Agregar Contenido",save:"Guardar",cancel:"Cancelar",dark:"Modo Oscuro",favOnly:"Solo Favoritos"}
 };
 
 // ===== دوال الجلب =====
@@ -365,57 +369,57 @@ async function loadData() {
 }
 
 async function loadVerses() {
-  log('اللغة الحالية من القايمة: [' + currentLang + ']')
+  // التعديل المهم: نقرأ اللغة من القايمة الأول
   currentLang = document.getElementById('verseLangFilter').value;
+  log('اللغة الحالية من القايمة: [' + currentLang + ']')
+
   const container = document.getElementById('versesContainer');
-  container.innerHTML = `<div class="loading">${t[currentLang].loading}</div>`;
+  container.innerHTML = `<div class="loading">${t[currentLang]?.loading || 'Loading...'}</div>`;
 
   try {
     const {data, error} = await sb
-    .from('verses')
-    .select(`id, surah, ayah, text, translations_verse_id_fkey(lang_code, text_translation)`)
-    .order('surah', {ascending: true})
-    .order('ayah', {ascending: true});
+   .from('verses')
+   .select(`id, surah, ayah, text, translations_verse_id_fkey(lang_code, text_translation)`)
+   .order('surah', {ascending: true})
+   .order('ayah', {ascending: true});
 
     if(error) throw error;
     log('✅ الداتا وصلت: ' + data.length + ' آية');
 
     if(!data || data.length === 0) {
-      container.innerHTML = `<div class="loading">${t[currentLang].no}</div>`;
+      container.innerHTML = `<div class="loading">${t[currentLang]?.no || 'No results'}</div>`;
       return;
     }
 
     const filtered = data.map(v => {
-      // هنا التعديل 👇 غيرت t لـ trg عشان ميحصلش تعارض مع قاموس الترجمات const t
       const tr = v.translations_verse_id_fkey?.find(trg => trg.lang_code.startsWith(currentLang.split('-')[0]))
-log('بدور على: ' + currentLang + ' | الموجود: ' + v.translations_verse_id_fkey?.map(x=>x.lang_code).join(', '))
-      const hasTranslation = tr && tr.text_translation && tr.text_translation.trim() !== '';
+      log('بدور على: ' + currentLang + ' | الموجود: ' + v.translations_verse_id_fkey?.map(x=>x.lang_code).join(', '))
+      const hasTranslation = tr && tr.text_translation && tr.text_translation.trim()!== '';
       const isArabic = currentLang === 'ar';
 
       return {
-        ...v,
-        translation: hasTranslation ? tr.text_translation : (isArabic ? null : 'الترجمة قريباً...'),
-        showTranslation: hasTranslation || !isArabic
+       ...v,
+        translation: hasTranslation? tr.text_translation : (isArabic? null : 'الترجمة قريباً...'),
+        showTranslation: hasTranslation ||!isArabic
       }
     });
 
     container.innerHTML = filtered.map(v => `
-  <div class="post">
-    <h3>سورة ${v.surah} - آية ${v.ayah} <span class="category">آية</span></h3>
-    <p class="verse-arabic">${v.text}</p>
-    
-    ${v.showTranslation ? `
-      <p style="margin-top:15px; color:var(--text2); line-height:2">
-        ${v.translation}
-      </p>
-      ${v.translation !== 'الترجمة قريباً...' ?
-        `<button class="btn copy-btn" data-text="${v.translation.replace(/"/g, '&quot;')}">📋 ${t[currentLang].copy}</button>`
-      : ''}
-    ` : ''}
-  </div>
-`).join('');
+      <div class="post">
+        <h3>سورة ${v.surah} - آية ${v.ayah} <span class="category">آية</span></h3>
+        <p class="verse-arabic">${v.text}</p>
 
-    // ربط أزرار النسخ بعد العرض
+        ${v.showTranslation? `
+          <p style="margin-top:15px; color:var(--text2); line-height:2">
+            ${v.translation}
+          </p>
+          ${v.translation!== 'الترجمة قريباً...'?
+            `<button class="btn copy-btn" data-text="${v.translation.replace(/"/g, '&quot;')}">📋 ${t[currentLang]?.copy || 'Copy'}</button>`
+          : ''}
+        ` : ''}
+      </div>
+    `).join('');
+
     container.querySelectorAll('.copy-btn').forEach(btn => {
       btn.onclick = () => copyPost(btn.dataset.text);
     });
@@ -450,7 +454,7 @@ function paginatePosts() {
 function displayPosts(postsToShow) {
   const container = document.getElementById('posts');
   if(postsToShow.length === 0) {
-    container.innerHTML = `<div class="loading">${t[currentLang].no}</div>`;
+    container.innerHTML = `<div class="loading">${t[currentLang]?.no || 'No results'}</div>`;
     return;
   }
 
@@ -462,15 +466,14 @@ function displayPosts(postsToShow) {
       <h3>${p.title} <span class="category">${p.category}</span></h3>
       <p>${p.content}</p>
       <div class="btns">
-        <button class="btn copy-btn" data-text="${p.content.replace(/"/g, '&quot;')}">📋 ${t[currentLang].copy}</button>
-        <button class="btn share-btn" data-title="${p.title}" data-content="${p.content}">📤 ${t[currentLang].share}</button>
-        <button class="btn delete-btn" data-id="${p.id}">🗑️ ${t[currentLang].delete}</button>
+        <button class="btn copy-btn" data-text="${p.content.replace(/"/g, '&quot;')}">📋 ${t[currentLang]?.copy || 'Copy'}</button>
+        <button class="btn share-btn" data-title="${p.title}" data-content="${p.content}">📤 ${t[currentLang]?.share || 'Share'}</button>
+        <button class="btn delete-btn" data-id="${p.id}">🗑️ ${t[currentLang]?.delete || 'Delete'}</button>
         <button class="btn" style="background:#25D366;color:white" onclick="window.open('https://wa.me/?text=' + encodeURIComponent(\`${p.title}\\n\\n${p.content}\`), '_blank')">📱 واتساب</button>
       </div>
     </div>
   `).join('');
 
-  // ربط الأحداث بعد العرض
   container.querySelectorAll('.fav-btn').forEach(btn => btn.onclick = () => toggleFav(parseInt(btn.dataset.id)));
   container.querySelectorAll('.copy-btn').forEach(btn => btn.onclick = () => copyPost(btn.dataset.text));
   container.querySelectorAll('.share-btn').forEach(btn => btn.onclick = () => sharePost(btn.dataset.title, btn.dataset.content));
@@ -487,7 +490,7 @@ function renderPagination() {
     return;
   }
 
-  let html = `<button id="prevBtn" ${currentPage===1?'disabled':''}>${t[currentLang].prev}</button>`;
+  let html = `<button id="prevBtn" ${currentPage===1?'disabled':''}>${t[currentLang]?.prev || 'Previous'}</button>`;
 
   let startPage = Math.max(1, currentPage - 2);
   let endPage = Math.min(totalPages, currentPage + 2);
@@ -496,7 +499,7 @@ function renderPagination() {
     html += `<button class="pageBtn ${i===currentPage?'active':''}" data-page="${i}">${i}</button>`;
   }
 
-  html += `<button id="nextBtn" ${currentPage===totalPages?'disabled':''}>${t[currentLang].next}</button>`;
+  html += `<button id="nextBtn" ${currentPage===totalPages?'disabled':''}>${t[currentLang]?.next || 'Next'}</button>`;
   container.innerHTML = html;
 
   document.getElementById('prevBtn').onclick = () => goToPage(currentPage-1);
@@ -506,12 +509,12 @@ function renderPagination() {
 
 function updateStats() {
   const count = filteredPosts.length;
-  document.getElementById('stats').textContent = `${count} ${t[currentLang].found}`;
+  document.getElementById('stats').textContent = `${count} ${t[currentLang]?.found || 'results'}`;
 }
 
 async function renderAll() {
   try {
-    document.getElementById('posts').innerHTML = `<div class="loading">${t[currentLang].loading}</div>`;
+    document.getElementById('posts').innerHTML = `<div class="loading">${t[currentLang]?.loading || 'Loading...'}</div>`;
     if(allPosts.length === 0) await loadData();
     filterPosts();
     const postsToShow = paginatePosts();
@@ -592,7 +595,7 @@ function goToPage(page) {
 
 function copyPost(text) {
   navigator.clipboard.writeText(text);
-  alert(t[currentLang].copied);
+  alert(t[currentLang]?.copied || 'Copied ✅');
 }
 
 function sharePost(title, content) {
@@ -616,40 +619,26 @@ function changeLanguage(lang) {
     el.textContent = el.getAttribute(`data-${lang}`);
   });
   document.getElementById('searchBox').placeholder = t[lang].search;
-  document.getElementById('verseLangFilter').value = lang;
+
+  loadVerses();
   renderAll();
-  loadVerses();
 }
 
-function toggleDark() {
-  document.body.classList.toggle('dark');
-  localStorage.setItem('dark', document.body.classList.contains('dark'));
-}
+// ===== الأحداث =====
+document.getElementById('verseLangFilter').onchange = loadVerses;
+document.getElementById('langSelect').onchange = (e) => changeLanguage(e.target.value);
+document.getElementById('searchBox').oninput = renderAll;
+document.getElementById('catFilter').onchange = renderAll;
+document.getElementById('perPage').onchange = () => {currentPage=1; renderAll();}
+document.getElementById('filterFav').onchange = renderAll;
+document.getElementById('addBtn').onclick = openModal;
+document.getElementById('cancelBtn').onclick = closeModal;
+document.getElementById('saveBtn').onclick = addPost;
+document.getElementById('darkBtn').onclick = () => document.body.classList.toggle('dark');
 
-// ===== نقطة البداية + ربط الأحداث =====
-document.addEventListener('DOMContentLoaded', () => {
-  if(localStorage.getItem('dark') === 'true') {
-    document.body.classList.add('dark');
-  }
-
-  document.getElementById('langSelect').value = currentLang;
-  document.getElementById('verseLangFilter').value = currentLang;
-
-  // ربط كل الأحداث هنا - بدون window ولا onclick في HTML
-  document.getElementById('langSelect').addEventListener('change', e => changeLanguage(e.target.value));
-  document.getElementById('darkBtn').addEventListener('click', toggleDark);
-  document.getElementById('addBtn').addEventListener('click', openModal);
-  document.getElementById('saveBtn').addEventListener('click', addPost);
-  document.getElementById('cancelBtn').addEventListener('click', closeModal);
-  document.getElementById('verseLangFilter').addEventListener('change', loadVerses);
-  document.getElementById('searchBox').addEventListener('keyup', () => { currentPage = 1; renderAll(); });
-  document.getElementById('catFilter').addEventListener('change', () => { currentPage = 1; renderAll(); });
-  document.getElementById('perPage').addEventListener('change', () => { currentPage = 1; renderAll(); });
-  document.getElementById('filterFav').addEventListener('change', () => { currentPage = 1; renderAll(); });
-
-  changeLanguage(currentLang);
-  loadVerses();
-});
+// ===== التشغيل =====
+loadVerses();
+renderAll();
 </script>
 </body>
 </html>
