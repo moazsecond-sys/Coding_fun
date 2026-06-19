@@ -320,8 +320,33 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-console.log("Supabase اتصلت ولا لأ؟", sb);
-console.log("كم عدد الأحرف في المفتاح:", SUPABASE_KEY.length);
+// امسك الزر والحقول
+const btnحفظ = document.querySelector('button:has(✅)'); // الزر الأخضر
+const inputنص = document.querySelector('input[placeholder="تجربة النشر"]');
+const selectنوع = document.querySelector('select'); // بتاع "آية"
+const textareaمحتوى = document.querySelector('textarea[placeholder="مرحبا"]');
+
+// لما تدوس حفظ
+btnحفظ.addEventListener('click', async () => {
+  console.log("دست حفظ، ببعت لـ Supabase...");
+  
+  const { data, error } = await supabase
+    .from('posts') // غير اسم الجدول لو عندك اسم تاني
+    .insert([{ 
+      title: inputنص.value,
+      type: selectنوع.value, 
+      content: textareaمحتوى.value,
+      user_id: 'ديدو' // حط الـ user_id بتاعك
+    }]);
+
+  if(error) {
+    console.log("غلطة:", error.message);
+    alert("فيه غلطة: " + error.message);
+  } else {
+    alert("اتحفظ بنجاح يا بطل! 🎉");
+    location.reload(); // اعمل ريفريش عشان يظهر تحت
+  }
+});
 // ===== 1. الديوان العام =====
 let allPosts = [];
 let filteredPosts = [];
