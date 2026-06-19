@@ -382,7 +382,8 @@ async function loadVerses() {
     }
 
     const filtered = data.map(v => {
-      const tr = v.translations.find(t => t.lang_code === currentLang);
+      // هنا التعديل 👇 غيرت t لـ trg عشان ميحصلش تعارض مع قاموس الترجمات const t
+      const tr = v.translations.find(trg => trg.lang_code === currentLang);
       const hasTranslation = tr && tr.text_translation && tr.text_translation.trim() !== '';
       const isArabic = currentLang === 'ar';
 
