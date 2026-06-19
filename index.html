@@ -461,7 +461,7 @@ window.closeModal = function() {
   document.getElementById('newContent').value = '';
 }
 
-async function addPost() {
+export async function addPost() {
   const title = document.getElementById('newTitle').value.trim();
   const content = document.getElementById('newContent').value.trim();
   const category = document.getElementById('newCategory').value;
@@ -483,7 +483,7 @@ async function addPost() {
 }
 
 // ===== 9. الحذف =====
-async function deletePost(id) {
+export async function deletePost(id) {
   if(!confirm('متأكد من الحذف؟')) return;
   const {error} = await sb.from('posts').delete().eq('id', id);
   if(error) {
