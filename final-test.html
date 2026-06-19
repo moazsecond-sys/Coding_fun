@@ -1,73 +1,48 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>اختبار نهائي</title>
-<style>
-body{font-family:Tahoma;padding:20px;background:#f5f5f5}
-.post{background:white;padding:15px;margin:10px 0;border-radius:10px;border-right:4px solid #4ade80}
-button{padding:8px 15px;margin:5px;border:none;border-radius:8px;cursor:pointer}
-.add{background:#4ade80;color:white}
-.edit{background:#f59e0b;color:white}
-.del{background:#ef4444;color:white}
-input,textarea,select{width:100%;padding:10px;margin:5px 0;border:2px solid #ddd;border-radius:8px}
-</style>
+  <meta charset="UTF-8">
+  <title>تجربة localStorage</title>
+  <style>
+    body { font-family: Tahoma; padding: 30px; text-align: center; }
+    select { font-size: 18px; padding: 10px; }
+    #result { margin-top: 30px; font-size: 20px; color: green; }
+  </style>
 </head>
 <body>
 
-<h2>اختبار Supabase النهائي</h2>
-<button class="add" onclick="add()">➕ إضافة تجربة</button>
-<div id="list">جاري التحميل...</div>
+  <h2>اختار لغة الترجمة</h2>
+  
+  <select id="verseLangFilter">
+    <option value="ar">العربية</option>
+    <option value="en">English</option>
+    <option value="es">Español</option>
+    <option value="de">Deutsch</option>
+  </select>
 
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
+  <div id="result">مستني اختيارك...</div>
 
-const URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-const sb = createClient(URL, KEY);
-
-async function load() {
-  const {data, error} = await sb.from('posts').select('*').order('id', {ascending:false}).limit(10);
-  if(error) {
-    document.getElementById('list').innerHTML = 'خطأ: ' + error.message;
-    return;
+<script>
+  // دي الدالة الوهمية اللي هتجرب عليها
+  function loadVerses() {
+    let currentLang = document.getElementById('verseLangFilter').value;
+    document.getElementById('result').innerText = 'اللغة المختارة حالاً: ' + currentLang;
+    console.log('اشتغلت باللغة:', currentLang);
   }
-  document.getElementById('list').innerHTML = data.map(p => `
-    <div class="post">
-      <b>${p.id}</b> - ${p.title}<br>
-      <small>${p.content.substring(0,50)}...</small><br>
-      <button class="edit" onclick="edit(${p.id},'${p.title.replace(/'/g,"")}', '${p.content.replace(/'/g,"")}')">تعديل</button>
-      <button class="del" onclick="del(${p.id})">حذف</button>
-    </div>
-  `).join('') || 'مفيش بيانات';
-}
 
-window.add = async function() {
-  const t = prompt('العنوان:');
-  const c = prompt('المحتوى:');
-  if(!t||!c) return;
-  const {error} = await sb.from('posts').insert([{title:t, content:c, category:'آية'}]);
-  alert(error ? 'خطأ: '+error.message : 'تمت الإضافة ✅');
-  load();
-}
+  // الخطوة 1: لما تغير من القايمة → خزن في التلاجة ونادي الدالة
+  document.getElementById('verseLangFilter').onchange = (e) => {
+    localStorage.setItem('verseLang', e.target.value); // الزق الاختيار
+    loadVerses(); // نادي الدالة
+  }
 
-window.edit = async function(id, oldT, oldC) {
-  const t = prompt('العنوان الجديد:', oldT);
-  const c = prompt('المحتوى الجديد:', oldC);
-  if(!t||!c) return;
-  const {error} = await sb.from('posts').update({title:t, content:c}).eq('id', id);
-  alert(error ? 'خطأ: '+error.message : 'تم التعديل ✅');
-  load();
-}
-
-window.del = async function(id) {
-  if(!confirm('حذف؟')) return;
-  const {error} = await sb.from('posts').delete().eq('id', id);
-  alert(error ? 'خطأ: '+error.message : 'تم الحذف ✅');
-  load();
-}
-
-load();
+  // الخطوة 2: أول ما الصفحة تفتح → اقرا من التلاجة وظبط القايمة
+  window.onload = () => {
+    let اللغة_المحفوظة = localStorage.getItem('verseLang') || 'ar'; // هات من التلاجة، لو فاضية خليها عربي
+    document.getElementById('verseLangFilter').value = اللغة_المحفوظة; // ظبط القايمة
+    loadVerses(); // اعرض النتيجة
+  }
 </script>
+
 </body>
 </html>
