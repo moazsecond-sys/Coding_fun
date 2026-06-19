@@ -399,19 +399,19 @@ log('بدور على: ' + currentLang + ' | الموجود: ' + v.translations_v
     });
 
     container.innerHTML = filtered.map(v => `
-      <div class="post">
-        <h3>سورة ${v.surah} - آية ${v.ayah} <span class="category">آية</span></h3>
-        <p class="verse-arabic">${v.text}</p>
-        ${currentLang!== 'ar'? `
-          <p style="margin-top:15px; color:var(--text2); line-height:2">
-            ${v.translation}
-          </p>
-          ${v.translation!== 'الترجمة قريباً...'?
-            `<button class="btn copy-btn" data-text="${v.translation.replace(/"/g, '&quot;')}">📋 ${t[currentLang].copy}</button>`
-          : ''}
-        ` : ''}
-      </div>
-    `).join('');
+  <div class="post">
+    <h3>سورة ${v.surah} - آية ${v.ayah} <span class="category">آية</span></h3>
+    <p class="verse-arabic">${v.text}</p>
+    ${v.showTranslation? `
+      <p style="margin-top:15px; color:var(--text2); line-height:2">
+        ${v.translation}
+      </p>
+      ${v.translation!== 'الترجمة قريباً...'?
+        `<button class="btn copy-btn" data-text="${v.translation.replace(/"/g, '&quot;')}">📋 ${t[currentLang].copy}</button>`
+      : ''}
+    ` : ''}
+  </div>
+`).join('');
 
     // ربط أزرار النسخ بعد العرض
     container.querySelectorAll('.copy-btn').forEach(btn => {
