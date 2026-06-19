@@ -365,6 +365,7 @@ async function loadData() {
 }
 
 async function loadVerses() {
+  log('اللغة الحالية من القايمة: [' + currentLang + ']')
   currentLang = document.getElementById('verseLangFilter').value;
   const container = document.getElementById('versesContainer');
   container.innerHTML = `<div class="loading">${t[currentLang].loading}</div>`;
