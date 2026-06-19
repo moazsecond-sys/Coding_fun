@@ -372,7 +372,7 @@ async function loadVerses() {
   try {
     const {data, error} = await sb
     .from('verses')
-    .select(`id, surah, ayah, text, translations(lang_code, text_translation)`)
+    .select(`id, surah, ayah, text, translations!inner(lang_code, text_translation)`)
     .order('surah', {ascending: true})
     .order('ayah', {ascending: true});
 
