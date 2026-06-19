@@ -1,290 +1,306 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم - معاذ </title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body { 
-      font-family: 'Tajawal', sans-serif; 
-      background: #f8f9fa; 
-      color: #222; 
-      padding: 20px; 
-      transition: 0.3s ease;
-    }
-    .box { 
-      background: white; 
-      padding: 30px; 
-      border-radius: 15px; 
-      max-width: 600px; 
-      margin: 40px auto; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    h2 { color: #2d5a3d; text-align: center; margin-bottom: 25px; }
-    h3 { color: #2d5a3d; }
-    
-    input, textarea, select { 
-      width: 100%; 
-      padding: 12px; 
-      margin: 10px 0; 
-      background: white; 
-      border: 2px solid #ddd; 
-      border-radius: 8px; 
-      color: #222;
-      font-family: 'Tajawal';
-      font-size: 16px;
-      transition: 0.2s;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: #4ade80;
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
-    }
-    
-    button { 
-      padding: 12px 20px; 
-      border: none; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      font-weight: bold; 
-      margin: 5px;
-      font-family: 'Tajawal';
-      font-size: 15px;
-      transition: 0.2s;
-    }
-    button:hover { opacity: 0.9; transform: translateY(-2px); }
-    
-    .btn-green { background: #4ade80; color: white; }
-    .btn-red { background: #ef4444; color: white; }
-    .btn-blue { background: #3b82f6; color: white; }
-    
-    .header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      margin-bottom: 30px; 
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    
-    .post { 
-      background: #f8f9fa; 
-      padding: 15px; 
-      border-radius: 10px; 
-      margin: 10px 0;
-      border: 1px solid #e0e0e0;
-    }
-    .post-actions { margin-top: 10px; text-align: left; }
-    
-    #adminPanel, #loginPanel { display: none; }
-    
-    #themeBtn { 
-      position: fixed; 
-      top: 20px; 
-      left: 20px; 
-      padding: 10px 18px; 
-      background: #333; 
-      color: white; 
-      border-radius: 25px;
-      z-index: 100;
-    }
-
-    /* ===== وضع الليل ===== */
-    body.dark {
-      background: #0f0f0f;
-      color: #e0e0e0;
-    }
-    body.dark .box {
-      background: #1e1e1e;
-      box-shadow: none;
-    }
-    body.dark h2, body.dark h3 { color: #4ade80; }
-    body.dark input, body.dark textarea, body.dark select {
-      background: #2a2a2a;
-      color: white;
-      border-color: #444;
-    }
-    body.dark .post {
-      background: #2a2a2a;
-      border-color: #444;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم - Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg1: #f8f9fa; --card: white; --text: #222; 
+  --green: #4ade80; --green-dark: #2d5a3d; --red: #ef4444;
+  --shadow: rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--bg1);
+  color: var(--text);
+  padding: 20px;
+  margin: 0;
+  min-height: 100vh;
+}
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.btn-back {
+  padding: 10px 20px;
+  border: 2px solid var(--green);
+  background: var(--card);
+  color: var(--green-dark);
+  border-radius: 25px;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn-back:hover { background: var(--green); color: white; }
+.btn-logout {
+  padding: 10px 20px;
+  border: 2px solid var(--red);
+  background: var(--red);
+  color: white;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+}
+h1 {
+  text-align: center;
+  color: var(--green-dark);
+  margin: 20px 0;
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.card {
+  background: var(--card);
+  padding: 25px;
+  border-radius: 18px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px var(--shadow);
+  border-right: 4px solid var(--green);
+}
+.card h3 {
+  margin-top: 0;
+  color: var(--green-dark);
+}
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+}
+textarea { min-height: 120px; resize: vertical; }
+.btn-save {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 14px 25px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-save:hover { transform: scale(1.02); }
+.btn-delete {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-right: 8px;
+}
+#adminPanel { display: none; }
+#loginBox { display: block; }
+.loading { text-align: center; padding: 20px; color: #666; }
+.translation-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 10px;
+}
+.translation-text {
+  flex: 1;
+}
+</style>
 </head>
 <body>
-  <button id="themeBtn" onclick="toggleTheme()">🌙 وضع ليلي</button>
 
-  <!-- 1. لوحة تسجيل الدخول -->
-  <div class="box" id="loginPanel">
-    <h2>تسجيل دخول الأدمن 🔐</h2>
-    <input type="email" id="email" placeholder="الايميل">
-    <input type="password" id="password" placeholder="كلمة السر">
-    <button class="btn-green" id="loginBtn" style="width:100%">دخول</button>
-    <div id="loginMsg" style="margin-top:10px; text-align:center"></div>
+<div class="top-nav">
+  <div>
+    <a href="index.html" class="btn-back">🏠 رجوع للرئيسية</a>
+    <a href="modern-index.html" class="btn-back">✨ الرجوع للنسخة الحديثة</a>
   </div>
+  <button class="btn-logout" onclick="logout()">🚪 تسجيل خروج</button>
+</div>
 
-  <!-- 2. لوحة النشر -->
-  <div class="box" id="adminPanel">
-    <div class="header">
-      <h2>لوحة نشر 📝 المحتوى الديني</h2>
-      <button class="btn-red" id="logoutBtn">تسجيل خروج</button>
-    </div>
+<h1>⚙️ لوحة التحكم - إدارة الترجمات</h1>
 
-    <h3 id="formTitle">إضافة / تعديل محتوى</h3>
-    <input type="hidden" id="editId">
-    <input type="text" id="title" placeholder="العنوان" required>
-    <textarea id="content" placeholder="النص" rows="5" required></textarea>
-    <select id="category">
-      <option value="آية">آية</option>
-      <option value="حديث">حديث</option>
-      <option value="دعاء">دعاء</option>
-      <option value="سؤال ديني">سؤال ديني</option>
+<!-- صندوق الدخول -->
+<div class="card" id="loginBox">
+  <h3>تسجيل الدخول</h3>
+  <input type="email" id="email" placeholder="الإيميل">
+  <input type="password" id="password" placeholder="كلمة المرور">
+  <button class="btn-save" onclick="login()">دخول</button>
+</div>
+
+<!-- لوحة التحكم -->
+<div id="adminPanel">
+  
+  <!-- إضافة ترجمة جديدة -->
+  <div class="card">
+    <h3>➕ إضافة ترجمة جديدة</h3>
+    
+    <label>اختر الآية:</label>
+    <select id="verseSelect">
+      <option>جاري تحميل الآيات...</option>
     </select>
-    <button class="btn-green" id="saveBtn" style="width:100%">نشر</button>
-    <button class="btn-blue" id="cancelBtn" style="display:none; width:100%; margin-top:8px;">إلغاء</button>
-    <div id="msg" style="margin-top:10px; text-align:center"></div>
-
-    <hr style="margin: 30px 0; border-color: #ddd;">
-    <h3>المحتوى المنشور</h3>
-    <div id="postsList">جاري التحميل...</div>
+    
+    <label>اختر اللغة:</label>
+    <select id="langSelect">
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="de">Deutsch</option>
+      <option value="pt">Português</option>
+      <option value="fr">Français</option>
+    </select>
+    
+    <label>النص المترجم:</label>
+    <textarea id="translationText" placeholder="اكتب الترجمة هنا..."></textarea>
+    
+    <button class="btn-save" onclick="saveTranslation()">💾 حفظ الترجمة</button>
   </div>
 
-  <script>
-    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo';
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <!-- عرض الترجمات المضافة -->
+  <div class="card">
+    <h3>📋 آخر 15 ترجمة مضافة</h3>
+    <div id="recentTranslations" class="loading">جاري التحميل...</div>
+  </div>
 
-    const loginPanel = document.getElementById('loginPanel');
-    const adminPanel = document.getElementById('adminPanel');
+</div>
 
-    // شيك اول ما تفتح الصفحة
-    sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        adminPanel.style.display = 'block';
-        loginPanel.style.display = 'none';
-        loadPosts();
-      } else {
-        loginPanel.style.display = 'block';
-        adminPanel.style.display = 'none';
-      }
-    });
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm'
 
-    // تسجيل دخول
-    document.getElementById('loginBtn').onclick = async () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) {
-        document.getElementById('loginMsg').textContent = 'خطأ: ' + error.message;
-        document.getElementById('loginMsg').style.color = 'red';
-      } else {
-        adminPanel.style.display = 'block';
-        loginPanel.style.display = 'none';
-        loadPosts();
-      }
-    };
+const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'; // حط المفتاح الـ anon public هنا
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // تسجيل خروج
-    document.getElementById('logoutBtn').onclick = async () => {
-      await sb.auth.signOut();
-      adminPanel.style.display = 'none';
-      loginPanel.style.display = 'block';
-    };
+// التحقق من الدخول
+sb.auth.getSession().then(({data: {session}}) => {
+  if(session) {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadVersesForSelect();
+    loadRecentTranslations();
+  } else {
+    document.getElementById('loginBox').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+});
 
-    const editId = document.getElementById('editId');
-    const saveBtn = document.getElementById('saveBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
+// تسجيل الدخول
+window.login = async function() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  const {error} = await sb.auth.signInWithPassword({email, password});
+  if(error) {
+    alert('خطأ: ' + error.message);
+  } else {
+    location.reload();
+  }
+}
 
-    saveBtn.onclick = async () => {
-      const id = editId.value;
-      const title = document.getElementById('title').value;
-      const content = document.getElementById('content').value;
-      const category = document.getElementById('category').value;
-      const msg = document.getElementById('msg');
-      
-      if(!title || !content) {
-        msg.textContent = 'املأ العنوان والنص';
-        msg.style.color = 'red';
-        return;
-      }
+// تسجيل الخروج
+window.logout = async function() {
+  await sb.auth.signOut();
+  location.reload();
+}
 
-      let error;
-      if(id) {
-        ({ error } = await sb.from('posts').update({ title, content, category }).eq('id', id));
-        msg.textContent = error ? 'خطأ: ' + error.message : 'تم التعديل بنجاح ✅';
-      } else {
-        ({ error } = await sb.from('posts').insert([{ title, content, category, views: 0 }]));
-        msg.textContent = error ? 'خطأ: ' + error.message : 'تم النشر بنجاح ✅';
-      }
-      
-      msg.style.color = error ? 'red' : 'green';
-      setTimeout(() => msg.textContent = '', 3000);
-      resetForm();
-      loadPosts();
-    };
+// تحميل الآيات في القايمة
+async function loadVersesForSelect() {
+  const {data, error} = await sb.from('verses')
+    .select('id, surah, ayah, text')
+    .order('surah')
+    .order('ayah');
+  
+  if(error) {
+    document.getElementById('verseSelect').innerHTML = '<option>خطأ في التحميل</option>';
+    return;
+  }
+  
+  const select = document.getElementById('verseSelect');
+  select.innerHTML = data.map(v => {
+    const shortText = v.text.length > 40 ? v.text.substring(0, 40) + '...' : v.text;
+    return `<option value="${v.id}">سورة ${v.surah} - آية ${v.ayah} | ${shortText}</option>`;
+  }).join('');
+}
 
-    cancelBtn.onclick = resetForm;
+// حفظ الترجمة
+window.saveTranslation = async function() {
+  const verse_id = document.getElementById('verseSelect').value;
+  const lang_code = document.getElementById('langSelect').value;
+  const text_translation = document.getElementById('translationText').value.trim();
+  
+  if(!verse_id || !text_translation) {
+    alert('اختر الآية واكتب الترجمة');
+    return;
+  }
+  
+  const {error} = await sb.from('translations').insert([
+    {verse_id: parseInt(verse_id), lang_code, text_translation}
+  ]);
+  
+  if(error) {
+    alert('خطأ: ' + error.message);
+  } else {
+    alert('✅ تم حفظ الترجمة بنجاح');
+    document.getElementById('translationText').value = '';
+    loadRecentTranslations();
+  }
+}
 
-    function resetForm() {
-      editId.value = '';
-      document.getElementById('title').value = '';
-      document.getElementById('content').value = '';
-      saveBtn.textContent = 'نشر';
-      document.getElementById('formTitle').textContent = 'إضافة / تعديل محتوى';
-      cancelBtn.style.display = 'none';
-    }
+// حذف الترجمة - الجديد 🔥
+window.deleteTranslation = async function(id) {
+  if(!confirm('متأكد انك عايز تحذف الترجمة دي؟')) return;
+  
+  const {error} = await sb.from('translations').delete().eq('id', id);
+  
+  if(error) {
+    alert('خطأ في الحذف: ' + error.message);
+  } else {
+    alert('🗑️ تم الحذف');
+    loadRecentTranslations();
+  }
+}
 
-    window.editPost = function(id, title, content, category) {
-      editId.value = id;
-      document.getElementById('title').value = title;
-      document.getElementById('content').value = content;
-      document.getElementById('category').value = category;
-      saveBtn.textContent = 'حفظ التعديل';
-      document.getElementById('formTitle').textContent = 'تعديل المحتوى';
-      cancelBtn.style.display = 'block';
-      window.scrollTo(0, 0);
-    }
-
-    window.deletePost = async function(id) {
-      if(confirm('متأكد تبي تحذف المنشور؟')) {
-        await sb.from('posts').delete().eq('id', id);
-        loadPosts();
-      }
-    }
-
-    async function loadPosts() {
-      const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-      const postsList = document.getElementById('postsList');
-      
-      if(!data || data.length === 0) {
-        postsList.textContent = 'لا يوجد محتوى منشور بعد';
-        return;
-      }
-      
-      postsList.innerHTML = data.map(p => `
-        <div class="post">
-          <b>${p.title}</b> - <span style="color:#4ade80">${p.category}</span>
-          <p style="margin:8px 0; line-height:1.6">${p.content}</p>
-          <div class="date">${new Date(p.created_at).toLocaleDateString('ar-EG', {day:'numeric', month:'long', year:'numeric'})} • 👁️ ${p.views || 0} قراءة</div>         
-          <div class="post-actions">
-          <button class="btn-blue" onclick="editPost(${p.id}, \`${p.title.replace(/`/g,"\\`")}\`, \`${p.content.replace(/`/g,"\\`")}\`, '${p.category}')">تعديل</button>
-          <button class="btn-red" onclick="deletePost(${p.id})">حذف</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-      const btn = document.getElementById('themeBtn');
-      btn.textContent = document.body.classList.contains('dark') ? '☀️ وضع نهاري' : '🌙 وضع ليلي';
-    }
-
-    if(localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark');
-      document.getElementById('themeBtn').textContent = '☀️ وضع نهاري';
-    }
-  </script>
+// عرض آخر الترجمات مع زرار الحذف
+async function loadRecentTranslations() {
+  const {data, error} = await sb.from('translations')
+    .select('id, lang_code, text_translation, verse_id, verses(surah, ayah)')
+    .order('id', {ascending: false})
+    .limit(15);
+  
+  if(error) {
+    document.getElementById('recentTranslations').innerHTML = 'خطأ في التحميل';
+    return;
+  }
+  
+  if(data.length === 0) {
+    document.getElementById('recentTranslations').innerHTML = 'لا توجد ترجمات بعد';
+    return;
+  }
+  
+  document.getElementById('recentTranslations').innerHTML = data.map(t => `
+    <div class="translation-item">
+      <div class="translation-text">
+        <strong>سورة ${t.verses.surah} - آية ${t.verses.ayah}</strong> 
+        <span style="background:#4ade80; color:white; padding:3px 8px; border-radius:10px; font-size:12px;">${t.lang_code}</span>
+        <br>
+        <small style="color:#666">${t.text_translation.substring(0, 100)}...</small>
+      </div>
+      <button class="btn-delete" onclick="deleteTranslation(${t.id})">🗑️ حذف</button>
+    </div>
+  `).join('');
+}
+</script>
 </body>
 </html>
