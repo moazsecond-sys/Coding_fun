@@ -375,6 +375,23 @@ function displayPosts(postsToShow) {
         <button class="btn copy-btn" onclick="copyPost(\`${p.content.replace(/`/g, '\\`')}\`)">📋 ${t[currentLang].copy}</button>
         <button class="btn share-btn" onclick="sharePost('${p.title.replace(/'/g, "\\'")}', \`${p.content.replace(/`/g, '\\`')}\`)">📤 ${t[currentLang].share}</button>
         <button class="btn delete-btn" onclick="deletePost(${p.id})">🗑️ ${t[currentLang].delete}</button>
+        // واتساب
+<button class="btn" style="background:#25D366;color:white" 
+onclick="window.open('https://wa.me/?text=' + encodeURIComponent(\`${p.title}\\n\\n${p.content}\`), '_blank')">
+📱 واتساب
+</button>
+
+// فيسبوك  
+<button class="btn" style="background:#1877f2;color:white"
+onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank')">
+📘 فيسبوك
+</button>
+
+// تويتر
+<button class="btn" style="background:#1DA1F2;color:white"
+onclick="window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(\`${p.title}\`), '_blank')">
+🐦 تويتر
+</button>
       </div>
     </div>
   `).join('');
@@ -505,11 +522,18 @@ window.copyPost = function(text) {
 }
 
 window.sharePost = function(title, content) {
+  const text = `${title}\n\n${content}\n\n📖 من موقع المحتوى الديني`;
+  const url = window.location.href;
+  
+  // لو الموبايل فيه مشاركة أصلية
   if(navigator.share) {
-    navigator.share({title: title, text: content});
-  } else {
-    copyPost(title + '\n\n' + content);
+    navigator.share({title: title, text: text, url: url});
+    return;
   }
+  
+  // لو مفيش - افتح واتساب مباشر
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`;
+  window.open(whatsappUrl, '_blank');
 }
 
 window.changeLanguage = function(lang) {
