@@ -380,9 +380,8 @@ async function loadVerses() {
         surah,
         ayah,
         text,
-        translations!inner(lang_code, text_translation)
+        translations(lang_code, text_translation)
       `)
-    .eq('translations.lang_code', currentLang)
     .order('surah', {ascending: true})
     .order('ayah', {ascending: true});
 
@@ -393,12 +392,21 @@ async function loadVerses() {
       return;
     }
 
-    container.innerHTML = data.map(v => `
+    // نفلتر التراجم حسب اللغة المختارة
+    const filtered = data.map(v => {
+      const tr = v.translations.find(t => t.lang_code === currentLang);
+      return {
+        ...v,
+        translation: tr ? tr.text_translation : 'الترجمة قريباً...'
+      }
+    });
+
+    container.innerHTML = filtered.map(v => `
       <div class="post">
         <h3>سورة ${v.surah} - آية ${v.ayah} <span class="category">آية</span></h3>
         <p class="verse-arabic">${v.text}</p>
-        <p>${v.translations[0].text_translation}</p>
-        <button class="btn copy-btn" onclick="copyPost(\`${v.translations[0].text_translation.replace(/`/g, '\\`')}\`)">📋 ${t[currentLang].copy}</button>
+        <p>${v.translation}</p>
+        <button class="btn copy-btn" onclick="copyPost(\`${v.translation.replace(/`/g, '\\`')}\`)">📋 ${t[currentLang].copy}</button>
       </div>
     `).join('');
 
