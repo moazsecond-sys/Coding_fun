@@ -369,10 +369,10 @@ async function loadVerses() {
 
   try {
     const {data, error} = await sb
-   .from('verses')
-   .select(`id, surah, ayah, text, translations(lang_code, text_translation)`)
-   .order('surah', {ascending: true})
-   .order('ayah', {ascending: true});
+    .from('verses')
+    .select(`id, surah, ayah, text, translations(lang_code, text_translation)`)
+    .order('surah', {ascending: true})
+    .order('ayah', {ascending: true});
 
     if(error) throw error;
 
@@ -383,9 +383,13 @@ async function loadVerses() {
 
     const filtered = data.map(v => {
       const tr = v.translations.find(t => t.lang_code === currentLang);
+      const hasTranslation = tr && tr.text_translation && tr.text_translation.trim() !== '';
+      const isArabic = currentLang === 'ar';
+
       return {
-       ...v,
-        translation: tr? tr.text_translation : 'الترجمة قريباً...'
+        ...v,
+        translation: hasTranslation ? tr.text_translation : (isArabic ? null : 'الترجمة قريباً...'),
+        showTranslation: hasTranslation || !isArabic
       }
     });
 
@@ -393,8 +397,14 @@ async function loadVerses() {
       <div class="post">
         <h3>سورة ${v.surah} - آية ${v.ayah} <span class="category">آية</span></h3>
         <p class="verse-arabic">${v.text}</p>
-        <p>${v.translation}</p>
-        <button class="btn copy-btn" data-text="${v.translation.replace(/"/g, '&quot;')}">📋 ${t[currentLang].copy}</button>
+        ${v.showTranslation ? `
+          <p style="margin-top:15px; color:var(--text2); line-height:2">
+            ${v.translation}
+          </p>
+          ${v.translation !== 'الترجمة قريباً...' ? 
+            `<button class="btn copy-btn" data-text="${v.translation.replace(/"/g, '&quot;')}">📋 ${t[currentLang].copy}</button>` 
+          : ''}
+        ` : ''}
       </div>
     `).join('');
 
