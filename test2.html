@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الديك والمفتش كونان</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #fff9c4, #ffecb3);
+    }
+    
+    #h1 {
+      padding: 20px 40px;
+      font-size: 24px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    #h1:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    
+    #h1:disabled {
+      cursor: not-allowed;
+    }
+    
+    h2 {
+      color: #e65100;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🐓 الديك المفتش كونان بيحرس المخزن 🐭</h2>
+  <button id="h1">Think well</button>
+  <p style="margin-top:20px; color:#666">افتح الـ Console بـ F12 عشان تشوف استجواب الديك</p>
+
+<script>
+document.getElementById('h1').onclick = function(event) {
+  
+  // الديك مسك الفار
+  let الفار_المتهم = event.target
+  
+  // 1. الاستجواب
+  console.log('========== تقرير الديك ==========')
+  console.log('🐓 الديك صاحي: كوكو كو! فيه حركة!')
+  console.log('🐓 الديك: اسم المتهم؟ ' + الفار_المتهم.id)
+  console.log('🐓 الديك: نوعه؟ ' + الفار_المتهم.tagName)
+  console.log('🐓 الديك: آخر كلام قاله؟ ' + الفار_المتهم.innerText)
+  console.log('=================================')
+  
+  // 2. العقاب - ينقر الفار
+  الفار_المتهم.style.transform = 'scale(0.85)'
+  الفار_المتهم.style.backgroundColor = '#f44336'
+  الفار_المتهم.innerText = 'سق سق سق... سامحني يا ديك!'
+  
+  // 3. بعد ثانية ونص... حبس في القفص
+  setTimeout(function() {
+    الفار_المتهم.disabled = true // القفص
+    الفار_المتهم.style.opacity = '0.4'
+    الفار_المتهم.innerText = '⛓️ محبوس 3 ثواني'
+    alert('🐓 الديك: الحكم! حبس 3 ثواني في القفص!')
+    
+    // 4. بعد 3 ثواني يطلعه
+    setTimeout(function() {
+      الفار_المتهم.disabled = false // فتح القفص
+      الفار_المتهم.style.transform = 'scale(1)'
+      الفار_المتهم.style.opacity = '1'
+      الفار_المتهم.style.backgroundColor = '#4caf50'
+      الفار_المتهم.innerText = 'Think well'
+      console.log('🐓 الديك: خلاص سامحتك يا فار... بس عيني عليك!')
+    }, 3000)
+  }, 1500)
+}
+</script>
+
+</body>
+</html>
