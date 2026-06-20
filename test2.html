@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>الديك والمفتش كونان</title>
+  <title>الديك المفتش vs الفار الحرامي</title>
   <style>
     body {
       font-family: 'Cairo', sans-serif;
@@ -11,78 +11,135 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      background: linear-gradient(135deg, #fff9c4, #ffecb3);
+      background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+      overflow: hidden;
+    }
+    
+    h2 {
+      color: #2d3436;
+      margin-bottom: 40px;
+      font-size: 28px;
     }
     
     #h1 {
-      padding: 20px 40px;
-      font-size: 24px;
-      background: #4caf50;
+      padding: 25px 50px;
+      font-size: 26px;
+      background: linear-gradient(45deg, #00b894, #00cec9);
       color: white;
       border: none;
-      border-radius: 15px;
+      border-radius: 20px;
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      font-weight: bold;
     }
     
     #h1:hover:not(:disabled) {
-      transform: scale(1.05);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transform: scale(1.08) rotate(2deg);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
     }
     
     #h1:disabled {
       cursor: not-allowed;
     }
+
+    /* ===== الأنيميشن الحقي ===== */
     
-    h2 {
-      color: #e65100;
-      margin-bottom: 30px;
+    /* الديك يرف بجناحه ويهجم */
+    @keyframes الديك_يهجم {
+      0%, 100% { transform: scale(1) rotate(-2deg); }
+      25% { transform: scale(1.15) rotate(5deg) translateY(-5px); }
+      75% { transform: scale(1.15) rotate(-5deg) translateY(-5px); }
+    }
+    
+    /* الفار يترعش من الخوف */
+    @keyframes الفار_يترعش {
+      0%, 100% { transform: translateX(0) scale(0.85); }
+      25% { transform: translateX(-8px) scale(0.85); }
+      75% { transform: translateX(8px) scale(0.85); }
+    }
+    
+    /* القفص ينزل عليه */
+    @keyframes القفص_ينزل {
+      0% { transform: scale(1) translateY(0); filter: brightness(1); }
+      50% { transform: scale(0.8) translateY(15px); filter: brightness(0.7); }
+      100% { transform: scale(0.8) translateY(0); filter: brightness(0.6); }
+    }
+    
+    /* وميض أحمر للتنبيه */
+    @keyframes وميض_أحمر {
+      0%, 100% { box-shadow: 0 0 0px red; }
+      50% { box-shadow: 0 0 30px red; }
+    }
+
+    .ديك_هجوم {
+      animation: الديك_يهجم 0.4s infinite, وميض_أحمر 0.5s infinite;
+      background: linear-gradient(45deg, #e17055, #d63031) !important;
+    }
+
+    .فار_محبوس {
+      animation: الفار_يترعش 0.15s infinite, القفص_ينزل 0.6s;
+      background: linear-gradient(45deg, #636e72, #2d3436) !important;
+    }
+    
+    .عداد {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #2d3436;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <h2>🐓 الديك المفتش كونان بيحرس المخزن 🐭</h2>
-  <button id="h1">Think well</button>
-  <p style="margin-top:20px; color:#666">افتح الـ Console بـ F12 عشان تشوف استجواب الديك</p>
+  <h2>🐓 المفتش كونان يحرس المخزن 🧀🐭</h2>
+  <button id="h1">🐭 Think well</button>
+  <div class="عداد" id="العداد"></div>
+  <p style="margin-top:15px; color:#555">افتح F12 عشان تسمع استجواب الديك 📝</p>
 
 <script>
 document.getElementById('h1').onclick = function(event) {
-  
-  // الديك مسك الفار
   let الفار_المتهم = event.target
+  let العداد = document.getElementById('العداد')
   
-  // 1. الاستجواب
-  console.log('========== تقرير الديك ==========')
-  console.log('🐓 الديك صاحي: كوكو كو! فيه حركة!')
-  console.log('🐓 الديك: اسم المتهم؟ ' + الفار_المتهم.id)
-  console.log('🐓 الديك: نوعه؟ ' + الفار_المتهم.tagName)
-  console.log('🐓 الديك: آخر كلام قاله؟ ' + الفار_المتهم.innerText)
-  console.log('=================================')
+  // منع الضغط مرتين
+  if(الفار_المتهم.disabled) return
   
-  // 2. العقاب - ينقر الفار
-  الفار_المتهم.style.transform = 'scale(0.85)'
-  الفار_المتهم.style.backgroundColor = '#f44336'
-  الفار_المتهم.innerText = 'سق سق سق... سامحني يا ديك!'
+  // 1. الديك يهجم
+  الفار_المتهم.classList.add('ديك_هجوم')
+  الفار_المتهم.innerHTML = '🐓 كوكو كو! اتقفشت!'
+  console.log('🐓 الديك: مين اللي بيسرق القمح؟!')
+  console.log('🐓 الديك: اسمك؟ ' + الفار_المتهم.id)
   
-  // 3. بعد ثانية ونص... حبس في القفص
   setTimeout(function() {
-    الفار_المتهم.disabled = true // القفص
-    الفار_المتهم.style.opacity = '0.4'
-    الفار_المتهم.innerText = '⛓️ محبوس 3 ثواني'
-    alert('🐓 الديك: الحكم! حبس 3 ثواني في القفص!')
+    // 2. الفار يتحبس في القفص
+    الفار_المتهم.classList.remove('ديك_هجوم')
+    الفار_المتهم.classList.add('فار_محبوس')
+    الفار_المتهم.disabled = true
+    الفار_المتهم.innerHTML = '🐭⛓️ محبوس سق سق'
+    console.log('🐓 الديك: الحكم 3 ثواني حبس!')
     
-    // 4. بعد 3 ثواني يطلعه
-    setTimeout(function() {
-      الفار_المتهم.disabled = false // فتح القفص
-      الفار_المتهم.style.transform = 'scale(1)'
-      الفار_المتهم.style.opacity = '1'
-      الفار_المتهم.style.backgroundColor = '#4caf50'
-      الفار_المتهم.innerText = 'Think well'
-      console.log('🐓 الديك: خلاص سامحتك يا فار... بس عيني عليك!')
-    }, 3000)
-  }, 1500)
+    // 3. عداد تنازلي
+    let ثواني = 3
+    العداد.innerHTML = `⛓️ باقي ${ثواني} ثانية`
+    
+    let المؤقت = setInterval(function() {
+      ثواني--
+      if(ثواني > 0) {
+        العداد.innerHTML = `⛓️ باقي ${ثواني} ثانية`
+      } else {
+        clearInterval(المؤقت)
+        العداد.innerHTML = ''
+        
+        // 4. الديك يصالحه ويطلعه
+        الفار_المتهم.classList.remove('فار_محبوس')
+        الفار_المتهم.disabled = false
+        الفار_المتهم.innerHTML = '🐭 Think well'
+        الفار_المتهم.style.background = 'linear-gradient(45deg, #00b894, #00cec9)'
+        console.log('🐓 الديك: خلاص سامحتك... بس آخر مرة!')
+      }
+    }, 1000)
+  }, 600)
 }
 </script>
 
