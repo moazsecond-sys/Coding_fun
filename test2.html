@@ -2,107 +2,109 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>الحظيرة مقفولة</title>
+  <title>ديك الحظيرة المفتش</title>
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    
-    /* باب حديد يغطي الصفحة كلها */
-    #باب_الحديد {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.95);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999; /* فوق الكل */
       text-align: center;
-    }
-    
-    #باب_الحديد h1 {
-      font-size: 48px;
-      color: #e74c3c;
-      animation: وميض 1s infinite;
-    }
-    
-    @keyframes وميض {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    
-    .المحتوى_العادي {
       padding: 50px;
-      text-align: center;
+      background: #f4f1e8;
     }
-    
-    button {
-      padding: 15px 30px;
-      font-size: 20px;
+    #الفار {
+      padding: 20px 40px;
+      font-size: 24px;
       background: #27ae60;
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 15px;
       cursor: pointer;
+      transition: 0.3s;
+    }
+    #الفار:hover {
+      background: #2ecc71;
+      transform: scale(1.1);
+    }
+    #الفار:disabled {
+      background: #95a5a6;
+      cursor: not-allowed;
+    }
+    .لوحة {
+      margin-top: 30px;
+      font-size: 22px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .مطلوبين {
+      margin-top: 20px;
+      color: #c0392b;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <!-- المحتوى العادي بتاع الصفحة -->
-  <div class="المحتوى_العادي">
-    <h2>🐓 أهلا في حظيرة الديك 🐭</h2>
-    <p>دي صفحة تجريبية</p>
-    <button onclick="alert('أهلا بيك!')">دوس هنا</button>
-    <input placeholder="اكتب هنا...">
-  </div>
-
-  <!-- باب الحديد - مخفي في الأول -->
-  <div id="باب_الحديد" style="display: none;">
-    <h1>🔴 ممنوع الدخول</h1>
-    <p>🐓 الديك: انت مخالف لقوانين الحظيرة</p>
-    <p>الحظر: مدى الحياة</p>
-    <p style="font-size: 14px; margin-top: 30px;">عشان تفك الحظر للتجربة: افتح Console واكتب localStorage.clear()</p>
+  <h1>🐓 أهلا في حظيرة الديك المفتش</h1>
+  <button id="الفار">🐭 أنا فار شقي دوس عليا</button>
+  
+  <div class="لوحة">
+    <p id="العداد">اتقفش: 0 فار</p>
+    <div class="مطلوبين" id="دفتر_المطلوبين">دفتر المطلوبين فاضي</div>
   </div>
 
 <script>
-// الديك يصحى ويبص في الدفتر أول ما الصفحة تفتح
-window.onload = function() {
-  let محظور = localStorage.getItem('حظر_مؤبد')
-  
-  if(محظور === 'نعم') {
-    // 1. نزل باب الحديد
-    document.getElementById('باب_الحديد').style.display = 'flex'
-    
-    // 2. عطل أي كلك في الصفحة
-    document.body.style.pointerEvents = 'none'
-    
-    // 3. عطل أي كتابة
-    document.addEventListener('keydown', function(e) {
-      e.preventDefault()
-    })
-    
-    console.log('🐓 الديك: الباب مقفول ومحدش يدخل!')
+// 1. الديك بيصحى يجهز حاجته
+let عدد_الفيران = 0
+let قايمة_المطلوبين = JSON.parse(localStorage.getItem('دفتر_الديك')) || []
+
+let الفار = document.getElementById('الفار')
+let العداد = document.getElementById('العداد')
+let الدفتر = document.getElementById('دفتر_المطلوبين')
+
+// 2. الديك صنع صفارتين
+let صفارة_تحذير = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg')
+let صوت_الباب = new Audio('https://actions.google.com/sounds/v1/doors/door_close.ogg')
+
+// 3. الديك يبص في الدفتر أول ما يفتح
+function حدث_الدفتر() {
+  if(قايمة_المطلوبين.length > 0) {
+    الدفتر.innerHTML = '🔴 المطلوبين: ' + قايمة_المطلوبين.join(' - ')
   }
 }
+حدث_الدفتر()
 
-// زر المخالفة - لو دوست عليه 3 مرات تتبند
-let عدد_المخالفات = 0
-document.querySelector('button').onclick = function() {
-  عدد_المخالفات++
+// 4. الفار دوست عليه = الديك يشتغل
+الفار.onclick = function() {
   
-  if(عدد_المخالفات >= 3) {
-    localStorage.setItem('حظر_مؤبد', 'نعم') // الديك يكتب اسمك
-    location.reload() // اعمل ريفريش عشان الباب ينزل
-  } else {
-    alert('⚠️ تحذير ' + عدد_المخالفات + '/3')
+  // أ. الديك يصفر تحذير
+  صفارة_تحذير.play()
+  
+  // ب. الديك يزود العداد
+  عدد_الفيران++
+  العداد.innerHTML = 'اتقفش: ' + عدد_الفيران + ' فار'
+  
+  // ج. الديك يسأله عن اسمه ويكتبه
+  let اسم_الفار = prompt('🐓 الديك: قف! اسمك إيه يا حرامي؟')
+  
+  if(اسم_الفار && اسم_الفار.trim() != '') {
+    قايمة_المطلوبين.push(اسم_الفار)
+    
+    // يحط الدفتر في الدرج
+    localStorage.setItem('دفتر_الديك', JSON.stringify(قايمة_المطلوبين))
+    
+    // يحدث الشاشة
+    حدث_الدفتر()
+    
+    alert('🐓 الديك: تمام يا ' + اسم_الفار + ' اسمك اتسجل رقم ' + عدد_الفيران)
+  }
+  
+  // د. لو وصل 3 فران = باب حديد
+  if(عدد_الفيران >= 3) {
+    صوت_الباب.play() // صوت قفلة الباب
+    الفار.disabled = true
+    الفار.innerHTML = '🔒 الحظيرة قفلت'
+    alert('🐓 الديك: 3 فران كفاية! الحظيرة قفلت مؤبد!')
   }
 }
 </script>
