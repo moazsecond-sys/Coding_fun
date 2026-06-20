@@ -2,112 +2,108 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>الديك يحبس الفار دقيقة</title>
+  <title>الحظيرة مقفولة</title>
   <style>
     body {
       font-family: 'Cairo', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* باب حديد يغطي الصفحة كلها */
+    #باب_الحديد {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #2d3436, #636e72);
-      color: white;
+      z-index: 9999; /* فوق الكل */
+      text-align: center;
     }
     
-    #h1 {
-      padding: 30px 60px;
-      font-size: 28px;
-      background: linear-gradient(45deg, #00b894, #55efc4);
+    #باب_الحديد h1 {
+      font-size: 48px;
+      color: #e74c3c;
+      animation: وميض 1s infinite;
+    }
+    
+    @keyframes وميض {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .المحتوى_العادي {
+      padding: 50px;
+      text-align: center;
+    }
+    
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      background: #27ae60;
       color: white;
       border: none;
-      border-radius: 25px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-      font-weight: bold;
-    }
-    
-    #h1:disabled {
-      background: linear-gradient(45deg, #d63031, #e84393);
-      cursor: not-allowed;
-      box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
-    }
-    
-    .عداد {
-      margin-top: 30px;
-      font-size: 32px;
-      font-weight: bold;
-      color: #fdcb6e;
-    }
-    
-    @keyframes وميض_سجن {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(0.95); opacity: 0.7; }
-    }
-    
-    .محبوس_دقيقة {
-      animation: وميض_سجن 0.5s infinite;
     }
   </style>
 </head>
 <body>
 
-  <h2>🐓 الديك: اللي يتجاوز الحد يتحبس دقيقة!</h2>
-  <button id="h1">🐭 دوس عليا</button>
-  <div class="عداد" id="العداد"></div>
+  <!-- المحتوى العادي بتاع الصفحة -->
+  <div class="المحتوى_العادي">
+    <h2>🐓 أهلا في حظيرة الديك 🐭</h2>
+    <p>دي صفحة تجريبية</p>
+    <button onclick="alert('أهلا بيك!')">دوس هنا</button>
+    <input placeholder="اكتب هنا...">
+  </div>
+
+  <!-- باب الحديد - مخفي في الأول -->
+  <div id="باب_الحديد" style="display: none;">
+    <h1>🔴 ممنوع الدخول</h1>
+    <p>🐓 الديك: انت مخالف لقوانين الحظيرة</p>
+    <p>الحظر: مدى الحياة</p>
+    <p style="font-size: 14px; margin-top: 30px;">عشان تفك الحظر للتجربة: افتح Console واكتب localStorage.clear()</p>
+  </div>
 
 <script>
-let الفار_المتهم = document.getElementById('h1')
-let العداد = document.getElementById('العداد')
-let عدد_السرقات = 0 // عداد المحاولات
-
-الفار_المتهم.onclick = function(event) {
+// الديك يصحى ويبص في الدفتر أول ما الصفحة تفتح
+window.onload = function() {
+  let محظور = localStorage.getItem('حظر_مؤبد')
   
-  // لو محبوس خلاص متعملش حاجة
-  if(الفار_المتهم.disabled) return
-  
-  عدد_السرقات++
-  console.log('🐓 الديك: دي سرقة رقم ' + عدد_السرقات)
-  
-  // أول مرة: تحذير
-  if(عدد_السرقات < 3) {
-    الفار_المتهم.innerHTML = '⚠️ تحذير ' + عدد_السرقات + '/3'
-    setTimeout(() => {
-      الفار_المتهم.innerHTML = '🐭 دوس عليا'
-    }, 1000)
-    return
-  }
-  
-  // تجاوز الحد: حبس دقيقة كاملة 60 ثانية
-  الفار_المتهم.disabled = true // قفل القفص
-  الفار_المتهم.classList.add('محبوس_دقيقة')
-  الفار_المتهم.innerHTML = '⛓️ محبوس دقيقة'
-  
-  let ثواني_متبقية = 60 // دقيقة كاملة
-  العداد.innerHTML = `⏱️ باقي ${ثواني_متبقية} ثانية`
-  
-  console.log('🐓 الديك: الحكم النهائي! حبس 60 ثانية!')
-  
-  // كل ثانية ننقص من العداد
-  let المؤقت = setInterval(function() {
-    ثواني_متبقية--
-    العداد.innerHTML = `⛓️ باقي ${ثواني_متبقية} ثانية سجن`
+  if(محظور === 'نعم') {
+    // 1. نزل باب الحديد
+    document.getElementById('باب_الحديد').style.display = 'flex'
     
-    // لما الدقيقة تخلص
-    if(ثواني_متبقية <= 0) {
-      clearInterval(المؤقت)
-      الفار_المتهم.disabled = false // فتح القفص
-      الفار_المتهم.classList.remove('محبوس_دقيقة')
-      الفار_المتهم.innerHTML = '🐭 Think well'
-      العداد.innerHTML = '✅ الديك سامحك... بس لو اتكررت هتبقى ساعة!'
-      عدد_السرقات = 0 // تصفير العداد
-      
-      setTimeout(() => {
-        العداد.innerHTML = ''
-      }, 3000)
-    }
-  }, 1000) // 1000 = ثانية واحدة
+    // 2. عطل أي كلك في الصفحة
+    document.body.style.pointerEvents = 'none'
+    
+    // 3. عطل أي كتابة
+    document.addEventListener('keydown', function(e) {
+      e.preventDefault()
+    })
+    
+    console.log('🐓 الديك: الباب مقفول ومحدش يدخل!')
+  }
+}
+
+// زر المخالفة - لو دوست عليه 3 مرات تتبند
+let عدد_المخالفات = 0
+document.querySelector('button').onclick = function() {
+  عدد_المخالفات++
+  
+  if(عدد_المخالفات >= 3) {
+    localStorage.setItem('حظر_مؤبد', 'نعم') // الديك يكتب اسمك
+    location.reload() // اعمل ريفريش عشان الباب ينزل
+  } else {
+    alert('⚠️ تحذير ' + عدد_المخالفات + '/3')
+  }
 }
 </script>
 
