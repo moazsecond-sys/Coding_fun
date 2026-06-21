@@ -1,46 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
+<meta charset="UTF-8">
+<title>Wasserreiniger</title>
 <style>
-  .sauber { color: blue; font-size: 24px; font-weight: bold; }
-  .schmutzig { color: brown; font-size: 24px; font-weight: bold; }
-  button { padding: 10px; margin: 5px; font-size: 18px; }
-  img { width: 200px; margin-top: 20px; }
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+    background: #f0f0f0;
+  }
+  h1 {
+    color: #333;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #ddd;
+  }
+  button:hover {
+    background: #ccc;
+  }
+  #w {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  img {
+    margin-top: 20px;
+    width: 250px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
 </style>
 </head>
 <body>
-<h2>Wasserreiniger</h2>
-<button onclick="macheSchmutzig()">وسخ الماية</button>
-<button onclick="reinigeWasser()">نضف الماية</button>
 
-<p id="wasser" class="sauber">Wasser ist sauber - الماية نضيفة stark!</p>
-<img id="wasserBild" src="https://i.imgur.com/8Km9tLL.jpg" alt="Wasser sauber">
+<h1>Wasserreiniger</h1>
+
+<button id="dirty">وسخ الماية</button>
+<button id="clean">نضف الماية</button>
+
+<p id="w">Wasser ist sauber! - الماية نضيفة wieder</p>
+<img id="bild" src="imgs/sauber.jpg" alt="Wasser">
+
+<!-- صوت الـ splash -->
+<audio id="splashSound" src="imgs/splash.mp3"></audio>
 
 <script>
-let istSauber = true;
-let bild = document.getElementById("wasserBild");
+const d = document.getElementById("dirty");
+const c = document.getElementById("clean");
+const w = document.getElementById("w");
+const bild = document.getElementById("bild");
+const sound = document.getElementById("splashSound");
 
-function macheSchmutzig() {
-  istSauber = false;
-  let w = document.getElementById("wasser");
-  w.innerHTML = "Wasser ist schmutzig! - الماية وسخة 🫠";
-  w.className = "schmutzig";
+// زرار وسخ الماية
+d.onclick = function() {
+  w.style.color = "brown";
+  w.innerHTML = "Wasser ist schmutzig! - الماية وسخة 😷";
   bild.src = "imgs/schmutzig.jpg"; // صورة ماية وسخة
-  bild.alt = "Wasser schmutzig";
-}
+};
 
-function reinigeWasser() {
-  let w = document.getElementById("wasser");
-  if (istSauber == false) {
-    istSauber = true;
-    w.innerHTML = "Wasser ist sauber! - الماية نضيفة wieder stark!";
-    w.className = "sauber";
-    bild.src = "imgs/sauber.jpg"; // صورة ماية نضيفة
-    bild.alt = "Wasser sauber";
-  } else {
-    w.innerHTML = "Wasser ist schon sauber - الماية نضيفة أصلاً 😄";
-  }
-}
+// زرار نضف الماية + صوت splash
+c.onclick = function() {
+  w.style.color = "blue";
+  w.innerHTML = "Wasser ist sauber! - الماية نضيفة wieder 💙";
+  bild.src = "imgs/sauber.jpg"; // صورة ماية نضيفة
+  
+  // شغل صوت الماية
+  sound.currentTime = 0; // عشان لو دوست كذا مرة ورا بعض
+  sound.play(); // splash! 💦
+};
 </script>
+
 </body>
 </html>
