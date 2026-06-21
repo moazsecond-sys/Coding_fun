@@ -1,93 +1,70 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
+<meta charset="UTF-8">
+<title>حاسبة التلاتة الكبار</title>
 <style>
-  #الفار {
-    padding: 20px 40px;
-    font-size: 22px;
-    background: #27ae60;
+  body {
+    font-family: Tahoma;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+ .box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 350px;
+  }
+  h2 {
+    color: #4a90e2;
+  }
+  button {
+    background: #4a90e2;
     color: white;
     border: none;
-    border-radius: 15px;
+    padding: 12px 25px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.5s;
+    font-size: 16px;
+    margin-top: 15px;
   }
-  
-  /* الفار وهو بيكنس */
-  .بيكنس {
-    animation: كنس 0.3s infinite;
-    background: #f39c12 !important;
+  button:hover {
+    background: #357abd;
   }
-  
-  @keyframes كنس {
-    0% { transform: translateX(-5px) rotate(-5deg); }
-    50% { transform: translateX(5px) rotate(5deg); }
-    100% { transform: translateX(-5px) rotate(-5deg); }
-  }
-  
-  #رسالة_العقاب {
+  #النتيجة {
     margin-top: 20px;
-    font-size: 20px;
-    color: #e74c3c;
+    font-size: 18px;
     font-weight: bold;
-    display: none;
+    color: #333;
   }
 </style>
 </head>
 <body>
 
-<h1>🐓 حظيرة الديك المشرف</h1>
-<button id="الفار">🐭 أنا فار شقي دوس عليا</button>
-<p id="العداد">اتقفش: 0 مرة</p>
-<p id="رسالة_العقاب"></p>
+<div class="box">
+  <h2>💡 حاسبة التلاتة الكبار</h2>
+  <p>المصاريف: [5, 15, 25, 35, 8, 50] جنيه</p>
+  <p>القاعدة: خد اللي أكبر من 20، اضربه في 2، واجمعه</p>
+  <button onclick="احسب()">احسبلي</button>
+  <div id="النتيجة"></div>
+</div>
 
 <script>
-let عدد_المخالفات = 0
-let الفار = document.getElementById('الفار')
-let العداد = document.getElementById('العداد')
-let الرسالة = document.getElementById('رسالة_العقاب')
+function احسب() {
+  const مصاريف = [5, 15, 25, 35, 8, 50];
 
-let صفارة = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg')
+  const الناتج = مصاريف
+   .filter(مبلغ => مبلغ > 20) // 1. شيل الرخيص: [25, 35, 50]
+   .map(مبلغ => مبلغ * 2) // 2. اضرب في 2: [50, 70, 100]
+   .reduce((إجمالي, مبلغ) => إجمالي + مبلغ, 0); // 3. اجمع: 220
 
-الفار.onclick = function() {
-  
-  // لو الفار في عقوبة ومينفعش يدوس
-  if(الفار.disabled) return
-  
-  صفارة.play()
-  عدد_المخالفات++
-  العداد.innerHTML = 'اتقفش: ' + عدد_المخالفات + ' مرة'
-  
-  // لو وصل 3 = عقوبة الكنس
-  if(عدد_المخالفات >= 3) {
-    
-    // 1. الديك يشغل الفار
-    الفار.disabled = true
-    الفار.classList.add('بيكنس') // يبدأ يتهز يمين وشمال
-    الفار.innerHTML = '🧹 بكنس الحظيرة...'
-    الرسالة.style.display = 'block'
-    الرسالة.innerHTML = '🐓 الديك: امسك المكنسة يا كسول! عقابك 10 ثواني كنس'
-    
-    // 2. عد تنازلي 10 ثواني
-    let ثواني_الكنس = 10
-    let مؤقت_الكنس = setInterval(function() {
-      الرسالة.innerHTML = '🐓 الديك: فاضل ' + ثواني_الكنس + ' ثانية كنس... يلا اشتغل'
-      ثواني_الكنس--
-      
-      // 3. خلص عقاب
-      if(ثواني_الكنس < 0) {
-        clearInterval(مؤقت_الكنس)
-        
-        // الديك يعفو عنه
-        الفار.disabled = false
-        الفار.classList.remove('بيكنس')
-        الفار.innerHTML = '🐭 أنا فار شقي دوس عليا'
-        الرسالة.innerHTML = '🐓 الديك: برافو... عفيت عنك المرة دي. بس لو غلطت تاني هزود العقاب!'
-        عدد_المخالفات = 0 // نرجع العداد صفر
-        العداد.innerHTML = 'اتقفش: 0 مرة'
-      }
-    }, 1000) // كل ثانية
-  }
+  document.getElementById('النتيجة').innerHTML =
+    `الإجمالي بعد الفلترة والضرب = <span style="color:#4a90e2">${الناتج} جنيه</span> 🎉`;
 }
 </script>
 
