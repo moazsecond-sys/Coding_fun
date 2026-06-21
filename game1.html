@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h2>Wasserspender</h2>
-<button onclick="gießeWasser()">صب ماية</button>
-<p id="glas">Glas ist leer - الكوباية فاضية</p>
+<h2>Wasserreiniger</h2>
+<button onclick="macheSchmutzig()">وسخ الماية</button>
+<button onclick="reinigeWasser()">نضف الماية</button>
+
+<p id="wasser">Wasser ist sauber - الماية نضيفة stark!</p>
 
 <script>
-let wasser = 0; // wasser = ماء
+let istSauber = true; // istSauber = هل هي نضيفة؟ true = نعم
 
-function gießeWasser() {
-  wasser = wasser + 1;
-  
-  if (wasser == 1) {
-    document.getElementById("glas").innerHTML = "Glas ist halb voll - نص الكوباية";
-  } else if (wasser >= 2) {
-    document.getElementById("glas").innerHTML = "Glas ist voll! - الكوباية مليانة stark!";
-    wasser = 0; // نرجع نصفر عشان نشرب ونسقي تاني
+function macheSchmutzig() {
+  istSauber = false;
+  document.getElementById("wasser").innerHTML = "Wasser ist schmutzig! - الماية وسخة 🫠";
+}
+
+function reinigeWasser() {
+  if (istSauber == false) {
+    istSauber = true;
+    document.getElementById("wasser").innerHTML = "Wasser ist sauber! - الماية نضيفة wieder stark!";
+  } else {
+    document.getElementById("wasser").innerHTML = "Wasser ist schon sauber - الماية نضيفة أصلاً 😄";
   }
 }
 </script>
