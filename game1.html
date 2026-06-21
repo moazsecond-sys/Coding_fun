@@ -1,26 +1,49 @@
 <!DOCTYPE html>
 <html>
+<head>
+<style>
+  .sauber {
+    color: blue;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .schmutzig {
+    color: brown;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  button {
+    padding: 10px;
+    margin: 5px;
+    font-size: 18px;
+  }
+</style>
+</head>
 <body>
 <h2>Wasserreiniger</h2>
 <button onclick="macheSchmutzig()">وسخ الماية</button>
 <button onclick="reinigeWasser()">نضف الماية</button>
 
-<p id="wasser">Wasser ist sauber - الماية نضيفة stark!</p>
+<p id="wasser" class="sauber">Wasser ist sauber - الماية نضيفة stark!</p>
 
 <script>
-let istSauber = true; // istSauber = هل هي نضيفة؟ true = نعم
+let istSauber = true;
 
 function macheSchmutzig() {
   istSauber = false;
-  document.getElementById("wasser").innerHTML = "Wasser ist schmutzig! - الماية وسخة 🫠";
+  let w = document.getElementById("wasser");
+  w.innerHTML = "Wasser ist schmutzig! - الماية وسخة 🫠";
+  w.className = "schmutzig"; // غير اللون لبني
 }
 
 function reinigeWasser() {
+  let w = document.getElementById("wasser");
   if (istSauber == false) {
     istSauber = true;
-    document.getElementById("wasser").innerHTML = "Wasser ist sauber! - الماية نضيفة wieder stark!";
+    w.innerHTML = "Wasser ist sauber! - الماية نضيفة wieder stark!";
+    w.className = "sauber"; // رجع اللون أزرق
   } else {
-    document.getElementById("wasser").innerHTML = "Wasser ist schon sauber - الماية نضيفة أصلاً 😄";
+    w.innerHTML = "Wasser ist schon sauber - الماية نضيفة أصلاً 😄";
   }
 }
 </script>
