@@ -2,21 +2,10 @@
 <html>
 <head>
 <style>
-  .sauber {
-    color: blue;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  .schmutzig {
-    color: brown;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  button {
-    padding: 10px;
-    margin: 5px;
-    font-size: 18px;
-  }
+  .sauber { color: blue; font-size: 24px; font-weight: bold; }
+  .schmutzig { color: brown; font-size: 24px; font-weight: bold; }
+  button { padding: 10px; margin: 5px; font-size: 18px; }
+  img { width: 200px; margin-top: 20px; }
 </style>
 </head>
 <body>
@@ -25,15 +14,19 @@
 <button onclick="reinigeWasser()">نضف الماية</button>
 
 <p id="wasser" class="sauber">Wasser ist sauber - الماية نضيفة stark!</p>
+<img id="wasserBild" src="https://i.imgur.com/8Km9tLL.jpg" alt="Wasser sauber">
 
 <script>
 let istSauber = true;
+let bild = document.getElementById("wasserBild");
 
 function macheSchmutzig() {
   istSauber = false;
   let w = document.getElementById("wasser");
   w.innerHTML = "Wasser ist schmutzig! - الماية وسخة 🫠";
-  w.className = "schmutzig"; // غير اللون لبني
+  w.className = "schmutzig";
+  bild.src = "https://i.imgur.com/5q6Jc9V.jpg"; // صورة ماية وسخة
+  bild.alt = "Wasser schmutzig";
 }
 
 function reinigeWasser() {
@@ -41,7 +34,9 @@ function reinigeWasser() {
   if (istSauber == false) {
     istSauber = true;
     w.innerHTML = "Wasser ist sauber! - الماية نضيفة wieder stark!";
-    w.className = "sauber"; // رجع اللون أزرق
+    w.className = "sauber";
+    bild.src = "https://i.imgur.com/8Km9tLL.jpg"; // صورة ماية نضيفة
+    bild.alt = "Wasser sauber";
   } else {
     w.innerHTML = "Wasser ist schon sauber - الماية نضيفة أصلاً 😄";
   }
