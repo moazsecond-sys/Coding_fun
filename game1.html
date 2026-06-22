@@ -91,10 +91,10 @@
       try {
         // 1. دور بالكلام النضيف
         let { data, error } = await supabase
-       .from('chat_history')
-       .select('bot_reply')
-       .eq('user_msg', cleanMsg)
-       .limit(1);
+  .from('chat_history')
+  .select('bot_reply')
+  .ilike('user_msg', cleanMsg)  // غيرنا eq لـ ilike
+  .limit(1);
 
         if(error) throw error;
 
