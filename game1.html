@@ -1,61 +1,3 @@
-<\!DOCTYPE html>
-<\html>
-<\head>
-  <\title>Draw Pattern<//title>
-  <\style>
-    body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1a1a2e; }
-    canvas { border: 3px solid #eee; border-radius: 20px; cursor: pointer; }
-  </\style>
-<\/head>
-<\body>
-<\canvas id="c" width="300" height="300"><//canvas>
-<\script>
-const cv = document.getElementById('c');
-const ctx = cv.getContext('2d');
-let dots = [], pattern = [], drawing = false;
-
-// نرسم 9 نقط
-for(let i=0; i<9; i++){
-  dots.push({x: 50 + (i%3)*100, y: 50 + Math.floor(i/3)*100})
-}
-
-function draw(){
-  ctx.clearRect(0,0,300,300);
-  // الخط
-  ctx.strokeStyle = '#0f0'; ctx.lineWidth = 8;
-  ctx.beginPath();
-  pattern.forEach((p,i) => i==0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
-  ctx.stroke();
-  
-  // النقط
-  dots.forEach(d => {
-    ctx.fillStyle = pattern.includes(d) ? '#0f0' : '#fff';
-    ctx.beginPath(); ctx.arc(d.x,d.y,20,0,Math.PI*2); ctx.fill();
-  });
-}
-
-cv.onmousedown = e => {
-  drawing = true; pattern = []; check(e);
-}
-cv.onmousemove = e => drawing && check(e);
-cv.onmouseup = () => {
-  drawing = false;
-  alert('النمط بتاعك: ' + pattern.map(p => dots.indexOf(p)+1).join('-'));
-}
-
-function check(e){
-  let x = e.offsetX, y = e.offsetY;
- // dots.forEach(d => {
-  //  if(Math.abs(x-d.x)<25 && Math.abs(y-d.y)<25 && !pattern.includes(d)){
-     // pattern.push(d); draw();
-    }
-  });
-}
-//draw();
-<//script>
-<//body>
-<//html>
-    
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -132,18 +74,25 @@ function check(e){
       chatBox.appendChild(userP);
 
       // البوت يرد بنفس كلامك - زي ما طلبت
-      setTimeout(() => reply(`انت قلت: ${userMsg}`), 500);
-      
-      input.value = '';
-    });
-
-    // Enter يبعت
-    input.addEventListener('keypress', e => {
-      if(e.key === 'Enter') btn.click();
-    });
-
-    // رسالة ترحيب أول ما يفتح
-    reply('أهلاً بيك! اكتب أي حاجة وهكررها وراك 😄');
+      // البوت الذكي - بيفهم الكلام
+setTimeout(() => {
+  let botReply;
+  
+  if(userMsg === "تحبني؟" || userMsg === "بتحبني") {
+    botReply = "أيوه طبعاً بحبك يا ملك الـ ES6 💛";
+  }
+  else if(userMsg.includes("ازيك")) {
+    botReply = "أنا تمام طالما انت رجعت للكود 🔥";
+  }
+  else if(userMsg === "اسمك ايه") {
+    botReply = "أنا بوتك الخاص، صنع إيدك انت";
+  }
+  else {
+    botReply = `انت قلت: ${userMsg}`; // لو مش فاهم يكرر
+  }
+  
+  reply(botReply);
+}, 500);
   </script>
 </body>
 </html>
