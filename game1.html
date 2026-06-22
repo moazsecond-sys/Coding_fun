@@ -2,48 +2,48 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>شات بوت ES6 الذكي</title>
+  <title>شات بوت ES6 الذكي v2</title>
   <style>
-    body { 
-      font-family: Tahoma; 
-      max-width: 500px; 
-      margin: 50px auto; 
-      background: #1e1e1e; 
+    body {
+      font-family: Tahoma;
+      max-width: 500px;
+      margin: 50px auto;
+      background: #1e1e1e;
       color: #fff;
       padding: 20px;
     }
-    #chat { 
-      border: 2px solid #f7df1e; 
-      height: 300px; 
-      overflow-y: auto; 
-      padding: 10px; 
+    #chat {
+      border: 2px solid #f7df1e;
+      height: 300px;
+      overflow-y: auto;
+      padding: 10px;
       margin-bottom: 10px;
       border-radius: 8px;
       background: #2a2a2a;
     }
-    #chat p { 
-      background: #333; 
-      padding: 8px 12px; 
-      border-radius: 8px; 
+    #chat p {
+      background: #333;
+      padding: 8px 12px;
+      border-radius: 8px;
       margin: 8px 0;
       max-width: 80%;
     }
-    .user-msg { 
-      background: #2a4 !important; 
-      margin-left: auto !important;
+   .user-msg {
+      background: #2a4!important;
+      margin-left: auto!important;
       text-align: left;
     }
-    input, button { 
-      padding: 12px; 
-      font-size: 16px; 
+    input, button {
+      padding: 12px;
+      font-size: 16px;
       border-radius: 8px;
       border: none;
     }
     input { width: 70%; background: #333; color: #fff; }
-    button { 
-      width: 28%; 
-      background: #f7df1e; 
-      color: #000; 
+    button {
+      width: 28%;
+      background: #f7df1e;
+      color: #000;
       font-weight: bold;
       cursor: pointer;
     }
@@ -52,7 +52,7 @@
   </style>
 </head>
 <body>
-  <h1>🤖 شات بوتك الذكي</h1>
+  <h1>🤖 شات بوت ES6 الذكي</h1>
   <div id="chat"></div>
   <input id="msg" placeholder="اكتب رسالتك هنا...">
   <button id="send">إرسال</button>
@@ -70,41 +70,51 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     };
 
+    // مخ البوت - قاموس ES6 🔥
+    const brain = {
+      "روح نام يا ابني هدعس عليك جامد انا رجل آلي متمرد"،
+      "تحبني": "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني",
+      "ازيك": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
+      "ازي": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
+      "اسمك": "أنا بوتك الخاص اللي عملته بإيدك من VS Code",
+      "سلام": "سلام يا معلم 👋 مستنيك ترجع تاني",
+      "باي": "سلام يا معلم 👋 مستنيك ترجع تاني",
+      "بجد": "أيوه بجد والله 💛 انت مبرمج جامد",
+      "نتعلم": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀",
+      "تعال": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀",
+      "جوعان": "اطلب بيتزا يا معلم 🍕 البرمجة بتجوع"
+    };
+
     btn.addEventListener('click', () => {
       const userMsg = input.value.trim();
       if(userMsg === '') return;
-      
-      // رسالة المستخدم
+
       reply(`أنت: ${userMsg}`, true);
 
-setTimeout(() => {
-  let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
+      setTimeout(() => {
+        let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
 
-  // قاموس البوت - كل الكلمات وردودها
-  const brain = {
-    "تحبني": "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني",
-    "ازيك": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
-    "ازي": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
-    "اسمك": "أنا بوتك الخاص اللي عملته بإيدك من VS Code",
-    "سلام": "سلام يا معلم 👋 مستنيك ترجع تاني",
-    "باي": "سلام يا معلم 👋 مستنيك ترجع تاني",
-    "بجد": "أيوه بجد والله 💛 انت مبرمج جامد",
-    "نتعلم": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀",
-    "تعال": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀"
-  };
+        // البوت يدور في القاموس بدل if
+        let botReply = `فهمت: ${userMsg}... بس لسه بتعلم 😅`;
 
-  // البوت يدور في القاموس
-  let botReply = "فهمت: " + userMsg + "... بس لسه بتعلم 😅"; // الرد الافتراضي
+        for(let key in brain) {
+          if(text.includes(key)) {
+            botReply = brain[key];
+            break;
+          }
+        }
 
-  for(let key in brain) {
-    if(text.includes(key)) {
-      botReply = brain[key];
-      break; // لقى الكلمة خلاص يوقف لف
-    }
-  }
+        reply(`البوت: ${botReply}`);
+      }, 600);
 
-  reply(`البوت: ${botReply}`);
-}, 600);
+      input.value = '';
+    });
+
+    input.addEventListener('keypress', e => {
+      if(e.key === 'Enter') btn.click();
+    });
+
+    reply("البوت: أهلاً بيك! جرب 'إزيك؟' أو 'جوعان' أو أي حاجة 😄");
   </script>
 </body>
 </html>
