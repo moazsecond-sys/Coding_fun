@@ -77,44 +77,34 @@
       // رسالة المستخدم
       reply(`أنت: ${userMsg}`, true);
 
-      // البوت الذكي - بيفهم العربي بعلامات ومن غير
-      setTimeout(() => {
-        let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
-        let botReply;
-        
-        if(text.includes("تحبني")) {
-  botReply = "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني";
-}
-else if(text.includes("ازيك") || text.includes("ازي")) {
-  botReply = "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟";
-}
-else if(text.includes("اسمك")) {
-  botReply = "أنا بوتك الخاص اللي عملته بإيدك من VS Code";
-}
-else if(text.includes("سلام") || text.includes("باي")) {
-  botReply = "سلام يا معلم 👋 مستنيك ترجع تاني";
-}
-else if(text.includes("بجد")) {
-  botReply = "أيوه بجد والله 💛 انت مبرمج جامد";
-}
-else if(text.includes("نتعلم") || text.includes("تعال")) {
-  botReply = "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀";
-}
-else {
-  botReply = `فهمت: ${userMsg} ... بس لسه بتعلم 😅`;
-}
-        
-        reply(`البوت: ${botReply}`);
-      }, 600);
-      
-      input.value = '';
-    });
+setTimeout(() => {
+  let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
 
-    input.addEventListener('keypress', e => {
-      if(e.key === 'Enter') btn.click();
-    });
+  // قاموس البوت - كل الكلمات وردودها
+  const brain = {
+    "تحبني": "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني",
+    "ازيك": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
+    "ازي": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
+    "اسمك": "أنا بوتك الخاص اللي عملته بإيدك من VS Code",
+    "سلام": "سلام يا معلم 👋 مستنيك ترجع تاني",
+    "باي": "سلام يا معلم 👋 مستنيك ترجع تاني",
+    "بجد": "أيوه بجد والله 💛 انت مبرمج جامد",
+    "نتعلم": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀",
+    "تعال": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀"
+  };
 
-    reply("البوت: أهلاً بيك! جرب تقولي 'إزيك؟' أو 'تحبني؟' 😄");
+  // البوت يدور في القاموس
+  let botReply = "فهمت: " + userMsg + "... بس لسه بتعلم 😅"; // الرد الافتراضي
+
+  for(let key in brain) {
+    if(text.includes(key)) {
+      botReply = brain[key];
+      break; // لقى الكلمة خلاص يوقف لف
+    }
+  }
+
+  reply(`البوت: ${botReply}`);
+}, 600);
   </script>
 </body>
 </html>
