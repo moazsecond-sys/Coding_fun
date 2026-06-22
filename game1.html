@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>شات بوت ES6</title>
+  <title>شات بوت ES6 الذكي</title>
   <style>
     body { 
       font-family: Tahoma; 
@@ -19,20 +19,27 @@
       padding: 10px; 
       margin-bottom: 10px;
       border-radius: 8px;
+      background: #2a2a2a;
     }
     #chat p { 
       background: #333; 
-      padding: 8px; 
-      border-radius: 5px; 
-      margin: 5px 0;
+      padding: 8px 12px; 
+      border-radius: 8px; 
+      margin: 8px 0;
+      max-width: 80%;
+    }
+    .user-msg { 
+      background: #2a4 !important; 
+      margin-left: auto !important;
+      text-align: left;
     }
     input, button { 
-      padding: 10px; 
+      padding: 12px; 
       font-size: 16px; 
-      border-radius: 5px;
+      border-radius: 8px;
       border: none;
     }
-    input { width: 70%; }
+    input { width: 70%; background: #333; color: #fff; }
     button { 
       width: 28%; 
       background: #f7df1e; 
@@ -41,58 +48,67 @@
       cursor: pointer;
     }
     button:hover { background: #ffd700; }
+    h1 { text-align: center; color: #f7df1e; }
   </style>
 </head>
 <body>
-  <h1>🤖 شات بوتك الخاص</h1>
+  <h1>🤖 شات بوتك الذكي</h1>
   <div id="chat"></div>
   <input id="msg" placeholder="اكتب رسالتك هنا...">
   <button id="send">إرسال</button>
 
   <script>
-    // ES6 كله 🔥
     const chatBox = document.getElementById('chat');
     const input = document.getElementById('msg');
     const btn = document.getElementById('send');
 
-    // فانكشن السهم ES6
-    const reply = (text) => {
+    const reply = (text, isUser = false) => {
       let p = document.createElement('p');
-      p.textContent = `البوت: ${text}`;
+      p.textContent = text;
+      if(isUser) p.classList.add('user-msg');
       chatBox.appendChild(p);
-      chatBox.scrollTop = chatBox.scrollHeight; // ينزل تحت تلقائي
+      chatBox.scrollTop = chatBox.scrollHeight;
     };
 
-    // الحدث لما تدوس إرسال
     btn.addEventListener('click', () => {
       const userMsg = input.value.trim();
-      if(userMsg === '') return; // لو فاضي ميبعتش
+      if(userMsg === '') return;
       
-      let userP = document.createElement('p');
-      userP.textContent = `أنت: ${userMsg}`;
-      userP.style.background = '#2a4';
-      chatBox.appendChild(userP);
+      // رسالة المستخدم
+      reply(`أنت: ${userMsg}`, true);
 
-      // البوت يرد بنفس كلامك - زي ما طلبت
-      // البوت الذكي - بيفهم الكلام
-setTimeout(() => {
-  let botReply;
-  
-  if(userMsg === "تحبني؟" || userMsg === "بتحبني") {
-    botReply = "أيوه طبعاً بحبك يا ملك الـ ES6 💛";
-  }
-  else if(userMsg.includes("ازيك")) {
-    botReply = "أنا تمام طالما انت رجعت للكود 🔥";
-  }
-  else if(userMsg === "اسمك ايه") {
-    botReply = "أنا بوتك الخاص، صنع إيدك انت";
-  }
-  else {
-    botReply = `انت قلت: ${userMsg}`; // لو مش فاهم يكرر
-  }
-  
-  reply(botReply);
-}, 500);
+      // البوت الذكي - بيفهم العربي بعلامات ومن غير
+      setTimeout(() => {
+        let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
+        let botReply;
+        
+        if(text.includes("تحبني")) {
+          botReply = "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني";
+        }
+        else if(text.includes("ازيك") || text.includes("ازي")) {
+          botReply = "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟";
+        }
+        else if(text.includes("اسمك")) {
+          botReply = "أنا بوتك الخاص اللي عملته بإيدك من VS Code";
+        }
+        else if(text.includes("سلام") || text.includes("باي")) {
+          botReply = "سلام يا معلم 👋 مستنيك ترجع تاني";
+        }
+        else {
+          botReply = `فهمت: ${userMsg} ... بس لسه بتعلم 😅`;
+        }
+        
+        reply(`البوت: ${botReply}`);
+      }, 600);
+      
+      input.value = '';
+    });
+
+    input.addEventListener('keypress', e => {
+      if(e.key === 'Enter') btn.click();
+    });
+
+    reply("البوت: أهلاً بيك! جرب تقولي 'إزيك؟' أو 'تحبني؟' 😄");
   </script>
 </body>
 </html>
