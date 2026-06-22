@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Draw Pattern</title>
-  <style>
+<\!DOCTYPE html>
+<\html>
+<\head>
+  <\title>Draw Pattern<//title>
+  <\style>
     body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1a1a2e; }
     canvas { border: 3px solid #eee; border-radius: 20px; cursor: pointer; }
-  </style>
-</head>
-<body>
-<canvas id="c" width="300" height="300"></canvas>
-<script>
+  </\style>
+<\/head>
+<\body>
+<\canvas id="c" width="300" height="300"><//canvas>
+<\script>
 const cv = document.getElementById('c');
 const ctx = cv.getContext('2d');
 let dots = [], pattern = [], drawing = false;
@@ -52,6 +52,98 @@ function check(e){
   });
 }
 draw();
-</script>
+<//script>
+<//body>
+<//html>
+    
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>شات بوت ES6</title>
+  <style>
+    body { 
+      font-family: Tahoma; 
+      max-width: 500px; 
+      margin: 50px auto; 
+      background: #1e1e1e; 
+      color: #fff;
+      padding: 20px;
+    }
+    #chat { 
+      border: 2px solid #f7df1e; 
+      height: 300px; 
+      overflow-y: auto; 
+      padding: 10px; 
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    #chat p { 
+      background: #333; 
+      padding: 8px; 
+      border-radius: 5px; 
+      margin: 5px 0;
+    }
+    input, button { 
+      padding: 10px; 
+      font-size: 16px; 
+      border-radius: 5px;
+      border: none;
+    }
+    input { width: 70%; }
+    button { 
+      width: 28%; 
+      background: #f7df1e; 
+      color: #000; 
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #ffd700; }
+  </style>
+</head>
+<body>
+  <h1>🤖 شات بوتك الخاص</h1>
+  <div id="chat"></div>
+  <input id="msg" placeholder="اكتب رسالتك هنا...">
+  <button id="send">إرسال</button>
+
+  <script>
+    // ES6 كله 🔥
+    const chatBox = document.getElementById('chat');
+    const input = document.getElementById('msg');
+    const btn = document.getElementById('send');
+
+    // فانكشن السهم ES6
+    const reply = (text) => {
+      let p = document.createElement('p');
+      p.textContent = `البوت: ${text}`;
+      chatBox.appendChild(p);
+      chatBox.scrollTop = chatBox.scrollHeight; // ينزل تحت تلقائي
+    };
+
+    // الحدث لما تدوس إرسال
+    btn.addEventListener('click', () => {
+      const userMsg = input.value.trim();
+      if(userMsg === '') return; // لو فاضي ميبعتش
+      
+      let userP = document.createElement('p');
+      userP.textContent = `أنت: ${userMsg}`;
+      userP.style.background = '#2a4';
+      chatBox.appendChild(userP);
+
+      // البوت يرد بنفس كلامك - زي ما طلبت
+      setTimeout(() => reply(`انت قلت: ${userMsg}`), 500);
+      
+      input.value = '';
+    });
+
+    // Enter يبعت
+    input.addEventListener('keypress', e => {
+      if(e.key === 'Enter') btn.click();
+    });
+
+    // رسالة ترحيب أول ما يفتح
+    reply('أهلاً بيك! اكتب أي حاجة وهكررها وراك 😄');
+  </script>
 </body>
 </html>
