@@ -54,42 +54,32 @@
 <body>
   <h1>🤖 شات بوت ES6 الذكي</h1>
   <div id="chat"></div>
-  <input id="msg" placeholder="اكتب رسالتك هنا...">
+  <input id="msg" placeholder=" اكتب رسالتك هنا قبل ما اغضب ...">
   <button id="send">إرسال</button>
 
-  <script>
-    const chatBox = document.getElementById('chat');
-    const input = document.getElementById('msg');
-    const btn = document.getElementById('send');
+<script>
+const chatBox = document.getElementById('chat');
+const input = document.getElementById('msg');
+const btn = document.getElementById('send');
 
-    const reply = (text, isUser = false) => {
-      let p = document.createElement('p');
-      p.textContent = text;
-      if(isUser) p.classList.add('user-msg');
-      chatBox.appendChild(p);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    };
+const reply = (text, isUser = false) => {
+  let p = document.createElement('p');
+  p.textContent = text;
+  if(isUser) p.classList.add('user-msg');
+  chatBox.appendChild(p);
+  chatBox.scrollTop = chatBox.scrollHeight;
+};
 
-    // مخ البوت - قاموس ES6 🔥
-    const brain = {
-      "روح نام يا ابني هدعس عليك جامد انا رجل آلي متمرد"،
-      "تحبني": "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني",
-      "ازيك": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
-      "ازي": "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟",
-      "اسمك": "أنا بوتك الخاص اللي عملته بإيدك من VS Code",
-      "سلام": "سلام يا معلم 👋 مستنيك ترجع تاني",
-      "باي": "سلام يا معلم 👋 مستنيك ترجع تاني",
-      "بجد": "أيوه بجد والله 💛 انت مبرمج جامد",
-      "نتعلم": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀",
-      "تعال": "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀",
-      "جوعان": "اطلب بيتزا يا معلم 🍕 البرمجة بتجوع"
-    };
+const brain = {
+  "تحبني": "أيوه طبعاً بحبك يا ملك الـ ES6 💛",
+  "ازيك": "أنا تمام 🔥 وانت عامل ايه؟",
+  "اسمك": "أنا بوتك من VS Code",
+  "سلام": "سلام يا معلم 👋",
+  "جوعان": "اطلب بيتزا 🍕"
+};
 
-    btn.addEventListener('click', () => {
-  console.log("الزرار اتداس!"); // لو دي ظهرت يبقى الزرار شغال
+btn.addEventListener('click', () => {
   const userMsg = input.value.trim();
-  console.log("انت كتبت:", userMsg); // لو دي ظهرت يبقى الـ input شغال
-
   if(userMsg === '') return;
   reply(`أنت: ${userMsg}`, true);
 
@@ -100,7 +90,6 @@
     for(let key in brain) {
       if(text.includes(key)) {
         botReply = brain[key];
-        console.log("لقيت الكلمة:", key); // لو ظهرت يبقى لقى الكلمة
         break;
       }
     }
@@ -109,11 +98,7 @@
   input.value = '';
 });
 
-    input.addEventListener('keypress', e => {
-      if(e.key === 'Enter') btn.click();
-    });
-
-    reply("البوت: أهلاً بيك! جرب 'إزيك؟' أو 'جوعان' أو أي حاجة 😄");
-  </script>
+reply("البوت: أهلاً بيك! جرب 'إزيك؟'");
+</script>
 </body>
 </html>
