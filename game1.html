@@ -86,29 +86,28 @@
     };
 
     btn.addEventListener('click', () => {
-      const userMsg = input.value.trim();
-      if(userMsg === '') return;
+  console.log("الزرار اتداس!"); // لو دي ظهرت يبقى الزرار شغال
+  const userMsg = input.value.trim();
+  console.log("انت كتبت:", userMsg); // لو دي ظهرت يبقى الـ input شغال
 
-      reply(`أنت: ${userMsg}`, true);
+  if(userMsg === '') return;
+  reply(`أنت: ${userMsg}`, true);
 
-      setTimeout(() => {
-        let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
+  setTimeout(() => {
+    let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
+    let botReply = `فهمت: ${userMsg}... بس لسه بتعلم 😅`;
 
-        // البوت يدور في القاموس بدل if
-        let botReply = `فهمت: ${userMsg}... بس لسه بتعلم 😅`;
-
-        for(let key in brain) {
-          if(text.includes(key)) {
-            botReply = brain[key];
-            break;
-          }
-        }
-
-        reply(`البوت: ${botReply}`);
-      }, 600);
-
-      input.value = '';
-    });
+    for(let key in brain) {
+      if(text.includes(key)) {
+        botReply = brain[key];
+        console.log("لقيت الكلمة:", key); // لو ظهرت يبقى لقى الكلمة
+        break;
+      }
+    }
+    reply(`البوت: ${botReply}`);
+  }, 600);
+  input.value = '';
+});
 
     input.addEventListener('keypress', e => {
       if(e.key === 'Enter') btn.click();
