@@ -1,82 +1,57 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Wasserreiniger</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin-top: 50px;
-    background: #f0f0f0;
-  }
-  h1 {
-    color: #333;
-  }
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 10px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background: #ddd;
-  }
-  button:hover {
-    background: #ccc;
-  }
-  #w {
-    font-size: 22px;
-    font-weight: bold;
-    margin-top: 20px;
-  }
-  img {
-    margin-top: 20px;
-    width: 250px;
-    height: auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
-</style>
+  <title>Draw Pattern</title>
+  <style>
+    body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1a1a2e; }
+    canvas { border: 3px solid #eee; border-radius: 20px; cursor: pointer; }
+  </style>
 </head>
 <body>
-
-<h1>Wasserreiniger</h1>
-
-<button id="dirty">وسخ الماية</button>
-<button id="clean">نضف الماية</button>
-
-<p id="w">Wasser ist sauber! - الماية نضيفة wieder</p>
-<img id="bild" src="imgs/sauber.jpg" alt="Wasser">
-
-<!-- صوت الـ splash -->
-<audio id="splashSound" src="imgs/splash.mp3"></audio>
-
+<canvas id="c" width="300" height="300"></canvas>
 <script>
-const d = document.getElementById("dirty");
-const c = document.getElementById("clean");
-const w = document.getElementById("w");
-const bild = document.getElementById("bild");
-const sound = document.getElementById("splashSound");
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+let dots = [], pattern = [], drawing = false;
 
-// زرار وسخ الماية
-d.onclick = function() {
-  w.style.color = "brown";
-  w.innerHTML = "Wasser ist schmutzig! - الماية وسخة 😷";
-  bild.src = "imgs/schmutzig.jpg"; // صورة ماية وسخة
-};
+// نرسم 9 نقط
+for(let i=0; i<9; i++){
+  dots.push({x: 50 + (i%3)*100, y: 50 + Math.floor(i/3)*100})
+}
 
-// زرار نضف الماية + صوت splash
-c.onclick = function() {
-  w.style.color = "blue";
-  w.innerHTML = "Wasser ist sauber! - الماية نضيفة wieder 💙";
-  bild.src = "imgs/sauber.jpg"; // صورة ماية نضيفة
+function draw(){
+  ctx.clearRect(0,0,300,300);
+  // الخط
+  ctx.strokeStyle = '#0f0'; ctx.lineWidth = 8;
+  ctx.beginPath();
+  pattern.forEach((p,i) => i==0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+  ctx.stroke();
   
-  // شغل صوت الماية
-  sound.currentTime = 0; // عشان لو دوست كذا مرة ورا بعض
-  sound.play(); // splash! 💦
-};
-</script>
+  // النقط
+  dots.forEach(d => {
+    ctx.fillStyle = pattern.includes(d) ? '#0f0' : '#fff';
+    ctx.beginPath(); ctx.arc(d.x,d.y,20,0,Math.PI*2); ctx.fill();
+  });
+}
 
+cv.onmousedown = e => {
+  drawing = true; pattern = []; check(e);
+}
+cv.onmousemove = e => drawing && check(e);
+cv.onmouseup = () => {
+  drawing = false;
+  alert('النمط بتاعك: ' + pattern.map(p => dots.indexOf(p)+1).join('-'));
+}
+
+function check(e){
+  let x = e.offsetX, y = e.offsetY;
+  dots.forEach(d => {
+    if(Math.abs(x-d.x)<25 && Math.abs(y-d.y)<25 && !pattern.includes(d)){
+      pattern.push(d); draw();
+    }
+  });
+}
+draw();
+</script>
 </body>
 </html>
