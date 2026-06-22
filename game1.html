@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>شات بوت ES6 الذكي v2</title>
+  <title>شات بوت ES6 العبقري v3</title>
   <style>
     body {
       font-family: Tahoma;
@@ -13,7 +13,7 @@
       padding: 20px;
     }
     #chat {
-      border: 2px solid #f7df1e;
+      border: 2px solid #3ecf8e;
       height: 300px;
       overflow-y: auto;
       padding: 10px;
@@ -28,7 +28,7 @@
       margin: 8px 0;
       max-width: 80%;
     }
-   .user-msg {
+  .user-msg {
       background: #2a4!important;
       margin-left: auto!important;
       text-align: left;
@@ -42,63 +42,98 @@
     input { width: 70%; background: #333; color: #fff; }
     button {
       width: 28%;
-      background: #f7df1e;
+      background: #3ecf8e;
       color: #000;
       font-weight: bold;
       cursor: pointer;
     }
-    button:hover { background: #ffd700; }
-    h1 { text-align: center; color: #f7df1e; }
+    button:hover { background: #2dd4bf; }
+    h1 { text-align: center; color: #3ecf8e; }
+   .loading { color: #f7df1e; font-size: 12px; }
   </style>
 </head>
 <body>
-  <h1>🤖 شات بوت ES6 الذكي</h1>
+  <h1>🧠 شات بوت Supabase العبقري</h1>
   <div id="chat"></div>
-  <input id="msg" placeholder=" اكتب رسالتك هنا قبل ما اغضب ...">
+  <input id="msg" placeholder="اكتب رسالتك... البوت فاكرك 💾">
   <button id="send">إرسال</button>
 
-<script>
-const chatBox = document.getElementById('chat');
-const input = document.getElementById('msg');
-const btn = document.getElementById('send');
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-const reply = (text, isUser = false) => {
-  let p = document.createElement('p');
-  p.textContent = text;
-  if(isUser) p.classList.add('user-msg');
-  chatBox.appendChild(p);
-  chatBox.scrollTop = chatBox.scrollHeight;
-};
+    // ===== حط بياناتك هنا =====
+    const SUPABASE_URL = 'https://mirrxytqttjglglxrarq.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pcnJ4eXRxdHRqZ2xnbHhyYXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MjE1MDMsImV4cCI6MjA5NjA5NzUwM30.I8EZoSupeqYZxPQvjNa4y0kq8XXZzfobhcHSFfVSbyo'
+    // ==========================
 
-const brain = {
-  "تحبني": "أيوه طبعاً بحبك يا ملك الـ ES6 💛",
-  "ازيك": "أنا تمام 🔥 وانت عامل ايه؟",
-  "اسمك": "أنا بوتك من VS Code",
-  "سلام": "سلام يا معلم 👋",
-  "جوعان": "اطلب بيتزا 🍕"
-};
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const chatBox = document.getElementById('chat');
+    const input = document.getElementById('msg');
+    const btn = document.getElementById('send');
 
-btn.addEventListener('click', () => {
-  const userMsg = input.value.trim();
-  if(userMsg === '') return;
-  reply(`أنت: ${userMsg}`, true);
+    const reply = (text, isUser = false) => {
+      let p = document.createElement('p');
+      p.textContent = text;
+      if(isUser) p.classList.add('user-msg');
+      chatBox.appendChild(p);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    };
 
-  setTimeout(() => {
-    let text = userMsg.toLowerCase().replace(/[؟?!.,]/g, '').trim();
-    let botReply = `فهمت: ${userMsg}... بس لسه بتعلم 😅`;
+    const loading = (show) => {
+      if(show) reply("البوت: بيفكر... 🧠", false);
+      else chatBox.lastChild?.remove();
+    };
 
-    for(let key in brain) {
-      if(text.includes(key)) {
-        botReply = brain[key];
-        break;
+    // مخ البوت بقى داتا بيز ES6
+    async function getBotReply(userMsg) {
+      try {
+        // 1. دور لو قولتها قبل كده
+        let { data, error } = await supabase
+        .from('chat_history')
+        .select('bot_reply')
+        .eq('user_msg', userMsg)
+        .limit(1);
+
+        if(error) throw error;
+
+        if(data && data.length > 0) {
+          return data[0].bot_reply + " 😎 فاكرك قولتها قبل كده";
+        }
+
+        // 2. كلمة جديدة - رد ذكي + احفظها
+        let newReply = `أول مرة أسمع "${userMsg}"... حفظتها عندي في الذاكرة 🧠`;
+
+        await supabase.from('chat_history').insert({
+          user_msg: userMsg,
+          bot_reply: newReply
+        });
+
+        return newReply;
+      } catch(err) {
+        console.error(err);
+        return "في مشكلة في الذاكرة... اتأكد من الـ URL والـ Key 🔧";
       }
     }
-    reply(`البوت: ${botReply}`);
-  }, 600);
-  input.value = '';
-});
 
-reply("البوت: أهلاً بيك! جرب 'إزيك؟'");
-</script>
+    btn.addEventListener('click', async () => {
+      const userMsg = input.value.trim();
+      if(userMsg === '') return;
+
+      reply(`أنت: ${userMsg}`, true);
+      loading(true);
+
+      let botReply = await getBotReply(userMsg);
+      loading(false);
+      reply(`البوت: ${botReply}`);
+
+      input.value = '';
+    });
+
+    input.addEventListener('keypress', e => {
+      if(e.key === 'Enter') btn.click();
+    });
+
+    reply("البوت: أهلاً يا عبقري! أنا بذاكرة Supabase دلوقتي. قولي أي حاجة وهفتكرها 💾");
+  </script>
 </body>
 </html>
