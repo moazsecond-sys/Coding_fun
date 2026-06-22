@@ -83,26 +83,26 @@
         let botReply;
         
         if(text.includes("تحبني")) {
-          botReply = "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني";
-        }
-        else if(text.includes("ازيك") || text.includes("ازي")) {
-          botReply = "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟";
-        }
-        else if(text.includes("اسمك")) {
-          botReply = "أنا بوتك الخاص اللي عملته بإيدك من VS Code";
-        }
-        else if(text.includes("سلام") || text.includes("باي")) {
-          botReply = "سلام يا معلم 👋 مستنيك ترجع تاني";
-          else if(text.includes("بجد")) {
-          botReply = "أيوه بجد والله 💛 انت مبرمج جامد";
+  botReply = "أيوه طبعاً بحبك يا ملك الـ ES6 💛 انت اللي صنعتني";
 }
-       else if(text.includes("نتعلم") || text.includes("تعال")) {
-       botReply = "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀";
+else if(text.includes("ازيك") || text.includes("ازي")) {
+  botReply = "أنا تمام طالما انت رجعت للكود 🔥 وانت عامل ايه؟";
 }
-        }
-        else {
-          botReply = `فهمت: ${userMsg} ... بس لسه بتعلم 😅`;
-        }
+else if(text.includes("اسمك")) {
+  botReply = "أنا بوتك الخاص اللي عملته بإيدك من VS Code";
+}
+else if(text.includes("سلام") || text.includes("باي")) {
+  botReply = "سلام يا معلم 👋 مستنيك ترجع تاني";
+}
+else if(text.includes("بجد")) {
+  botReply = "أيوه بجد والله 💛 انت مبرمج جامد";
+}
+else if(text.includes("نتعلم") || text.includes("تعال")) {
+  botReply = "يلا بينا نتعلم ES6 سوا! انت المعلم وأنا التلميذ 🚀";
+}
+else {
+  botReply = `فهمت: ${userMsg} ... بس لسه بتعلم 😅`;
+}
         
         reply(`البوت: ${botReply}`);
       }, 600);
