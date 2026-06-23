@@ -84,15 +84,16 @@
     };
 
     async function getBotReply(userMsg) {
+  leasync function getBotReply(userMsg) {
   let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
 
   try {
     // 1. دور بالكلام النضيف
     let { data, error } = await supabase
-    .from('chat_history')
-    .select('bot_reply')
-    .eq('user_msg', cleanMsg)
-    .limit(1);
+   .from('chat_history')
+   .select('bot_reply')
+   .eq('user_msg', cleanMsg)
+   .limit(1);
 
     if(error) throw error;
 
@@ -109,7 +110,7 @@
       bot_reply: newReply
     }, { onConflict: 'user_msg' });
 
-    return newReply; // هنا مفيش "فاكرك"
+    return newReply;
   } catch(err) {
     console.error(err);
     return "في مشكلة في الذاكرة... اتأكد من الـ URL والـ Key والـ RLS 🔧";
