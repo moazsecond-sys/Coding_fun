@@ -84,8 +84,8 @@
     };
 
 async function getBotReply(userMsg) {
-  let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
-  console.log("بدور على:", cleanMsg); // دي الكاميرا
+let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
+console.log("بدور على:", cleanMsg); // دي الكاميرا
 
   try {
     let { data, error } = await supabase
