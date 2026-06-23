@@ -86,7 +86,6 @@
 async function getBotReply(userMsg) {
   let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
 
-  // ردود "فاكرك" العشوائية
   const memoryReplies = [
     "😎 فاكرك قولتها قبل كده حتى بالمسافات",
     "🧠 أيوه دي مش غريبة عليا، قلتها قبل كده",
@@ -95,20 +94,18 @@ async function getBotReply(userMsg) {
 
   try {
     let { data, error } = await supabase
-  .from('chat_history')
-  .select('bot_reply')
-  .eq('user_msg', cleanMsg)
-  .limit(1);
+ .from('chat_history')
+ .select('bot_reply')
+ .eq('user_msg', cleanMsg)
+ .limit(1);
 
     if(error) throw error;
 
     if(data && data.length > 0) {
-      // اختار رد عشوائي من المصفوفة
       let randomReply = memoryReplies[Math.floor(Math.random() * memoryReplies.length)];
-      return data[0].bot_reply + " + randomReply;
+      return `${data[0].bot_reply} ${randomReply}`; // هنا صلحتها
     }
 
-    // كلمة جديدة
     let newReply = `أول مرة أسمع "${userMsg}"... حفظتها في الذاكرة 🧠`;
     await supabase.from('chat_history').upsert({
       user_msg: cleanMsg,
