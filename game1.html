@@ -85,28 +85,24 @@
 
 async function getBotReply(userMsg) {
   let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
-
-  const memoryReplies = [
-    "😎 فاكرك قولتها قبل كده حتى بالمسافات",
-    "🧠 أيوه دي مش غريبة عليا، قلتها قبل كده",
-    "💾 الذاكرة سجلت دي خلاص يا معلم"
-  ];
+  console.log("بدور على:", cleanMsg); // دي الكاميرا
 
   try {
     let { data, error } = await supabase
- .from('chat_history')
- .select('bot_reply')
- .eq('user_msg', cleanMsg)
- .limit(1);
+      .from('chat_history')
+      .select('bot_reply, user_msg')
+      .eq('user_msg', cleanMsg)
+      .limit(1);
+
+    console.log("النتيجة من Supabase:", data); // ودي الصورة
 
     if(error) throw error;
 
     if(data && data.length > 0) {
-      let randomReply = memoryReplies[Math.floor(Math.random() * memoryReplies.length)];
-      return `${data[0].bot_reply} ${randomReply}`; // هنا صلحتها
+      return `${data[0].bot_reply} 😎 فاكرك قولتها قبل كده`;
     }
 
-    let newReply = `أول مرة أسمع "${userMsg}"... حفظتها في الذاكرة 🧠`;
+    let newReply = `أول مرة أسمع "${userMsg}"... حفظتها 🧠`;
     await supabase.from('chat_history').upsert({
       user_msg: cleanMsg,
       bot_reply: newReply
@@ -115,10 +111,9 @@ async function getBotReply(userMsg) {
     return newReply;
   } catch(err) {
     console.error(err);
-    return "في مشكلة في الذاكرة... اتأكد من الـ URL والـ Key والـ RLS 🔧";
+    return "في مشكلة في الذاكرة 🔧";
   }
 }
-
     btn.addEventListener('click', async () => {
       const userMsg = input.value.trim();
       if(userMsg === '') return;
