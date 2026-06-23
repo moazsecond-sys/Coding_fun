@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>شات بوت Supabase الذاكرة الذكية v4</title>
+  <title>شات بوت Supabase الذاكرة الذكية v4.1</title>
   <style>
     body {
       font-family: Tahoma;
@@ -28,7 +28,7 @@
       margin: 8px 0;
       max-width: 80%;
     }
-   .user-msg {
+  .user-msg {
       background: #2a4d3a!important;
       margin-left: auto!important;
       text-align: left;
@@ -52,7 +52,7 @@
   </style>
 </head>
 <body>
-  <h1>🧠 شات بوت الذاكرة الذكية v4</h1>
+  <h1>🧠 شات بوت الذاكرة الذكية v4.1</h1>
   <div id="chat"></div>
   <input id="msg" placeholder="اكتب رسالتك... البوت فاكر المسافات والحركات 😎">
   <button id="send">إرسال</button>
@@ -83,18 +83,16 @@
       else chatBox.lastChild?.remove();
     };
 
-    // مخ البوت ES6 + ذاكرة ذكية
     async function getBotReply(userMsg) {
-      // الحركة السحرية: نشيل المسافات + نوحد الحروف
       let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
 
       try {
         // 1. دور بالكلام النضيف
         let { data, error } = await supabase
-  .from('chat_history')
-  .select('bot_reply')
-  .ilike('user_msg', cleanMsg)  // غيرنا eq لـ ilike
-  .limit(1);
+         .from('chat_history')
+         .select('bot_reply')
+         .eq('user_msg', cleanMsg)
+         .limit(1);
 
         if(error) throw error;
 
@@ -102,18 +100,18 @@
           return data[0].bot_reply + " 😎 فاكرك قولتها قبل كده حتى بالمسافات";
         }
 
-        // 2. كلمة جديدة - احفظ النسخة النضيفة
+        // 2. كلمة جديدة - upsert عشان ميكررش لو حصل غلطة
         let newReply = `أول مرة أسمع "${userMsg}"... حفظتها في الذاكرة 🧠`;
 
-        await supabase.from('chat_history').insert({
+        await supabase.from('chat_history').upsert({
           user_msg: cleanMsg,
           bot_reply: newReply
-        });
+        }, { onConflict: 'user_msg' });
 
         return newReply;
       } catch(err) {
         console.error(err);
-        return "في مشكلة في الذاكرة... اتأكد من الـ URL والـ Key 🔧";
+        return "في مشكلة في الذاكرة... اتأكد من الـ URL والـ Key والـ RLS 🔧";
       }
     }
 
@@ -135,7 +133,7 @@
       if(e.key === 'Enter') btn.click();
     });
 
-    reply("البوت: أهلاً يا عبقري! ذاكرتي بقت ذكية دلوقتي. اكتبلي 'مرحبا' بمسافة أو من غير وهفتكرك 💾");
+    reply("البوت: أهلاً يا عبقري! v4.1 بقيت بذاكرة حديد. اكتبلي 'مرحبا' بمسافة أو من غير وهفتكرك 💾");
   </script>
 </body>
 </html>
