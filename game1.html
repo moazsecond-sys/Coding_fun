@@ -1,23 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-<title>بوت ذكي v4.4</title>
+<meta charset="UTF-8">
+<title>بوت ذكي v4.4.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:'Segoe UI';max-width:600px;margin:50px auto;padding:20px;background:#f5f5f5}
-#chat{height:400px;border:2px solid #4CAF50;border-radius:10px;padding:15px;overflow-y:auto;background:white;margin-bottom:10px}
-.msg{margin:8px 0;padding:10px;border-radius:8px}
-.user{background:#DCF8C6;text-align:right}
-.bot{background:#E8E8E8}
-input{width:75%;padding:12px;border:2px solid #4CAF50;border-radius:8px;font-size:16px}
-button{width:22%;padding:12px;background:#4CAF50;color:white;border:none;border-radius:8px;cursor:pointer;font-size:16px}
+body{font-family:'Segoe UI',Tahoma;margin:0;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh}
+.container{max-width:600px;margin:0 auto;background:white;border-radius:15px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+h2{text-align:center;color:#4CAF50;margin-bottom:20px}
+#chat{height:400px;border:2px solid #4CAF50;border-radius:10px;padding:15px;overflow-y:auto;background:#f9f9f9;margin-bottom:15px}
+.msg{margin:10px 0;padding:12px 15px;border-radius:12px;max-width:80%;word-wrap:break-word}
+.user{background:#DCF8C6;margin-left:auto;text-align:right}
+.bot{background:#E3F2FD;margin-right:auto}
+.input-area{display:flex;gap:10px}
+input{flex:1;padding:14px;border:2px solid #4CAF50;border-radius:10px;font-size:16px}
+button{padding:14px 25px;background:#4CAF50;color:white;border:none;border-radius:10px;cursor:pointer;font-size:16px;font-weight:bold}
 button:hover{background:#45a049}
+button:active{transform:scale(0.98)}
 </style>
 </head>
 <body>
-<h2>🧠 بوت ذكي v4.4 - بذاكرة برو</h2>
+<div class="container">
+<h2>🧠 بوت ذكي v4.4.1 - بذاكرة برو</h2>
 <div id="chat"></div>
+<div class="input-area">
 <input id="msg" placeholder="اكتبلي أي حاجة...">
 <button onclick="send()">إرسال</button>
+</div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -30,69 +40,74 @@ const input = document.getElementById('msg');
 
 function addMsg(text, who){
  chat.innerHTML += `<div class="msg ${who}">${text}</div>`;
- chat.scrollTop = chat.scrollTopMax;
+ // التعديل المهم v4.4.1 عشان الموبايل
+ chat.scrollTop = chat.scrollHeight;
 }
 
 async function send(){
- let userMsg = input.value;
+ let userMsg = input.value.trim();
  if(!userMsg) return;
- 
+
  addMsg(userMsg, 'user');
  input.value = '';
- 
- // تنضيف أقوى v4.4
- let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,،]/g, '');
- 
- // شوف الكلمة دي اتقالت كام مرة
- const { data } = await supabase
-  .from('chat_history')
-  .select('*')
-  .eq('user_msg', cleanMsg);
- 
+
+ try {
+ let cleanMsg = userMsg.toLowerCase().replace(/[؟?!.,،\s]+$/g, '');
+
+ const { data, error } = await supabase
+ .from('chat_history')
+ .select('*')
+ .eq('user_msg', cleanMsg)
+ .limit(1);
+
+ if(error) throw error;
+
  let reply = '';
- 
- if(data.length === 0){
-  // أول مرة
+
+ if(!data || data.length === 0){
   if(cleanMsg.includes('اسمي') || cleanMsg.includes('انا')){
-   reply = `تشرفنا! هحفظ اسمك عندي 🧠 قولي اسمك بس؟`;
+   reply = `تشرفنا! قولي اسمك كامل عشان أحفظه 🧠`;
   } else {
    reply = `أول مرة أسمع "${userMsg}"... حفظتها في الذاكرة 🧠`;
   }
   await supabase.from('chat_history').insert({
-   user_msg: cleanMsg, 
+   user_msg: cleanMsg,
    bot_reply: reply,
    count: 1
   });
  } else {
-  // قولتها قبل كده
-  let count = data[0].count + 1;
+  let count = (data[0].count || 1) + 1;
   let savedReply = data[0].bot_reply;
-  
-  // لو بيقول اسمه نحفظه
+
   if(cleanMsg.includes('اسمي') && userMsg.split(' ').length > 1){
-   let name = userMsg.split('اسمي')[1].trim();
+   let name = userMsg.replace('اسمي','').trim();
    await supabase.from('chat_history').update({bot_reply: `أهلاً ${name} يا غالي 🌸`}).eq('user_msg', cleanMsg);
    reply = `أهلاً ${name} يا غالي 🌸 دي المرة رقم ${count} نتكلم`;
   } else {
    const extras = [
     `😎 فاكرك قولتها قبل كده`,
     `🧠 دي المرة رقم ${count} يا معلم`,
-    `💪 ذاكرتي حديد`,
+    `💪 ذاكرتي حديد والله`,
     `🌸 منور تاني`,
-    `🔥 رجعت امتى؟`
+    `🔥 رجعت امتى يا بطل`
    ];
    let randomExtra = extras[Math.floor(Math.random() * extras.length)];
    reply = savedReply + ' + randomExtra;
   }
-  
+
   await supabase.from('chat_history').update({count: count}).eq('user_msg', cleanMsg);
  }
- 
+
  addMsg(reply, 'bot');
+
+ } catch(err){
+ addMsg('⚠️ حصل خطأ: ' + err.message + ' اتأكد من URL والمفتاح بتوع Supabase', 'bot');
+ console.error(err);
+ }
 }
 
 input.addEventListener('keypress', e => {if(e.key==='Enter') send()});
-addMsg('أهلاً! أنا بوت v4.4 الجديد. قولي اسمك عشان أحفظه 😊', 'bot');
+addMsg('أهلاً! أنا بوت v4.4.1 الجديد. جرب تقولي اسمك 😊', 'bot');
 </script>
 </body>
 </html>
