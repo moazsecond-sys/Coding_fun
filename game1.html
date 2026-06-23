@@ -70,9 +70,12 @@ async function send(){
 
  if(error) throw error;
 
- let reply = data.length === 0
-? `أول مرة أسمع "${userMsg}"... حفظتها 🧠`
- : data[0].bot_reply + ` 😎 المرة رقم ${(data[0].count||1)+1}`;
+ let reply;
+if(data.length === 0){
+ reply = `أول مرة أسمع "${userMsg}"... حفظتها 🧠`;
+} else {
+ reply = `فاكرك يا معلم 😎 دي المرة رقم ${(data[0].count||1)+1} تقول "${userMsg}"`;
+}
 
  if(data.length === 0){
  await client.from('chat_history').insert({user_msg: cleanMsg, bot_reply: reply, count: 1});
