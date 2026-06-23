@@ -84,36 +84,37 @@
     };
 
     async function getBotReply(userMsg) {
-      let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
+  let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
 
-      try {
-        // 1. دور بالكلام النضيف
-        let { data, error } = await supabase
-         .from('chat_history')
-         .select('bot_reply')
-         .eq('user_msg', cleanMsg)
-         .limit(1);
+  try {
+    // 1. دور بالكلام النضيف
+    let { data, error } = await supabase
+    .from('chat_history')
+    .select('bot_reply')
+    .eq('user_msg', cleanMsg)
+    .limit(1);
 
-        if(error) throw error;
+    if(error) throw error;
 
-        if(data && data.length > 0) {
-          return data[0].bot_reply + " 😎 فاكرك قولتها قبل كده حتى بالمسافات";
-        }
-
-        // 2. كلمة جديدة - upsert عشان ميكررش لو حصل غلطة
-        let newReply = `أول مرة أسمع "${userMsg}"... حفظتها في الذاكرة 🧠`;
-
-        await supabase.from('chat_history').upsert({
-          user_msg: cleanMsg,
-          bot_reply: newReply
-        }, { onConflict: 'user_msg' });
-
-        return newReply;
-      } catch(err) {
-        console.error(err);
-        return "في مشكلة في الذاكرة... اتأكد من الـ URL والـ Key والـ RLS 🔧";
-      }
+    if(data && data.length > 0) {
+      // لو لقيناه قديم يبقى نقوله فاكرك
+      return data[0].bot_reply + " 😎 فاكرك قولتها قبل كده حتى بالمسافات";
     }
+
+    // 2. كلمة جديدة - سجلها ورد الرد العادي من غير فاكرك
+    let newReply = `أول مرة أسمع "${userMsg}"... حفظتها في الذاكرة 🧠`;
+
+    await supabase.from('chat_history').upsert({
+      user_msg: cleanMsg,
+      bot_reply: newReply
+    }, { onConflict: 'user_msg' });
+
+    return newReply; // هنا مفيش "فاكرك"
+  } catch(err) {
+    console.error(err);
+    return "في مشكلة في الذاكرة... اتأكد من الـ URL والـ Key والـ RLS 🔧";
+  }
+}
 
     btn.addEventListener('click', async () => {
       const userMsg = input.value.trim();
