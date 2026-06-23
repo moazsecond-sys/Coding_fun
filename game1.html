@@ -83,28 +83,33 @@
       else chatBox.lastChild?.remove();
     };
 
-    async function getBotReply(userMsg) {
-  leasync function getBotReply(userMsg) {
+async function getBotReply(userMsg) {
   let cleanMsg = userMsg.trim().toLowerCase().replace(/[؟?!.,]/g, '');
 
+  // ردود "فاكرك" العشوائية
+  const memoryReplies = [
+    "😎 فاكرك قولتها قبل كده حتى بالمسافات",
+    "🧠 أيوه دي مش غريبة عليا، قلتها قبل كده",
+    "💾 الذاكرة سجلت دي خلاص يا معلم"
+  ];
+
   try {
-    // 1. دور بالكلام النضيف
     let { data, error } = await supabase
-   .from('chat_history')
-   .select('bot_reply')
-   .eq('user_msg', cleanMsg)
-   .limit(1);
+  .from('chat_history')
+  .select('bot_reply')
+  .eq('user_msg', cleanMsg)
+  .limit(1);
 
     if(error) throw error;
 
     if(data && data.length > 0) {
-      // لو لقيناه قديم يبقى نقوله فاكرك
-      return data[0].bot_reply + " 😎 فاكرك قولتها قبل كده حتى بالمسافات";
+      // اختار رد عشوائي من المصفوفة
+      let randomReply = memoryReplies[Math.floor(Math.random() * memoryReplies.length)];
+      return data[0].bot_reply + " + randomReply;
     }
 
-    // 2. كلمة جديدة - سجلها ورد الرد العادي من غير فاكرك
+    // كلمة جديدة
     let newReply = `أول مرة أسمع "${userMsg}"... حفظتها في الذاكرة 🧠`;
-
     await supabase.from('chat_history').upsert({
       user_msg: cleanMsg,
       bot_reply: newReply
