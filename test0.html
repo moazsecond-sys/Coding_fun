@@ -2,59 +2,35 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مسرحية x-transition - بيت السيرفرات</title>
-  
-  <!-- Tailwind CSS عشان الشكل يبقى شيك -->
+  <title>سمسار الألوان</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Alpine.js العفاريت كلها -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x/dist/cdn.min.js"></script>
-  
-  <style>
-    /* عشان x-cloak الستارة السودا */
-    [x-cloak] { display: none !important; }
-  </style>
 </head>
-<body class="bg-gradient-to-br from-purple-900 via-blue-900 to-black min-h-screen flex items-center justify-center p-4">
-  
-  <!-- بيت السيرفرات كله هنا -->
-  <div x-data="{ مفتوح: false }" class="text-center">
-    
-    <h1 class="text-4xl font-bold text-white mb-8">🎭 مسرحية العفريت الراقص 💃</h1>
-    
-    <!-- الزرار اللي هينده على x-on -->
-    <button 
-      @click="مفتوح = !مفتوح"
-      class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition">
-      <span x-text="مفتوح ? 'خبي العفريت' : 'طلع العفريت'"></span>
-    </button>
+<body>
 
-    <!-- العفريت + الراقصة x-transition -->
-    <div 
-      x-show="مفتوح"
-      x-cloak
-      x-transition:enter="transition ease-out duration-500"
-      x-transition:enter-start="opacity-0 scale-75 -translate-y-10"
-      x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-      
-      x-transition:leave="transition ease-in duration-300"
-      x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-      x-transition:leave-end="opacity-0 scale-75 translate-y-10"
-      
-      class="mt-10 bg-white/20 backdrop-blur-lg p-10 rounded-3xl shadow-2xl border-white/30">
-      
-      <div class="text-8xl mb-4">👻</div>
-      <h2 class="text-3xl font-bold text-white mb-2">بوو! انا العفريت</h2>
-      <p class="text-xl text-white/80">بس طالع برقصة سلو موشن مش فووش ناشف 😎</p>
-      
-    </div>
+  <!-- بيت السيرفرات كله -->
+  <div x-data="{
+    الالوان: ['bg-purple-900', 'bg-blue-900', 'bg-green-900', 'bg-red-900', 'bg-pink-900'],
+    رقم_اللون: 0,
+    غير_اللون() {
+      this.رقم_اللون = (this.رقم_اللون + 1) % this.الوان.length
+    }
+  }" 
+  :class="الوان[رقم_اللون]" 
+  class="min-h-screen flex-col items-center justify-center transition-all duration-500">
     
-    <!-- شرح صغير تحت -->
-    <div class="mt-12 text-white/60 text-sm">
-      <p>الكود ده بيستخدم: x-data + x-show + x-on + x-transition + x-cloak</p>
-      <p>شلة العفاريت الأساسية كلها في ملف واحد 😂</p>
-    </div>
+    <h1 class="text-5xl font-bold text-white mb-8">🎭 بيت السيرفرات الملون</h1>
+    
+    <p class="text-2xl text-white/80 mb-10">
+      اللون الحالي: <span x-text="رقم_اللون + 1"></span> من 5
+    </p>
+
+    <!-- الزرار السحري -->
+    <button 
+      @click="غير_اللون()"
+      class="bg-white/20 hover:bg-white/30 text-white font-bold py-4 px-10 rounded-full text-xl backdrop-blur-lg border-2 border-white/50 transform hover:scale-110 transition">
+      كبس هنا... غير اللون! 🌈
+    </button>
     
   </div>
 
