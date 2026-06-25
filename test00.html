@@ -3,64 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>عداد بزرارين</title>
+  <title>عداد الصباع</title>
   <style>
     body{
       display:flex;
       justify-content:center;
       align-items:center;
       height:100vh;
-      background:#f2f2f2;
+      background:#1e1e2f;
       font-family:sans-serif;
     }
     .box{
       text-align:center;
-      background:white;
-      padding:30px;
-      border-radius:16px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      background:#2b2b40;
+      padding:40px;
+      border-radius:30px;
+      box-shadow:0 0 20px rgba(0,0,0,0.4);
     }
-    button{
-      padding:12px 24px;
-      font-size:24px;
-      border:none;
-      border-radius:10px;
-      cursor:pointer;
-      transition:0.2s;
-    }
-    button:active{transform:scale(0.9);}
-    #minus{background:#e63946; color:white;}
-    #plus{background:#2a9d8f; color:white;}
     #num{
-      font-size:32px;
+      font-size:80px;
       font-weight:bold;
-      margin:0 20px;
-      min-width:50px;
+      color:#00ffaa;
+      margin:20px 0;
+      min-width:120px;
       display:inline-block;
     }
+    button{
+      width:100px;
+      height:100px;
+      font-size:50px;
+      border:none;
+      border-radius:50%;
+      cursor:pointer;
+      margin:10px;
+      transition:0.1s;
+    }
+    button:active{transform:scale(0.85);}
+    #plus{background:#2a9d8f; color:white;}
+    #reset{background:#e63946; color:white; font-size:20px;}
   </style>
 </head>
 <body>
   <div class="box">
-    <h2>العداد 🌸</h2>
-    <button id="minus">-</button>
-    <span id="num">0</span>
+    <div id="num">0</div>
+    <br>
     <button id="plus">+</button>
+    <button id="reset">↺</button>
   </div>
 
   <script>
     let x = 0;
     const num = document.getElementById('num');
     const plus = document.getElementById('plus');
-    const minus = document.getElementById('minus');
+    const reset = document.getElementById('reset');
 
     plus.onclick = () => {
       x++;
       num.textContent = x;
     }
 
-    minus.onclick = () => {
-      x--;
+    reset.onclick = () => {
+      x = 0;
       num.textContent = x;
     }
   </script>
