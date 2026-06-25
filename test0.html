@@ -3,47 +3,20 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body {
-    margin: 0;
-    background: #222;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    font-family: sans-serif;
-    touch-action: none;
-  }
-  canvas {
-    border: 3px solid #4CAF50;
-    background: #333;
-    margin-bottom: 20px;
-  }
-  .controls {
-    display: flex;
-    gap: 30px;
-  }
-  button {
-    width: 100px;
-    height: 100px;
-    font-size: 40px;
-    border-radius: 20px;
-    border: none;
-    background: #4CAF50;
-    color: white;
-    touch-action: manipulation;
-  }
-  button:active {
-    background: #2E7D32; /* لما تدوس الزرار يغمق */
-  }
+  body {margin:0;background:#87CEEB;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;touch-action:none}
+  canvas {border:3px solid #333;background:#87CEEB;margin-bottom:20px}
+  .controls {display:flex;gap:15px}
+  button {width:90px;height:90px;font-size:35px;border-radius:20px;border:none;background:#FF5722;color:white}
+  button:active {background:#D84315}
 </style>
 </head>
 <body>
 
-<canvas id="game" width="400" height="200"></canvas>
+<canvas id="game" width="400" height="250"></canvas>
 
 <div class="controls">
   <button id="left">←</button>
+  <button id="jump">↑</button>
   <button id="right">→</button>
 </div>
 
@@ -51,51 +24,56 @@
 let canvas = document.getElementById('game');
 let ctx = canvas.getContext('2d');
 
-let x = 175;      // ابدأ من النص
-let speed = 0;    // السرعة
-let dir = 0;      // الاتجاه: -1 شمال، 1 يمين، 0 واقف
+let x = 175, y = 180;      // مكان المكعب
+let speedX = 0, speedY = 0; // سرعة افقية ورأسية
+let dir = 0;               // -1 شمال، 1 يمين
+let onGround = true;       // لامس الأرض ولا بيطير؟
 
-// 1. ازرار التحكم
-let leftBtn = document.getElementById('left');
-let rightBtn = document.getElementById('right');
+// الزراير
+document.getElementById('left').ontouchstart = () => dir = -1;
+document.getElementById('right').ontouchstart = () => dir = 1;
+document.getElementById('left').ontouchend = document.getElementById('right').ontouchend = () => dir = 0;
 
-// لما تدوس
-leftBtn.addEventListener('touchstart', () => dir = -1);
-rightBtn.addEventListener('touchstart', () => dir = 1);
+// القفز - أهم جزء
+document.getElementById('jump').ontouchstart = () => {
+  if(onGround) {           // مينفعش ينط وهو في الهوا
+    speedY = -15;          // اديله دفعة لفوق
+    onGround = false;
+  }
+};
 
-// لما تشيل صابعك من أي زرار
-leftBtn.addEventListener('touchend', () => dir = 0);
-rightBtn.addEventListener('touchend', () => dir = 0);
-
-// عشان لو دوست بالماوس من الكمبيوتر
-leftBtn.addEventListener('mousedown', () => dir = -1);
-rightBtn.addEventListener('mousedown', () => dir = 1);
-leftBtn.addEventListener('mouseup', () => dir = 0);
-rightBtn.addEventListener('mouseup', () => dir = 0);
-
-// 2. حلقة اللعبة
 function gameLoop() {
-  // لو دايس يمين/شمال يبقى السرعة 5، لو مش دايس هدي بالتدريج ease-out
-  if(dir !== 0) {
-    speed = dir * 5;
-  } else {
-    speed = speed * 0.85; // يهدي براحة
+  // 1. حركة يمين شمال + ease-out
+  if(dir !== 0) speedX = dir * 5;
+  else speedX = speedX * 0.85;
+  x = x + speedX;
+  
+  // 2. الجاذبية والقفز
+  speedY = speedY + 0.8; // الجاذبية بتشده لتحت
+  y = y + speedY;
+  
+  // 3. الأرض
+  if(y > 180) {          // وصل للأرض
+    y = 180;
+    speedY = 0;
+    onGround = true;     // يقدر ينط تاني
   }
   
-  x = x + speed;
-  
-  // متخليش المكعب يطلع برا
+  // حدود الشاشة
   if(x < 0) x = 0;
   if(x > 350) x = 350;
   
   // ارسم
-  ctx.clearRect(0, 0, 400, 200);
-  ctx.fillStyle = '#4CAF50';
-  ctx.fillRect(x, 75, 50, 50);
+  ctx.clearRect(0, 0, 400, 250);
+  // أرض
+  ctx.fillStyle = '#8B4513';
+  ctx.fillRect(0, 230, 400, 20);
+  // مكعب ماريو
+  ctx.fillStyle = '#FF5722';
+  ctx.fillRect(x, y, 50, 50);
   
   requestAnimationFrame(gameLoop);
 }
-
 gameLoop();
 </script>
 </body>
