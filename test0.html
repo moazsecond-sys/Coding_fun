@@ -5,65 +5,90 @@
 <style>
   body {
     margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     background: #222;
-    touch-action: none; /* عشان ميعملش سكرول لما تدوس */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: sans-serif;
+    touch-action: none;
   }
   canvas {
     border: 3px solid #4CAF50;
     background: #333;
+    margin-bottom: 20px;
   }
-  #info {
-    position: absolute;
-    top: 20px;
+  .controls {
+    display: flex;
+    gap: 30px;
+  }
+  button {
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
+    border-radius: 20px;
+    border: none;
+    background: #4CAF50;
     color: white;
-    font-family: sans-serif;
+    touch-action: manipulation;
+  }
+  button:active {
+    background: #2E7D32; /* لما تدوس الزرار يغمق */
   }
 </style>
 </head>
 <body>
 
-<div id="info">دوس على الشاشة وحرك صابعك = المكعب يمشي</div>
 <canvas id="game" width="400" height="200"></canvas>
+
+<div class="controls">
+  <button id="left">←</button>
+  <button id="right">→</button>
+</div>
 
 <script>
 let canvas = document.getElementById('game');
 let ctx = canvas.getContext('2d');
 
-let x = 50;        // مكان المكعب
-let speed = 0;     // السرعة
-let isPressed = false; // حد دايس ولا لأ
+let x = 175;      // ابدأ من النص
+let speed = 0;    // السرعة
+let dir = 0;      // الاتجاه: -1 شمال، 1 يمين، 0 واقف
 
-// 1. لما تدوس على الشاشة
-canvas.addEventListener('touchstart', (e) => {
-  isPressed = true;
-  e.preventDefault();
-});
+// 1. ازرار التحكم
+let leftBtn = document.getElementById('left');
+let rightBtn = document.getElementById('right');
 
-// 2. لما تشيل صابعك
-canvas.addEventListener('touchend', () => {
-  isPressed = false;
-});
+// لما تدوس
+leftBtn.addEventListener('touchstart', () => dir = -1);
+rightBtn.addEventListener('touchstart', () => dir = 1);
 
-// 3. حلقة اللعبة 60 مرة في الثانية
+// لما تشيل صابعك من أي زرار
+leftBtn.addEventListener('touchend', () => dir = 0);
+rightBtn.addEventListener('touchend', () => dir = 0);
+
+// عشان لو دوست بالماوس من الكمبيوتر
+leftBtn.addEventListener('mousedown', () => dir = -1);
+rightBtn.addEventListener('mousedown', () => dir = 1);
+leftBtn.addEventListener('mouseup', () => dir = 0);
+rightBtn.addEventListener('mouseup', () => dir = 0);
+
+// 2. حلقة اللعبة
 function gameLoop() {
-  // التحكم: لو دايس زود السرعة، لو مش دايس هدي بالتدريج
-  if(isPressed) {
-    speed = 5; // امشي
+  // لو دايس يمين/شمال يبقى السرعة 5، لو مش دايس هدي بالتدريج ease-out
+  if(dir !== 0) {
+    speed = dir * 5;
   } else {
-    speed = speed * 0.9; // ease-out عشان يهدي براحة
+    speed = speed * 0.85; // يهدي براحة
   }
   
   x = x + speed;
   
-  // خلي المكعب ميوصلش للحافة
-  if(x > 350) x = 350;
+  // متخليش المكعب يطلع برا
   if(x < 0) x = 0;
+  if(x > 350) x = 350;
   
-  // امسح وارسم
+  // ارسم
   ctx.clearRect(0, 0, 400, 200);
   ctx.fillStyle = '#4CAF50';
   ctx.fillRect(x, 75, 50, 50);
