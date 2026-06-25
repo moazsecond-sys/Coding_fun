@@ -1,44 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  .box {
-    width: 50px;
-    height: 50px;
-    background: #4CAF50;
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #222;
+    touch-action: none; /* عشان ميعملش سكرول لما تدوس */
+  }
+  canvas {
+    border: 3px solid #4CAF50;
+    background: #333;
+  }
+  #info {
     position: absolute;
-    top: 50px;
-  }
-  
-  .ease-in {
-    animation: move 2s ease-in infinite alternate;
-  }
-  
-  .ease-out {
-    animation: move 2s ease-out infinite alternate;
-    top: 150px;
-    background: #FF5722;
-  }
-
-  @keyframes move {
-    from { left: 0; }
-    to { left: 300px; }
-  }
-
-  label {
-    position: absolute;
-    left: 0;
+    top: 20px;
+    color: white;
     font-family: sans-serif;
   }
 </style>
 </head>
 <body>
 
-<label style="top: 20px;">Ease In - يبدأ بطيء</label>
-<div class="box ease-in"></div>
+<div id="info">دوس على الشاشة وحرك صابعك = المكعب يمشي</div>
+<canvas id="game" width="400" height="200"></canvas>
 
-<label style="top: 120px;">Ease Out - يهدي في الآخر</label>
-<div class="box ease-out"></div>
+<script>
+let canvas = document.getElementById('game');
+let ctx = canvas.getContext('2d');
 
+let x = 50;        // مكان المكعب
+let speed = 0;     // السرعة
+let isPressed = false; // حد دايس ولا لأ
+
+// 1. لما تدوس على الشاشة
+canvas.addEventListener('touchstart', (e) => {
+  isPressed = true;
+  e.preventDefault();
+});
+
+// 2. لما تشيل صابعك
+canvas.addEventListener('touchend', () => {
+  isPressed = false;
+});
+
+// 3. حلقة اللعبة 60 مرة في الثانية
+function gameLoop() {
+  // التحكم: لو دايس زود السرعة، لو مش دايس هدي بالتدريج
+  if(isPressed) {
+    speed = 5; // امشي
+  } else {
+    speed = speed * 0.9; // ease-out عشان يهدي براحة
+  }
+  
+  x = x + speed;
+  
+  // خلي المكعب ميوصلش للحافة
+  if(x > 350) x = 350;
+  if(x < 0) x = 0;
+  
+  // امسح وارسم
+  ctx.clearRect(0, 0, 400, 200);
+  ctx.fillStyle = '#4CAF50';
+  ctx.fillRect(x, 75, 50, 50);
+  
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
 </body>
 </html>
