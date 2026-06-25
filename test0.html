@@ -2,13 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>سمسار الألوان</title>
+  <title>سمسار الألوان شغال</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x/dist/cdn.min.js"></script>
 </head>
 <body>
 
-  <!-- بيت السيرفرات كله -->
   <div x-data="{
     الالوان: ['bg-purple-900', 'bg-blue-900', 'bg-green-900', 'bg-red-900', 'bg-pink-900'],
     رقم_اللون: 0,
@@ -25,7 +24,6 @@
       اللون الحالي: <span x-text="رقم_اللون + 1"></span> من 5
     </p>
 
-    <!-- الزرار السحري -->
     <button 
       @click="غير_اللون()"
       class="bg-white/20 hover:bg-white/30 text-white font-bold py-4 px-10 rounded-full text-xl backdrop-blur-lg border-2 border-white/50 transform hover:scale-110 transition">
