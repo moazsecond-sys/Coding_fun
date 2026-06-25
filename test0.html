@@ -1,39 +1,44 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>سمسار الألوان شغال</title>
+<style>
+  .box {
+    width: 50px;
+    height: 50px;
+    background: #4CAF50;
+    position: absolute;
+    top: 50px;
+  }
   
-  <!-- لينك Tailwind الثابت - ده اللي هيشغل الدهان -->
-<link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  .ease-in {
+    animation: move 2s ease-in infinite alternate;
+  }
   
-  <!-- Alpine بدون defer عشان يصحى بسرعة -->
-  <script defer src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js"></script>
+  .ease-out {
+    animation: move 2s ease-out infinite alternate;
+    top: 150px;
+    background: #FF5722;
+  }
+
+  @keyframes move {
+    from { left: 0; }
+    to { left: 300px; }
+  }
+
+  label {
+    position: absolute;
+    left: 0;
+    font-family: sans-serif;
+  }
+</style>
 </head>
-<body class="min-h-screen h-screen bg-red-900">
+<body>
 
-  <div x-data="{
-    الالوان: ['bg-purple-900', 'bg-blue-900', 'bg-green-900', 'bg-red-900', 'bg-pink-900'],
-    رقم_اللون: 0,
-    غير_اللون() {
-      this.رقم_اللون = (this.رقم_اللون + 1) % this.الوان.length
-    }
-  }" 
-  :class="الوان[رقم_اللون]" class="flex h-screen w-screen flex-col items-center justify-center transition-all duration-500">
-    
-    <h1 class="text-5xl font-bold text-white mb-8">🎭 بيت السيرفرات الملون</h1>
-    
-    <p class="text-2xl text-white/80 mb-10">
-      اللون الحالي: <span x-text="رقم_اللون + 1"></span> من 5
-    </p>
+<label style="top: 20px;">Ease In - يبدأ بطيء</label>
+<div class="box ease-in"></div>
 
-    <button 
-      @click="غير_اللون()"
-      class="bg-white/20 hover:bg-white/30 text-white font-bold py-4 px-10 rounded-full text-xl backdrop-blur-lg border-2 border-white/50 transform hover:scale-110 transition">
-      كبس هنا... غير اللون! 🌈
-    </button>
-    
-  </div>
+<label style="top: 120px;">Ease Out - يهدي في الآخر</label>
+<div class="box ease-out"></div>
 
 </body>
 </html>
