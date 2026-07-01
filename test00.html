@@ -12,6 +12,7 @@
       height:100vh;
       background:#1e1e2f;
       font-family:sans-serif;
+      user-select:none; /* عشان متعلمش بالغلط وانت بتدوس */
     }
     .box{
       text-align:center;
@@ -55,23 +56,35 @@
   </div>
 
   <script>
-    let x = Number(localStorage.getItem("الحمد")) || 0; // 1. طلع الرقم من التلاجة
+    // 1. نطلع الرقم من التلاجة بأمان
+    let x = parseInt(localStorage.getItem("الحمد")) || 0; 
+    
     const num = document.getElementById('num');
     const plus = document.getElementById('plus');
     const reset = document.getElementById('reset');
 
-    num.textContent = x; // 2. اول ما الصفحة تفتح، اكتب الرقم
+    num.textContent = x; // 2. نعرضه اول ما الصفحة تفتح
+
+    // 3. دالة واحدة للتخزين عشان منكررش الكود
+    function save() {
+      try {
+        localStorage.setItem("الحمد", x);
+        console.log("✅ تم التخزين:", x); // شوف دي في F12
+      } catch (e) {
+        console.error("❌ التخزين فشل. افتح بـ Live Server", e);
+      }
+    }
 
     plus.onclick = () => {
       x++;
       num.textContent = x;
-      localStorage.setItem("الحمد", x); // 3. ده السطر الجديد. خزن الرقم في التلاجة
+      save(); // خزن
     }
 
     reset.onclick = () => {
       x = 0;
       num.textContent = x;
-      localStorage.setItem("الحمد", x); // 4. حتى الريست نخزنه صفر
+      save(); // خزن الصفر
     }
   </script>
 </body>
