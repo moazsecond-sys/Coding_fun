@@ -55,19 +55,23 @@
   </div>
 
   <script>
-    let x = 0;
+    let x = Number(localStorage.getItem("الحمد")) || 0; // 1. طلع الرقم من التلاجة
     const num = document.getElementById('num');
     const plus = document.getElementById('plus');
     const reset = document.getElementById('reset');
 
+    num.textContent = x; // 2. اول ما الصفحة تفتح، اكتب الرقم
+
     plus.onclick = () => {
       x++;
       num.textContent = x;
+      localStorage.setItem("الحمد", x); // 3. ده السطر الجديد. خزن الرقم في التلاجة
     }
 
     reset.onclick = () => {
       x = 0;
       num.textContent = x;
+      localStorage.setItem("الحمد", x); // 4. حتى الريست نخزنه صفر
     }
   </script>
 </body>
