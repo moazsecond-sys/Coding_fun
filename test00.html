@@ -2,142 +2,35 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>عداد الحمد لله</title>
-  <style>
-    body{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      background:#1e1e2f;
-      font-family:sans-serif;
-      user-select:none;
-      overflow:hidden; /* عشان البطاقة متعملش سكرول */
-    }
-    .box{
-      text-align:center;
-      background:#2b2b40;
-      padding:40px 30px;
-      border-radius:30px;
-      box-shadow:0 0 20px rgba(0,0,0,0.4);
-      z-index: 2;
-    }
-    #num{
-      font-size:80px;
-      font-weight:bold;
-      color:#00ffaa;
-      margin:10px 0 0 0;
-    }
-    #label{
-      font-size:24px;
-      color:#ccc;
-      margin-bottom:20px;
-    }
-    button{
-      width:100px;
-      height:100px;
-      font-size:50px;
-      border:none;
-      border-radius:50%;
-      cursor:pointer;
-      margin:10px;
-      transition:0.1s;
-    }
-    button:active{transform:scale(0.85);}
-    #plus{background:#2a9d8f; color:white;}
-    #reset{background:#e63946; color:white; font-size:20px;}
-
-    /* كود البطاقة اللي بتنزل وتطلع */
-    #card{
-      position: fixed;
-      bottom: -200px; /* مختفية تحت */
-      left: 50%;
-      transform: translateX(-50%);
-      background: #00ffaa;
-      color: #1e1e2f;
-      padding: 20px 40px;
-      border-radius: 20px;
-      font-size: 22px;
-      font-weight: bold;
-      transition: bottom 0.6s ease, opacity 0.6s ease;
-      opacity: 0;
-      box-shadow: 0 0 30px #00ffaa;
-      z-index: 10;
-    }
-    #card.show{
-      bottom: 40px; /* تطلع فوق */
-      opacity: 1;
-    }
-    #card.hide{
-      bottom: -200px; /* تنزل تحت */
-      opacity: 0;
-    }
+  <title>العداد</title> 
+  <style> 
+    body { background: #1e1e2f; display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 50px; }
+    #num { font-size: 60px; color: white; }
+    #plus { font-size: 40px; padding: 12px 25px; border-radius: 16px; border: none; }
   </style>
 </head>
-<body>
-  <div class="box">
-    <div id="num">0</div>
-    <div id="label">الحمد لله 🌸</div>
-    <button id="plus">+</button>
-    <button id="reset">↺</button>
-  </div>
+<body> 
 
-  <div id="card" class="hide">الحمد لله 🌸</div>
+  <div id="num">0</div>
+  <button id="plus">زد +</button>
 
-  <script>
-    // 1. نطلع الرقم وعدد الدورات من التلاجة
-    let x = parseInt(localStorage.getItem("الحمد")) || 0; 
-    let cycles = parseInt(localStorage.getItem("cycles")) || 0; 
+  <script> 
+    let count = 0; // 1. بدأنا من 0 
+
+    const btn = document.getElementById("plus"); // 2. جبنا الزرار
+    const numDiv = document.getElementById("num"); // 3. جبنا مكان الرقم
+
+    btn.onclick = () => { // 4. لما ندوس
+      
+      count++; // 5. زود 1 
+      if (count==10) {
+        numDiv.textContent ="Win"}
+      else {
+        
+      numDiv.textContent = count;} // 6. حط الرقم الجديد في الـ div
+   
+    };
     
-    const num = document.getElementById('num');
-    const plus = document.getElementById('plus');
-    const reset = document.getElementById('reset');
-    const card = document.getElementById('card');
-
-    // 2. 30 بطاقة مختلفة. زود براحتك
-    const messages = [
-      "الحمد لله 🌸", "سبحان الله ✨", "الله اكبر 💚", "لا اله الا الله", 
-      "استغفر الله 🤲", "اللهم صل على محمد ﷺ", "ما شاء الله", "تبارك الرحمن"
-    ];
-
-    num.textContent = x;
-
-    function save() {
-      localStorage.setItem("الحمد", x);
-      localStorage.setItem("cycles", cycles);
-    }
-
-    function showCard() {
-      card.textContent = messages[cycles % messages.length]; // تجيب بطاقة جديدة
-      card.classList.remove('hide');
-      card.classList.add('show');
-      setTimeout(() => { // بعد 2 ثانية تختفي
-        card.classList.remove('show');
-        card.classList.add('hide');
-      }, 2000);
-    }
-
-    plus.onclick = () => {
-      x++;
-      num.textContent = x;
-
-      if (x % 33 === 0) { // كل 33 مرة
-        showCard();
-        cycles++;
-        if (x >= 990) { // 30 دورة * 33 = 990 
-          x = 0; 
-        }
-      }
-      save();
-    }
-
-    reset.onclick = () => {
-      x = 0;
-      cycles = 0; // نرجع البطاقات من الاول
-      num.textContent = x;
-      save();
-    }
   </script>
 </body>
 </html>
