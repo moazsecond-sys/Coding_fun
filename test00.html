@@ -1,49 +1,31 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>سوريا بالصور</title>
 <style>
-  body { background: #f7f3e9; font-family: sans-serif; text-align: center; padding: 20px; }
-  .box { background: white; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 500px; }
-  img { width: 100%; border-radius: 10px; margin-top: 10px; } /* خلي الصورة قد الصندوق */
+  body { background: #ddd; padding: 40px; }
+  
+  .box {
+    background: white; 
+    border: 3px solid red; /* ده الحيط = BORDER */
+    margin: 30px;          /* ده الهوا بره = MARGIN */
+    padding: 30px;         /* ده السفنج جوه = PADDING */
+    border-radius: 20px;   /* ده المقص = مدور الحروف */
+    text-align: center;
+  }
 </style>
 </head>
 <body>
 
-  <div class="box" id="infoBox"> 
-    <h1>🇸🇾 سوريا</h1>
-    <p id="cityText">اختار مدينة من تحت</p>
-    <img id="cityImg" src="" style="display:none;"> <!-- النافذة فاضية في البداية -->
-  </div>
-
   <div class="box">
-    <select id="citySelect">
-      <option value="">-- اختار --</option>
-      <!-- حطيت الصورة + النص مع بعض في value -->
-      <option value="دمشق|https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Damascus_Old_City.jpg/600px-Damascus_Old_City.jpg">دمشق</option>
-      <option value="حلب|https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Citadel_of_Aleppo.jpg/600px-Citadel_of_Aleppo.jpg">حلب</option>
-      <option value="حمص|https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Homs_Clock_Tower.jpg/600px-Homs_Clock_Tower.jpg">حمص</option>
-    </select>
+    انا الصندوق 📦
+    <br> شايف السفنج الابيض حواليا؟ ده PADDING
+    <br> وشايف المسافة الحمرا بره؟ ده MARGIN
   </div>
 
-<script>
-  const select = document.getElementById('citySelect');
-  const text = document.getElementById('cityText');
-  const img = document.getElementById('cityImg'); // مسكت النافذة
-
-  select.onchange = () => {
-    if (select.value !== "") {
-      let [name, link] = select.value.split('|'); // اقسم النص والصورة
-      text.textContent = name;
-      img.src = link; // حط الصورة في النافذة
-      img.style.display = 'block'; // اظهر النافذة
-    } else {
-      text.textContent = "اختار مدينة من تحت";
-      img.style.display = 'none'; // اخفيها
-    }
-  };
-</script>
+  <div class="box" style="border-radius: 0px;">
+    انا صندوق مربع 🔲 
+    <br> عشان border-radius = 0
+  </div>
 
 </body>
 </html>
