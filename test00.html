@@ -1,49 +1,48 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<body style="font-family: sans-serif; text-align: center; padding: 40px; background: #fff8e1;">
+<head>
+<meta charset="UTF-8">
+<title>سوريا بالصور</title>
+<style>
+  body { background: #f7f3e9; font-family: sans-serif; text-align: center; padding: 20px; }
+  .box { background: white; border-radius: 15px; padding: 20px; margin: 20px auto; max-width: 500px; }
+  img { width: 100%; border-radius: 10px; margin-top: 10px; } /* خلي الصورة قد الصندوق */
+</style>
+</head>
+<body>
 
-  <h1>🧂 مراقب الملح العصبي</h1>
-  
-  <h2>علبة الملح: <span id="salt">100</span>%</h2>
-  <button id="useSalt">استخدم ملح</button>
+  <div class="box" id="infoBox"> 
+    <h1>🇸🇾 سوريا</h1>
+    <p id="cityText">اختار مدينة من تحت</p>
+    <img id="cityImg" src="" style="display:none;"> <!-- النافذة فاضية في البداية -->
+  </div>
 
-  <p id="msg" style="font-size: 24px; color: #d84315; font-weight: bold;"></p>
+  <div class="box">
+    <select id="citySelect">
+      <option value="">-- اختار --</option>
+      <!-- حطيت الصورة + النص مع بعض في value -->
+      <option value="دمشق|https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Damascus_Old_City.jpg/600px-Damascus_Old_City.jpg">دمشق</option>
+      <option value="حلب|https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Citadel_of_Aleppo.jpg/600px-Citadel_of_Aleppo.jpg">حلب</option>
+      <option value="حمص|https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Homs_Clock_Tower.jpg/600px-Homs_Clock_Tower.jpg">حمص</option>
+    </select>
+  </div>
 
 <script>
-  let saltBox = 100;
-  let warehouse = 1000;
-  let yelled = false; // علم: زعقنا ولا لسه؟
+  const select = document.getElementById('citySelect');
+  const text = document.getElementById('cityText');
+  const img = document.getElementById('cityImg'); // مسكت النافذة
 
-  const salt = document.getElementById('salt');
-  const msg = document.getElementById('msg');
-
-  function checkSalt() {
-    salt.textContent = saltBox;
-
-    if (saltBox < 100 && saltBox > 50) {
-      msg.textContent = "⚠️ تنبيه: الملح نقص";
-      yelled = false; // نسمح له يزعق تاني بعد التعبئة
-    }
-
-    if (saltBox <= 50 && !yelled) { // !yelled = لو مزعقش قبل كده
-      msg.textContent = "🫠 بييب... اوعك تلمس تاني!! 🧂";
-      yelled = true; // علم انه زعق خلاص
-      saltBox = 100;
-      warehouse = warehouse - 50;
-      setTimeout(() => { msg.textContent = "✅ اتملت... بس متلمسش تاني فاهم؟"; }, 1500);
-    }
-  }
-
-  document.getElementById('useSalt').onclick = () => {
-    if (saltBox > 0) {
-      saltBox = saltBox - 10;
-      checkSalt();
+  select.onchange = () => {
+    if (select.value !== "") {
+      let [name, link] = select.value.split('|'); // اقسم النص والصورة
+      text.textContent = name;
+      img.src = link; // حط الصورة في النافذة
+      img.style.display = 'block'; // اظهر النافذة
     } else {
-      msg.textContent = "❌ فاضية... بطل لمس بقى 🫠";
+      text.textContent = "اختار مدينة من تحت";
+      img.style.display = 'none'; // اخفيها
     }
   };
-
-  checkSalt();
 </script>
 
 </body>
