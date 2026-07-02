@@ -1,62 +1,48 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <style>
-    body { background: #fff8e1; font-family: sans-serif; text-align: center; padding: 40px; }
-    .basket { font-size: 50px; margin: 20px; }
-    button { padding: 10px 20px; font-size: 18px; margin: 5px; cursor: pointer; }
-    #win { font-size: 40px; color: green; display: none; }
-  </style>
-</head>
-<body>
+<body style="font-family: sans-serif; text-align: center; padding: 40px; background: #fff8e1;">
 
-  <h1>لعبة مساواة البيض 🥚</h1>
+  <h1>🧂 مراقب الملح الذكي</h1>
   
-  <div class="basket">🧺 سبت 1: <span id="b1">7</span> بيضات</div>
-  <div class="basket">🧺 سبت 2: <span id="b2">3</span> بيضات</div>
+  <h2>علبة الملح: <span id="salt">100</span>%</h2>
+  <button id="useSalt">استخدم ملح</button>
 
-  <button id="moveToB2">انقل بيضة لـ سبت 2</button>
-  <button id="moveToB1">انقل بيضة لـ سبت 1</button>
-
-  <div id="win">متساويين! WIN 🥚</div>
+  <p id="msg" style="font-size: 24px; color: #d84315;"></p>
 
 <script>
-  let basket1 = 7; // نبدأ سبت 1 فيه 7
-  let basket2 = 3; // سبت 2 فيه 3
+  let saltBox = 100; // العلبة مليانة 100%
+  let warehouse = 1000; // المخزن كبير
 
-  const b1 = document.getElementById('b1');
-  const b2 = document.getElementById('b2');
-  const winMsg = document.getElementById('win');
+  const salt = document.getElementById('salt');
+  const msg = document.getElementById('msg');
 
-  function update() {
-    b1.textContent = basket1;
-    b2.textContent = basket2;
-    
-    // خطوة المساواة: لو بقوا قد بعض
-    if (basket1 === basket2) {
-      winMsg.style.display = 'block'; // اظهر WIN
-    } else {
-      winMsg.style.display = 'none'; // اخفي WIN
+  function checkSalt() {
+    salt.textContent = saltBox; // ورّي النسبة
+
+    // 1. لو نقصت أخبرني 
+    if (saltBox < 100) {
+      msg.textContent = "⚠️ تنبيه: الملح نقص";
+    }
+
+    // 2. لو نقصت للنصف
+    if (saltBox <= 50) {
+      msg.textContent = "🧂 الملح وصل للنصف! هملاها من المخزن...";
+      saltBox = 100; // 3. املاها ثاني من المخزن
+      warehouse = warehouse - 50; // خصم من المخزن
+      setTimeout(() => { msg.textContent = "✅ تمت التعبئة. العلبة 100%"; }, 1000);
     }
   }
 
-  document.getElementById('moveToB2').onclick = () => {
-    if (basket1 > 0) { // متاخدش من الفاضي
-      basket1--;
-      basket2++;
-      update();
+  document.getElementById('useSalt').onclick = () => {
+    if (saltBox > 0) {
+      saltBox = saltBox - 10; // كل ضغطة = استخدم 10%
+      checkSalt();
+    } else {
+      msg.textContent = "❌ العلبة فاضية خالص";
     }
   };
 
-  document.getElementById('moveToB1').onclick = () => {
-    if (basket2 > 0) {
-      basket2--;
-      basket1++;
-      update();
-    }
-  };
-  
-  update(); // شغل اول مرة
+  checkSalt(); // شغل اول مرة
 </script>
 
 </body>
