@@ -2,47 +2,48 @@
 <html lang="ar" dir="rtl">
 <body style="font-family: sans-serif; text-align: center; padding: 40px; background: #fff8e1;">
 
-  <h1>🧂 مراقب الملح الذكي</h1>
+  <h1>🧂 مراقب الملح العصبي</h1>
   
   <h2>علبة الملح: <span id="salt">100</span>%</h2>
   <button id="useSalt">استخدم ملح</button>
 
-  <p id="msg" style="font-size: 24px; color: #d84315;"></p>
+  <p id="msg" style="font-size: 24px; color: #d84315; font-weight: bold;"></p>
 
 <script>
-  let saltBox = 100; // العلبة مليانة 100%
-  let warehouse = 1000; // المخزن كبير
+  let saltBox = 100;
+  let warehouse = 1000;
+  let yelled = false; // علم: زعقنا ولا لسه؟
 
   const salt = document.getElementById('salt');
   const msg = document.getElementById('msg');
 
   function checkSalt() {
-    salt.textContent = saltBox; // ورّي النسبة
+    salt.textContent = saltBox;
 
-    // 1. لو نقصت أخبرني 
-    if (saltBox < 100) {
+    if (saltBox < 100 && saltBox > 50) {
       msg.textContent = "⚠️ تنبيه: الملح نقص";
+      yelled = false; // نسمح له يزعق تاني بعد التعبئة
     }
 
-    // 2. لو نقصت للنصف
-    if (saltBox <= 50) {
-      msg.textContent = "🧂 الملح وصل للنصف! هملاها من المخزن...";
-      saltBox = 100; // 3. املاها ثاني من المخزن
-      warehouse = warehouse - 50; // خصم من المخزن
-      setTimeout(() => { msg.textContent = "✅ تمت التعبئة. العلبة 100%"; }, 1000);
+    if (saltBox <= 50 && !yelled) { // !yelled = لو مزعقش قبل كده
+      msg.textContent = "🫠 بييب... اوعك تلمس تاني!! 🧂";
+      yelled = true; // علم انه زعق خلاص
+      saltBox = 100;
+      warehouse = warehouse - 50;
+      setTimeout(() => { msg.textContent = "✅ اتملت... بس متلمسش تاني فاهم؟"; }, 1500);
     }
   }
 
   document.getElementById('useSalt').onclick = () => {
     if (saltBox > 0) {
-      saltBox = saltBox - 10; // كل ضغطة = استخدم 10%
+      saltBox = saltBox - 10;
       checkSalt();
     } else {
-      msg.textContent = "❌ العلبة فاضية خالص";
+      msg.textContent = "❌ فاضية... بطل لمس بقى 🫠";
     }
   };
 
-  checkSalt(); // شغل اول مرة
+  checkSalt();
 </script>
 
 </body>
