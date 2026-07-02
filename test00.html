@@ -1,25 +1,56 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<meta charset="UTF-8">
+<title>دليل سوريا</title>
 <style>
-  body { background: gray; padding: 0; } /* خلفية الصفحة رمادي */
-  
-  .box {
-    background: white;   /* ده لون PADDING */
-    border:3px solid red; /* ده لون BORDER = الخط */
-    margin: 300px;        /* ده لون MARGIN = هتشوفه رمادي */
-    padding: 90px;       /* ده لون PADDING = هتشوفه ابيض */
+  body { 
+    background: #e0e0e0; /* رمادي فاتح */
+    font-family: Tahoma;
+    padding: 20px; /* هوا حوالين الصفحة كلها */
+  }
+  .card { /* ده الصندوق الابيض الجديد */
+    background: white;
+    border: 2px solid #ccc; 
+    border-radius: 15px; /* المقص = مدور */
+    padding: 25px; /* السفنج جوه */
+    margin: 30px auto; /* الهوا بره + توسّط في النص */
+    max-width: 600px; /* ميكبرش اوي في الكمبيوتر */
     text-align: center;
   }
+  #cityImg { max-width: 100%; border-radius: 10px; }
 </style>
 </head>
 <body>
 
-  <div class="box">
-    📦 انا الصندوق
-    <br> الابيض حواليا = PADDING 
-    <br> الرمادي بره الاحمر = MARGIN
+  <div class="card"> <!-- الصندوق الفخم -->
+    <h1>دليل سوريا</h1>
+    <select id="citySelect">
+      <option value="">اختر مدينة</option>
+      <option value="https://placehold.co/600x400/EEE/31343C?text=حلب">حلب</option>
+      <option value="https://placehold.co/600x400/EEE/31343C?text=دمشق">دمشق</option>
+    </select>
+    <p id="info"></p>
+    <img id="cityImg" src="" style="display:none;">
   </div>
+
+<script>
+  const select = document.getElementById('citySelect');
+  const img = document.getElementById('cityImg');
+  const info = document.getElementById('info');
+
+  select.addEventListener('change', function() {
+    const city = this.value;
+    if (city) {
+      img.src = city;
+      img.style.display = 'block';
+      info.textContent = 'انت اخترت: ' + this.options[this.selectedIndex].text;
+    } else {
+      img.style.display = 'none';
+      info.textContent = '';
+    }
+  });
+</script>
 
 </body>
 </html>
