@@ -1,37 +1,63 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>العداد</title> 
-  <style> 
-    body { background: #1e1e2f; display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 50px; }
-    #num { font-size: 60px; color: white; }
-    #plus { font-size: 40px; padding: 12px 25px; border-radius: 16px; border: none; }
+  <style>
+    body { background: #fff8e1; font-family: sans-serif; text-align: center; padding: 40px; }
+    .basket { font-size: 50px; margin: 20px; }
+    button { padding: 10px 20px; font-size: 18px; margin: 5px; cursor: pointer; }
+    #win { font-size: 40px; color: green; display: none; }
   </style>
 </head>
-<body> 
+<body>
 
-  <div id="num">0</div>
-  <button id="plus">زد +</button>
+  <h1>لعبة مساواة البيض 🥚</h1>
+  
+  <div class="basket">🧺 سبت 1: <span id="b1">7</span> بيضات</div>
+  <div class="basket">🧺 سبت 2: <span id="b2">3</span> بيضات</div>
 
-  <script> 
-    let count = 0; // 1. بدأنا من 0 
+  <button id="moveToB2">انقل بيضة لـ سبت 2</button>
+  <button id="moveToB1">انقل بيضة لـ سبت 1</button>
 
-    const btn = document.getElementById("plus"); // 2. جبنا الزرار
-    const numDiv = document.getElementById("num"); // 3. جبنا مكان الرقم
+  <div id="win">متساويين! WIN 🥚</div>
 
-    btn.onclick = () => { // 4. لما ندوس
-      
-      count++; // 5. زود 1 
-      if (count==10) {
-        numDiv.textContent ="Win"
-      btn.disabled= true;}
-      else {
-        
-      numDiv.textContent = count;} // 6. حط الرقم الجديد في الـ div
-   
-    };
+<script>
+  let basket1 = 7; // نبدأ سبت 1 فيه 7
+  let basket2 = 3; // سبت 2 فيه 3
+
+  const b1 = document.getElementById('b1');
+  const b2 = document.getElementById('b2');
+  const winMsg = document.getElementById('win');
+
+  function update() {
+    b1.textContent = basket1;
+    b2.textContent = basket2;
     
-  </script>
+    // خطوة المساواة: لو بقوا قد بعض
+    if (basket1 === basket2) {
+      winMsg.style.display = 'block'; // اظهر WIN
+    } else {
+      winMsg.style.display = 'none'; // اخفي WIN
+    }
+  }
+
+  document.getElementById('moveToB2').onclick = () => {
+    if (basket1 > 0) { // متاخدش من الفاضي
+      basket1--;
+      basket2++;
+      update();
+    }
+  };
+
+  document.getElementById('moveToB1').onclick = () => {
+    if (basket2 > 0) {
+      basket2--;
+      basket1++;
+      update();
+    }
+  };
+  
+  update(); // شغل اول مرة
+</script>
+
 </body>
 </html>
